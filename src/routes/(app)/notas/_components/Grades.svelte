@@ -3,11 +3,11 @@
 	import { CircleCheck, CircleX } from '@lucide/svelte';
 
 	export interface Props {
-			selectedRamoId: string;
-			predictedNotas?: Record<string, number> | null;
-			ramoProbabilities?: Record<string, number | null>;
-			ramoStatuses?: Record<string, 'possible' | 'impossible' | 'guaranteed'>;
-		}
+		selectedRamoId: string;
+		predictedNotas?: Record<string, number> | null;
+		ramoProbabilities?: Record<string, number | null>;
+		ramoStatuses?: Record<string, 'possible' | 'impossible' | 'guaranteed'>;
+	}
 
 	let {
 		selectedRamoId = '',
@@ -111,7 +111,8 @@
 				<input
 					type="number"
 					value={localValues[id] || ''}
-					placeholder={evaluacion.valor_actual === null && predictedNotas?.[evaluacion.id] !== undefined
+					placeholder={evaluacion.valor_actual === null &&
+					predictedNotas?.[evaluacion.id] !== undefined
 						? predictedNotas[evaluacion.id].toFixed(1)
 						: '0.0'}
 					oninput={(e) => {
@@ -143,12 +144,13 @@
 	</div>
 {:else}
 	<div class="space-y-4">
-		
 		<div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
 			{#each ramosSummary as ramo (ramo.id)}
 				<a
 					href={`/notas#${ramo.id}`}
-					class="flex items-center gap-3 p-3 border rounded-lg transition-colors {ramoStatuses[ramo.id] === 'guaranteed'
+					class="flex items-center gap-3 p-3 border rounded-lg transition-colors {ramoStatuses[
+						ramo.id
+					] === 'guaranteed'
 						? 'bg-emerald-50 border-emerald-200 hover:bg-emerald-100'
 						: ramoStatuses[ramo.id] === 'impossible'
 							? 'bg-red-50 border-red-200 hover:bg-red-100'

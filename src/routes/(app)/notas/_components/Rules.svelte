@@ -175,13 +175,13 @@
 						</button>
 					</div>
 
-
-
 					<div class="flex items-center justify-between">
 						<span class="text-sm text-gray-600">Media histórica</span>
 						<input
 							type="number"
-							value={draft.mode === 'auto' ? Number(getAutoPerfil(draft).media_historica.toFixed(2)) : draft.media_historica}
+							value={draft.mode === 'auto'
+								? Number(getAutoPerfil(draft).media_historica.toFixed(2))
+								: draft.media_historica}
 							disabled={draft.mode === 'auto'}
 							oninput={(e) =>
 								updateDraft({ media_historica: Number((e.target as HTMLInputElement).value || 0) })}
@@ -193,7 +193,9 @@
 						<span class="text-sm text-gray-600">Desviación estándar</span>
 						<input
 							type="number"
-							value={draft.mode === 'auto' ? Number(getAutoPerfil(draft).desviacion_estandar.toFixed(2)) : draft.desviacion_estandar}
+							value={draft.mode === 'auto'
+								? Number(getAutoPerfil(draft).desviacion_estandar.toFixed(2))
+								: draft.desviacion_estandar}
 							disabled={draft.mode === 'auto'}
 							oninput={(e) =>
 								updateDraft({

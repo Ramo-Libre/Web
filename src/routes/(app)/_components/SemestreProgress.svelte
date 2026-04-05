@@ -48,9 +48,7 @@
 			const evaluaciones = db.notas
 				.getEvaluacionesData(ramoId)
 				.list.map(([, e]) => ({ ...e, peso: e.peso / 100 }));
-			const restricciones = db.notas
-				.getRestriccionesData(ramoId)
-				.list.map(([, r]) => r);
+			const restricciones = db.notas.getRestriccionesData(ramoId).list.map(([, r]) => r);
 
 			if (!contexto || evaluaciones.length === 0) {
 				return 'possible';

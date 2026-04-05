@@ -87,7 +87,8 @@
 		}
 
 		const status =
-			approvalStatus ?? (isPossible === false ? 'NO_POSIBLE' : isPossible === true ? 'POSIBLE' : null);
+			approvalStatus ??
+			(isPossible === false ? 'NO_POSIBLE' : isPossible === true ? 'POSIBLE' : null);
 
 		if (status === 'NO_POSIBLE') {
 			bannerTitle = 'No es posible';
@@ -123,7 +124,10 @@
 		<div class="text-xs font-semibold uppercase tracking-wider opacity-80">{bannerLabel}</div>
 		<div class="text-2xl font-semibold mt-1">{bannerTitle}</div>
 		<div class="text-sm opacity-90 mt-1">{bannerSubtitle}</div>
-		<BannerIcon class="absolute -right-5 -bottom-5 text-white/10 rotate-12 pointer-events-none" size={160} />
+		<BannerIcon
+			class="absolute -right-5 -bottom-5 text-white/10 rotate-12 pointer-events-none"
+			size={160}
+		/>
 	</div>
 
 	<div class="p-6 space-y-4">
@@ -131,9 +135,7 @@
 			{#if selectedProbGeneral !== null}
 				<div class="flex items-center gap-2 text-xs text-slate-600">
 					<Activity size={14} class="text-slate-400" />
-					<span class="font-semibold text-slate-700">
-						Probabilidad general:
-					</span>
+					<span class="font-semibold text-slate-700"> Probabilidad general: </span>
 					<span class="font-semibold text-slate-800">
 						{(selectedProbGeneral * 100).toFixed(1)}%
 					</span>
@@ -197,12 +199,15 @@
 			<div class="mt-4 -mb-2 flex items-center justify-center gap-4 text-xs text-gray-600">
 				<div class="flex items-center gap-1">
 					<Activity size={14} class="text-slate-400" />
-					<span class="font-semibold text-slate-700">{globalStats?.media?.toFixed(1) ?? '0.0'}</span>
+					<span class="font-semibold text-slate-700">{globalStats?.media?.toFixed(1) ?? '0.0'}</span
+					>
 					<span class="text-[11px] text-slate-400">Media</span>
 				</div>
 				<div class="flex items-center gap-1">
 					<Activity size={14} class="text-slate-400" />
-					<span class="font-semibold text-slate-700">{globalStats?.desviacion?.toFixed(1) ?? '0.0'}</span>
+					<span class="font-semibold text-slate-700"
+						>{globalStats?.desviacion?.toFixed(1) ?? '0.0'}</span
+					>
 					<span class="text-[11px] text-slate-400">Desviación</span>
 				</div>
 			</div>

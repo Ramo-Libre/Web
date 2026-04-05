@@ -94,5 +94,5 @@ body {
 }
 
 button {
-    @apply transition-all duration-100
+	@apply transition-all duration-100;
 }

@@ -80,9 +80,7 @@ export class NotasManager implements Serializable<NotasSerial> {
 				ramosMap.set(ramoId, {
 					evaluaciones: new SvelteMap<EvaluacionKey, Evaluacion>(ramoSerial.evaluaciones || []),
 					tags: new SvelteMap<TagKey, Tag>(ramoSerial.tags || []),
-					restricciones: new SvelteMap<RestriccionKey, Restriccion>(
-						ramoSerial.restricciones || []
-					),
+					restricciones: new SvelteMap<RestriccionKey, Restriccion>(ramoSerial.restricciones || []),
 					contexto: ramoSerial.contexto,
 					perfil: ramoSerial.perfil
 				});
@@ -427,9 +425,7 @@ export class NotasManager implements Serializable<NotasSerial> {
 		const ramoData = this._ramos.get(ramoId);
 		if (!ramoData) return false;
 		return (
-			ramoData.evaluaciones.size > 0 ||
-			ramoData.tags.size > 0 ||
-			ramoData.restricciones.size > 0
+			ramoData.evaluaciones.size > 0 || ramoData.tags.size > 0 || ramoData.restricciones.size > 0
 		);
 	}
 

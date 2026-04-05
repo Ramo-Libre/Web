@@ -3,7 +3,11 @@
 	import { browser } from '$app/environment';
 	import { fly } from 'svelte/transition';
 	import { db } from '$lib/state/index.svelte';
-	import solve, { type Estrategia, type SalidaCompleta, type Restriccion } from '@madmti/gradesolver';
+	import solve, {
+		type Estrategia,
+		type SalidaCompleta,
+		type Restriccion
+	} from '@madmti/gradesolver';
 	import RamosListReadOnly from './_components/RamosListReadOnly.svelte';
 	import StatusHeader from './_components/StatusHeader.svelte';
 	import Grades from './_components/Grades.svelte';
@@ -118,9 +122,7 @@
 			: ''
 	);
 
-	const computeAutoPerfil = (
-		contexto: { nota_aprobacion: number; nota_maxima: number } | null
-	) => {
+	const computeAutoPerfil = (contexto: { nota_aprobacion: number; nota_maxima: number } | null) => {
 		if (
 			!contexto ||
 			typeof contexto.nota_aprobacion !== 'number' ||
@@ -170,7 +172,12 @@
 		contextoRamo: { nota_minima: number },
 		evaluaciones: { id: string; valor_actual: number | null | undefined }[]
 	): RamoEstado => {
-		if (resolved && typeof resolved === 'object' && 'status' in resolved && resolved.status === 'error') {
+		if (
+			resolved &&
+			typeof resolved === 'object' &&
+			'status' in resolved &&
+			resolved.status === 'error'
+		) {
 			return 'possible';
 		}
 
@@ -285,21 +292,25 @@
 		if (isPossible === false) {
 			approvalStatus = 'NO_POSIBLE';
 		} else if (isPossible === true && notaMinima !== null) {
-			const allAbove = keys.length > 0 && keys.every((strategy) =>
-				pendientes.every((id) => {
-					const value = plans[strategy]?.notas_objetivo?.[id];
-					const rounded = value !== undefined && value !== null ? Number(value.toFixed(2)) : null;
-					return rounded !== null && rounded > notaMinima;
-				})
-			);
+			const allAbove =
+				keys.length > 0 &&
+				keys.every((strategy) =>
+					pendientes.every((id) => {
+						const value = plans[strategy]?.notas_objetivo?.[id];
+						const rounded = value !== undefined && value !== null ? Number(value.toFixed(2)) : null;
+						return rounded !== null && rounded > notaMinima;
+					})
+				);
 
-			const allBelowEq = keys.length > 0 && keys.every((strategy) =>
-				pendientes.every((id) => {
-					const value = plans[strategy]?.notas_objetivo?.[id];
-					const rounded = value !== undefined && value !== null ? Number(value.toFixed(2)) : null;
-					return rounded !== null && rounded <= notaMinima;
-				})
-			);
+			const allBelowEq =
+				keys.length > 0 &&
+				keys.every((strategy) =>
+					pendientes.every((id) => {
+						const value = plans[strategy]?.notas_objetivo?.[id];
+						const rounded = value !== undefined && value !== null ? Number(value.toFixed(2)) : null;
+						return rounded !== null && rounded <= notaMinima;
+					})
+				);
 
 			if (pendientes.length === 0 || allBelowEq) {
 				approvalStatus = 'GARANTIZADO';
@@ -397,7 +408,12 @@
 		solve(input)
 			.then((result) => {
 				if (requestId !== solveRequestId) return;
-				if (result && typeof result === 'object' && 'status' in result && result.status === 'error') {
+				if (
+					result &&
+					typeof result === 'object' &&
+					'status' in result &&
+					result.status === 'error'
+				) {
 					console.error('❌ solve() error:', result);
 					prediction = null;
 					predictionError = result.message || 'Error desconocido';
@@ -410,7 +426,6 @@
 					Object.keys(resolved.maquina_d ?? resolved.planes ?? {})
 				);
 				prediction = resolved;
-
 			})
 			.catch((error) => {
 				if (requestId !== solveRequestId) return;
@@ -478,7 +493,12 @@
 				try {
 					const result = await solve(input);
 					if (requestId !== summarySolveRequestId) return;
-					if (result && typeof result === 'object' && 'status' in result && result.status === 'error') {
+					if (
+						result &&
+						typeof result === 'object' &&
+						'status' in result &&
+						result.status === 'error'
+					) {
 						next[ramoId] = null;
 						nextStatuses[ramoId] = 'possible';
 						continue;
@@ -505,57 +525,50 @@
 	});
 </script>
 
-
-	<div class="sm:h-full sm:overflow-hidden" in:fly={{ y: 10, duration: 300, delay: 100 }}>
-		<!-- Layout Grid Responsivo -->
-		<div class="flex flex-col sm:grid grid-cols-1 lg:grid-cols-12 gap-6 sm:h-full">
-			<!-- Panel de Lista de Ramos (Aside izquierda) -->
-			<div
-				class="lg:col-span-4 xl:col-span-3 flex flex-col gap-4 sm:h-full sm:min-h-0 sm:overflow-hidden"
-			>
-				<div class="sm:flex-1 sm:overflow-y-auto sm:min-h-0">
-					<RamosListReadOnly {selectedRamoId} onSelectRamo={handleSelectRamo} />
-				</div>
+<div class="sm:h-full sm:overflow-hidden" in:fly={{ y: 10, duration: 300, delay: 100 }}>
+	<!-- Layout Grid Responsivo -->
+	<div class="flex flex-col sm:grid grid-cols-1 lg:grid-cols-12 gap-6 sm:h-full">
+		<!-- Panel de Lista de Ramos (Aside izquierda) -->
+		<div
+			class="lg:col-span-4 xl:col-span-3 flex flex-col gap-4 sm:h-full sm:min-h-0 sm:overflow-hidden"
+		>
+			<div class="sm:flex-1 sm:overflow-y-auto sm:min-h-0">
+				<RamosListReadOnly {selectedRamoId} onSelectRamo={handleSelectRamo} />
 			</div>
+		</div>
 
-			<!-- Panel Principal - 3 Componentes con scroll -->
-			<div class="lg:col-span-8 xl:col-span-9 sm:h-full sm:min-h-0 sm:overflow-y-auto">
-				<div class="flex flex-col gap-6 pb-6">
-					<!-- Componente 1: Header de Estado -->
-					<div class="sm:flex-none">
-						<StatusHeader
-							{selectedRamoId}
-							summaryStats={summaryStats}
-							globalStats={globalStats}
-							selectedProbGeneral={selectedProbGeneral}
-							{strategies}
-							{selectedStrategy}
-							{probabilities}
-							{isSolving}
-							{isPossible}
-							{impossibleReasons}
-							{approvalStatus}
-							error={predictionError}
-							onSelectStrategy={handleSelectStrategy}
-						/>
-					</div>
+		<!-- Panel Principal - 3 Componentes con scroll -->
+		<div class="lg:col-span-8 xl:col-span-9 sm:h-full sm:min-h-0 sm:overflow-y-auto">
+			<div class="flex flex-col gap-6 pb-6">
+				<!-- Componente 1: Header de Estado -->
+				<div class="sm:flex-none">
+					<StatusHeader
+						{selectedRamoId}
+						{summaryStats}
+						{globalStats}
+						{selectedProbGeneral}
+						{strategies}
+						{selectedStrategy}
+						{probabilities}
+						{isSolving}
+						{isPossible}
+						{impossibleReasons}
+						{approvalStatus}
+						error={predictionError}
+						onSelectStrategy={handleSelectStrategy}
+					/>
+				</div>
 
-					<!-- Componente 2: Calificaciones -->
-					<div class="sm:flex-none">
-						<Grades
-							{selectedRamoId}
-							{predictedNotas}
-							ramoProbabilities={ramoProbabilities}
-							ramoStatuses={ramoStatuses}
-						/>
-					</div>
+				<!-- Componente 2: Calificaciones -->
+				<div class="sm:flex-none">
+					<Grades {selectedRamoId} {predictedNotas} {ramoProbabilities} {ramoStatuses} />
+				</div>
 
-					<!-- Componente 3: Reglas de Evaluación -->
-					<div class="sm:flex-none">
-						<Rules />
-					</div>
+				<!-- Componente 3: Reglas de Evaluación -->
+				<div class="sm:flex-none">
+					<Rules />
 				</div>
 			</div>
 		</div>
 	</div>
-
+</div>

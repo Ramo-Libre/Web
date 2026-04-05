@@ -1,5 +1,4 @@
 <script lang="ts">
-
 	import { IconButton } from '$lib/components/ui/icon-button';
 	import * as Tooltip from '$lib/components/ui/tooltip';
 	import * as AlertDialog from '$lib/components/ui/alert-dialog';

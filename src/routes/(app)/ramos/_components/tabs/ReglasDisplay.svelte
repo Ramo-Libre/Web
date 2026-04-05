@@ -8,8 +8,6 @@
 		color: string;
 	}
 
-
-
 	interface Props {
 		rules: Restriccion[];
 		tags: [string, TagType][];

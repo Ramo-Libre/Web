@@ -56,7 +56,9 @@
 	});
 </script>
 
-<div class="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm h-64 relative overflow-hidden">
+<div
+	class="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm h-64 relative overflow-hidden"
+>
 	<div class="flex items-center gap-2 mb-4">
 		<TrendingUp class="w-5 h-5 text-green-500" />
 		<h3 class="text-sm font-bold text-gray-400 uppercase tracking-widest">Conteo evaluaciones</h3>
