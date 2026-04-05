@@ -1,3 +1,0 @@
-[submodule "modules/GradeSolver"]
-	path = modules/GradeSolver
-	url = git@github.com:madmti/GradeSolver.git

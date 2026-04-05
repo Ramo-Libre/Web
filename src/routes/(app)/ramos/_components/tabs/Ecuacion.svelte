@@ -20,8 +20,8 @@
 	let newTagName = $state('');
 
 	// Estado para Evaluaciones
-	let newEvalName = $state('');
-	let newEvalWeight = $state(20);
+	let newEvalId = $state('');
+	let newEvalPeso = $state(20);
 
 	// --- DERIVADOS ---
 	// Usar el manager de notas con ramoId (métodos de solo lectura)
@@ -108,17 +108,17 @@
 
 	// --- LÓGICA DE EVALUACIONES ---
 	function addEvaluation() {
-		if (!newEvalName.trim() || !selectedRamoId) return;
+		if (!newEvalId.trim() || !selectedRamoId) return;
 
 		db.notas.getEvaluaciones(selectedRamoId).add({
-			name: newEvalName.trim(),
-			weight: newEvalWeight,
+			id: newEvalId.trim(),
+			peso: newEvalPeso,
 			tags: [],
-			grade: null
+			valor_actual: null
 		});
 
-		newEvalName = '';
-		newEvalWeight = Math.max(0, 100 - totalWeight);
+		newEvalId = '';
+		newEvalPeso = Math.max(0, 100 - totalWeight);
 	}
 
 	function removeEvaluation(evaluacionId: string) {
@@ -126,24 +126,24 @@
 		db.notas.getEvaluaciones(selectedRamoId).remove(evaluacionId);
 	}
 
-	function updateEvaluacionName(evaluacionId: string, newName: string) {
+	function updateEvaluacionId(evaluacionId: string, newId: string) {
 		if (!selectedRamoId) return;
 		const evaluacion = db.notas.getEvaluaciones(selectedRamoId).get(evaluacionId);
 		if (evaluacion) {
 			db.notas.getEvaluaciones(selectedRamoId).update(evaluacionId, {
 				...evaluacion,
-				name: newName
+				id: newId
 			});
 		}
 	}
 
-	function updateEvaluacionWeight(evaluacionId: string, newWeight: number) {
+	function updateEvaluacionPeso(evaluacionId: string, newPeso: number) {
 		if (!selectedRamoId) return;
 		const evaluacion = db.notas.getEvaluaciones(selectedRamoId).get(evaluacionId);
 		if (evaluacion) {
 			db.notas.getEvaluaciones(selectedRamoId).update(evaluacionId, {
 				...evaluacion,
-				weight: newWeight
+				peso: newPeso
 			});
 		}
 	}
@@ -251,9 +251,16 @@
 					<input
 						type="text"
 						bind:value={newTagName}
-						onkeydown={(e) => e.key === 'Enter' && createTag()}
+						onkeydown={(e) => {
+							if (e.key === 'Enter') {
+								e.preventDefault();
+								createTag();
+							}
+						}}
 						placeholder="Nueva etiqueta..."
 						class="w-24 bg-transparent border-none outline-none text-xs font-medium placeholder-gray-400 text-gray-700 min-w-12"
+						autocomplete="off"
+						enterkeyhint="done"
 					/>
 				</div>
 			{/if}
@@ -342,14 +349,22 @@
 							<!-- Nombre de la evaluación -->
 							<input
 								type="text"
-								value={evaluacion.name}
+								value={evaluacion.id}
 								onchange={(e) =>
-									updateEvaluacionName(evaluacionId, (e.target as HTMLInputElement).value)}
+									updateEvaluacionId(evaluacionId, (e.target as HTMLInputElement).value)}
+								onkeydown={(e) => {
+									if (e.key === 'Enter') {
+										e.preventDefault();
+										(e.target as HTMLInputElement).blur();
+									}
+								}}
 								onclick={(e) => !paintMode && e.stopPropagation()}
 								disabled={paintMode}
 								class="flex-1 bg-transparent border-none outline-none font-medium text-gray-800 placeholder-gray-400 focus:ring-0 text-base min-w-0
 	                            {paintMode ? 'cursor-crosshair pointer-events-none' : ''}"
 								placeholder="Nombre de la evaluación..."
+								autocomplete="off"
+								enterkeyhint="done"
 							/>
 
 							<!-- Tags asignados - solo visible en sm+ -->
@@ -388,15 +403,24 @@
 							>
 								<input
 									type="number"
-									value={evaluacion.weight}
+									value={evaluacion.peso}
 									onchange={(e) =>
-										updateEvaluacionWeight(
+										updateEvaluacionPeso(
 											evaluacionId,
 											Number((e.target as HTMLInputElement).value)
 										)}
+									onkeydown={(e) => {
+										if (e.key === 'Enter') {
+											e.preventDefault();
+											(e.target as HTMLInputElement).blur();
+										}
+									}}
 									disabled={paintMode}
 									class="w-10 text-right bg-transparent outline-none font-bold text-gray-700 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none
 	                                {paintMode ? 'cursor-crosshair' : ''}"
+									autocomplete="off"
+									enterkeyhint="done"
+									inputmode="numeric"
 								/>
 								<span class="text-xs text-gray-400 font-bold">%</span>
 							</div>
@@ -462,10 +486,17 @@
 					<input
 						id="new-eval-input"
 						type="text"
-						bind:value={newEvalName}
-						onkeydown={(e) => e.key === 'Enter' && addEvaluation()}
+						bind:value={newEvalId}
+						onkeydown={(e) => {
+							if (e.key === 'Enter') {
+								e.preventDefault();
+								addEvaluation();
+							}
+						}}
 						placeholder="Nueva evaluación (ej: Certamen 1)..."
 						class="flex-1 bg-transparent border-none outline-none text-sm text-gray-600 font-medium placeholder-gray-400 focus:ring-0"
+						autocomplete="off"
+						enterkeyhint="done"
 					/>
 				</div>
 			{/if}

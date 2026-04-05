@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
 	import { IconButton } from '$lib/components/ui/icon-button';
 	import * as Tooltip from '$lib/components/ui/tooltip';
 	import * as AlertDialog from '$lib/components/ui/alert-dialog';
@@ -123,7 +122,7 @@
 	<!-- Formulario para agregar ramo -->
 	{#if isFormExpanded}
 		<div
-			transition:slide={{ duration: 300 }}
+			transition:slide={{ duration: 300, axis: 'y' }}
 			class="space-y-4 mb-6 p-4 bg-slate-50 rounded-lg border border-slate-200 shrink-0"
 		>
 			<div class="space-y-2">
@@ -137,18 +136,21 @@
 					onkeydown={(e) => e.key === 'Enter' && handleAgregar()}
 					placeholder="Ej: Arquitectura de Software"
 					class="w-full px-3 py-2 bg-white rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all"
+					autocomplete="off"
+					enterkeyhint="done"
 				/>
 			</div>
 
-			<Button
+			<button
 				onclick={handleAgregar}
 				disabled={!nombreRamo.trim()}
-				class="w-full bg-orange-500 hover:bg-orange-600 text-white"
-				variant="default"
+				class="w-full bg-orange-500 hover:bg-orange-600 disabled:opacity-50 disabled:pointer-events-none text-white py-2 px-4 rounded-md active:scale-95 inline-flex items-center justify-center gap-2 font-medium transition-all shadow-sm"
+				type="button"
+				style="touch-action: manipulation;"
 			>
-				<Plus class="w-4 h-4 mr-2" />
+				<Plus class="w-4 h-4" />
 				Agregar Ramo
-			</Button>
+			</button>
 		</div>
 	{/if}
 
@@ -212,7 +214,7 @@
 <!-- Versión Móvil (menores a sm) -->
 <div class="sm:hidden space-y-3">
 	<!-- Botón selector móvil -->
-	<div class="relative">
+	<div class="relative z-30">
 		<button
 			onclick={() => (isMobileDropdownOpen = !isMobileDropdownOpen)}
 			class="w-full bg-white border border-slate-200 rounded-xl p-4 flex items-center justify-between transition-all duration-200 {isMobileDropdownOpen
@@ -267,16 +269,16 @@
 		{#if isMobileDropdownOpen}
 			<!-- Overlay para cerrar al tocar fuera -->
 			<div
-				class="fixed inset-0 z-10"
+				class="fixed inset-0 z-40"
 				onclick={closeMobileDropdown}
 				onkeydown={(e) => e.key === 'Escape' && closeMobileDropdown()}
 				role="button"
-				tabindex="0"
+				tabindex="-1"
 				aria-label="Close dropdown"
 			></div>
 
 			<div
-				class="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-200 rounded-xl shadow-lg z-20 max-h-80 overflow-y-auto"
+				class="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-200 rounded-xl shadow-lg z-50 max-h-80 overflow-y-auto"
 			>
 				{#if db.ramos.list.length > 0}
 					<div class="p-2">
@@ -286,8 +288,13 @@
 								Mis Ramos ({db.ramos.list.length})
 							</div>
 							<button
-								onclick={() => (isMobileFormVisible = !isMobileFormVisible)}
-								class="p-2 text-slate-400 hover:text-orange-600 hover:bg-orange-50 rounded transition-all {isMobileFormVisible
+								type="button"
+								style="touch-action: manipulation;"
+								onclick={(e) => {
+									e.stopPropagation();
+									isMobileFormVisible = !isMobileFormVisible;
+								}}
+								class="p-2 text-slate-400 hover:text-orange-600 hover:bg-orange-50 active:scale-95 rounded transition-all {isMobileFormVisible
 									? 'rotate-45'
 									: ''}"
 							>
@@ -308,21 +315,24 @@
 									<input
 										id="nombreRamoMobileDropdown"
 										type="text"
+										autocomplete="off"
+										enterkeyhint="done"
 										bind:value={nombreRamo}
 										onkeydown={(e) => e.key === 'Enter' && handleAgregar()}
 										placeholder="Ej: Arquitectura de Software"
 										class="w-full px-3 py-2 bg-white rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all text-sm"
 									/>
 								</div>
-								<Button
+								<button
 									onclick={handleAgregar}
 									disabled={!nombreRamo.trim()}
-									class="w-full bg-orange-500 hover:bg-orange-600 text-white text-sm py-2"
-									size="sm"
+									class="w-full bg-orange-500 hover:bg-orange-600 disabled:opacity-50 disabled:pointer-events-none text-white text-sm py-2 px-3 rounded-md active:scale-95 inline-flex items-center justify-center gap-2 font-medium transition-all"
+									type="button"
+									style="touch-action: manipulation;"
 								>
-									<Plus class="w-3 h-3 mr-2" />
+									<Plus class="w-3 h-3" />
 									Agregar
-								</Button>
+								</button>
 							</div>
 						{/if}
 
@@ -335,7 +345,9 @@
 								>
 									<button
 										onclick={() => handleMobileSelect(id)}
-										class="flex-1 flex items-center gap-3 text-left"
+										class="flex-1 flex items-center gap-3 text-left active:opacity-70"
+										type="button"
+										style="touch-action: manipulation;"
 									>
 										<!-- Indicador de color -->
 										<div
@@ -370,6 +382,8 @@
 											openDeleteConfirm(id);
 										}}
 										class="p-2 text-slate-300 hover:text-rose-500 hover:bg-rose-50 active:text-rose-600 active:bg-rose-100 active:scale-95 rounded transition-all duration-150"
+										type="button"
+										style="touch-action: manipulation;"
 									>
 										<Trash class="w-4 h-4" />
 									</button>
@@ -387,21 +401,24 @@
 								<input
 									id="nombreRamoMobileEmpty"
 									type="text"
+									autocomplete="off"
+									enterkeyhint="done"
 									bind:value={nombreRamo}
 									onkeydown={(e) => e.key === 'Enter' && handleAgregar()}
 									placeholder="Ej: Arquitectura de Software"
 									class="w-full px-3 py-2 bg-white rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all text-sm"
 								/>
 							</div>
-							<Button
+							<button
 								onclick={handleAgregar}
 								disabled={!nombreRamo.trim()}
-								class="w-full bg-orange-500 hover:bg-orange-600 text-white text-sm py-2"
-								size="sm"
+								class="w-full bg-orange-500 hover:bg-orange-600 disabled:opacity-50 disabled:pointer-events-none text-white text-sm py-2 px-3 rounded-md active:scale-95 inline-flex items-center justify-center gap-2 font-medium transition-all"
+								type="button"
+								style="touch-action: manipulation;"
 							>
-								<Plus class="w-3 h-3 mr-2" />
+								<Plus class="w-3 h-3" />
 								Agregar
-							</Button>
+							</button>
 						</div>
 					</div>
 				{/if}
