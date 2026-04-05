@@ -256,7 +256,13 @@ export class NotasManager implements Serializable<NotasSerial> {
 			list: Array.from(ramoData.evaluaciones.entries()),
 			map: ramoData.evaluaciones,
 			add: (evaluacion: Evaluacion) => {
-				const id = crypto.randomUUID();
+				const id = crypto.randomUUID
+					? crypto.randomUUID()
+					: 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+							const r = (Math.random() * 16) | 0;
+							const v = c === 'x' ? r : (r & 0x3) | 0x8;
+							return v.toString(16);
+						});
 				ramoData.evaluaciones.set(id, {
 					...evaluacion,
 					valor_actual: evaluacion.valor_actual ?? null
@@ -285,7 +291,13 @@ export class NotasManager implements Serializable<NotasSerial> {
 			list: Array.from(ramoData.tags.entries()),
 			map: ramoData.tags,
 			add: (tag: Tag) => {
-				const id = crypto.randomUUID();
+				const id = crypto.randomUUID
+					? crypto.randomUUID()
+					: 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+							const r = (Math.random() * 16) | 0;
+							const v = c === 'x' ? r : (r & 0x3) | 0x8;
+							return v.toString(16);
+						});
 				ramoData.tags.set(id, tag);
 				return id;
 			},
@@ -311,7 +323,13 @@ export class NotasManager implements Serializable<NotasSerial> {
 			list: Array.from(ramoData.restricciones.entries()),
 			map: ramoData.restricciones,
 			add: (restriccion: Restriccion) => {
-				const id = crypto.randomUUID();
+				const id = crypto.randomUUID
+					? crypto.randomUUID()
+					: 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+							const r = (Math.random() * 16) | 0;
+							const v = c === 'x' ? r : (r & 0x3) | 0x8;
+							return v.toString(16);
+						});
 				ramoData.restricciones.set(id, restriccion);
 				return id;
 			},

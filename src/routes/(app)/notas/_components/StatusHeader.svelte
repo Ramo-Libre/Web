@@ -1,9 +1,21 @@
 <script lang="ts">
 	import type { Estrategia } from '@madmti/gradesolver';
-	import { ShieldCheck, ShieldX, Shield } from '@lucide/svelte';
+	import { ShieldCheck, ShieldX, Shield, Activity } from '@lucide/svelte';
 
 	interface Props {
 		selectedRamoId: string;
+		summaryStats?: {
+			pendientes: number;
+			buenas: number;
+			malas: number;
+			total: number;
+		};
+		globalStats?: {
+			media: number;
+			desviacion: number;
+			total: number;
+		};
+		selectedProbGeneral?: number | null;
 		strategies: Estrategia[];
 		selectedStrategy: Estrategia | null;
 		probabilities: Record<string, number>;
@@ -17,6 +29,9 @@
 
 	let {
 		selectedRamoId = '',
+		summaryStats = { pendientes: 0, buenas: 0, malas: 0, total: 0 },
+		globalStats = { media: 0, desviacion: 0, total: 0 },
+		selectedProbGeneral = null,
 		strategies = [],
 		selectedStrategy = null,
 		probabilities = {},
@@ -47,15 +62,18 @@
 		return `${(value * 100).toFixed(1)}%`;
 	}
 
+	let bannerLabel = $state('Predicción');
 	let bannerTitle = $state('Predicción');
 	let bannerSubtitle = $state('Esperando datos para calcular.');
 	let bannerClasses = $state('bg-linear-to-r from-indigo-600 to-indigo-700 text-white');
 	let BannerIcon = $state(Shield);
 
 	$effect(() => {
+		bannerLabel = 'Predicción';
 		if (!selectedRamoId) {
-			bannerTitle = 'Sin selección';
-			bannerSubtitle = 'Selecciona un ramo para ver la predicción.';
+			bannerLabel = 'Resumen';
+			bannerTitle = 'General';
+			bannerSubtitle = 'Resumen general de tus notas.';
 			bannerClasses = 'bg-linear-to-r from-slate-600 to-slate-700 text-white';
 			BannerIcon = Shield;
 			return;
@@ -102,7 +120,7 @@
 
 <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
 	<div class={`relative p-6 sm:p-8 ${bannerClasses} transition-all`}>
-		<div class="text-xs font-semibold uppercase tracking-wider opacity-80">Predicción</div>
+		<div class="text-xs font-semibold uppercase tracking-wider opacity-80">{bannerLabel}</div>
 		<div class="text-2xl font-semibold mt-1">{bannerTitle}</div>
 		<div class="text-sm opacity-90 mt-1">{bannerSubtitle}</div>
 		<BannerIcon class="absolute -right-5 -bottom-5 text-white/10 rotate-12 pointer-events-none" size={160} />
@@ -110,6 +128,17 @@
 
 	<div class="p-6 space-y-4">
 		{#if selectedRamoId}
+			{#if selectedProbGeneral !== null}
+				<div class="flex items-center gap-2 text-xs text-slate-600">
+					<Activity size={14} class="text-slate-400" />
+					<span class="font-semibold text-slate-700">
+						Probabilidad general:
+					</span>
+					<span class="font-semibold text-slate-800">
+						{(selectedProbGeneral * 100).toFixed(1)}%
+					</span>
+				</div>
+			{/if}
 			{#if isPossible === false && impossibleReasons.length > 0}
 				<div class="text-xs text-red-600">
 					<div class="font-semibold mb-1">Restricciones incumplibles</div>
@@ -147,7 +176,36 @@
 				<div class="text-sm text-red-600 font-medium">{error}</div>
 			{/if}
 		{:else}
-			<p class="text-gray-500 text-sm">No hay ramo seleccionado</p>
+			<div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+				<div class="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
+					<div class="text-xs text-slate-500">Pendientes</div>
+					<div class="text-xl font-semibold text-slate-800">{summaryStats?.pendientes ?? 0}</div>
+				</div>
+				<div class="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
+					<div class="text-xs text-slate-500">Buenas notas</div>
+					<div class="text-xl font-semibold text-slate-800">{summaryStats?.buenas ?? 0}</div>
+				</div>
+				<div class="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
+					<div class="text-xs text-slate-500">Malas notas</div>
+					<div class="text-xl font-semibold text-slate-800">{summaryStats?.malas ?? 0}</div>
+				</div>
+				<div class="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
+					<div class="text-xs text-slate-500">Total</div>
+					<div class="text-xl font-semibold text-slate-800">{summaryStats?.total ?? 0}</div>
+				</div>
+			</div>
+			<div class="mt-4 -mb-2 flex items-center justify-center gap-4 text-xs text-gray-600">
+				<div class="flex items-center gap-1">
+					<Activity size={14} class="text-slate-400" />
+					<span class="font-semibold text-slate-700">{globalStats?.media?.toFixed(1) ?? '0.0'}</span>
+					<span class="text-[11px] text-slate-400">Media</span>
+				</div>
+				<div class="flex items-center gap-1">
+					<Activity size={14} class="text-slate-400" />
+					<span class="font-semibold text-slate-700">{globalStats?.desviacion?.toFixed(1) ?? '0.0'}</span>
+					<span class="text-[11px] text-slate-400">Desviación</span>
+				</div>
+			</div>
 		{/if}
 	</div>
 </div>

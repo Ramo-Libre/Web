@@ -97,7 +97,7 @@
 	}
 </script>
 
-<div class="bg-white rounded-lg border border-gray-200 shadow-sm">
+<div class="bg-white rounded-lg border border-gray-200 shadow-sm {selectedRamoId ? '' : 'hidden'}">
 	<!-- Barra del perfil (botón completo) -->
 	<button
 		onclick={openModal}

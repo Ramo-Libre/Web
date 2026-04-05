@@ -22,6 +22,8 @@
 		reportes_probabilidad?: ProbMap;
 	};
 
+	type RamoEstado = 'possible' | 'impossible' | 'guaranteed';
+
 	// Estado para el ramo seleccionado
 	let selectedRamoId = $state('');
 
@@ -56,6 +58,58 @@
 	);
 	const tagsList = $derived(selectedRamoId ? db.notas.getTagsData(selectedRamoId).list : []);
 	const tagsMap = $derived(new Map(tagsList));
+	const summaryStats = $derived.by(() => {
+		let pendientes = 0;
+		let buenas = 0;
+		let malas = 0;
+		let total = 0;
+
+		for (const [ramoId] of db.ramos.list) {
+			const { list } = db.notas.getEvaluacionesData(ramoId);
+			const contextoRamo = db.notas.getContexto(ramoId);
+			const notaAprobacion = contextoRamo?.nota_aprobacion ?? 0;
+
+			for (const [, evaluacion] of list) {
+				total += 1;
+				const nota = evaluacion.valor_actual;
+				if (nota === null || nota === undefined) {
+					pendientes += 1;
+				} else if (nota < notaAprobacion) {
+					malas += 1;
+				} else {
+					buenas += 1;
+				}
+			}
+		}
+
+		return { pendientes, buenas, malas, total };
+	});
+	const globalStats = $derived.by(() => {
+		let total = 0;
+		let media = 0;
+		let desviacion = 0;
+		const notas: number[] = [];
+
+		for (const [ramoId] of db.ramos.list) {
+			const { list } = db.notas.getEvaluacionesData(ramoId);
+			for (const [, evaluacion] of list) {
+				const nota = evaluacion.valor_actual;
+				if (nota !== null && nota !== undefined) {
+					notas.push(nota);
+				}
+			}
+		}
+
+		if (notas.length > 0) {
+			total = notas.length;
+			media = notas.reduce((acc, value) => acc + value, 0) / total;
+			desviacion = Math.sqrt(
+				notas.reduce((acc, value) => acc + Math.pow(value - media, 2), 0) / total
+			);
+		}
+
+		return { media, desviacion, total };
+	});
 	const contexto = $derived(selectedRamoId ? db.notas.getContexto(selectedRamoId) : null);
 	const perfilConfig = $derived(selectedRamoId ? db.notas.getPerfil(selectedRamoId) : null);
 	const perfilFingerprint = $derived(
@@ -94,10 +148,64 @@
 	let isPossible = $state<boolean | null>(null);
 	let impossibleReasons = $state<string[]>([]);
 	let approvalStatus = $state<'NO_POSIBLE' | 'POSIBLE' | 'GARANTIZADO' | null>(null);
+	let ramoProbabilities = $state<Record<string, number | null>>({});
+	let ramoStatuses = $state<Record<string, RamoEstado>>({});
+	let summarySolveRequestId = 0;
 
 	const extractPlans = (result: SolverOutput): PlanMap => result.maquina_d ?? result.planes ?? {};
 	const extractProbSource = (result: SolverOutput): ProbMap =>
 		result.maquina_p ?? result.reportes_probabilidad ?? {};
+
+	const selectedProbGeneral = $derived.by(() => {
+		if (!prediction) return null;
+		const source = extractProbSource(prediction);
+		const values = Object.values(source)
+			.map((value) => value?.probabilidad_general)
+			.filter((value) => typeof value === 'number') as number[];
+		return values.length ? values.reduce((acc, value) => acc + value, 0) / values.length : null;
+	});
+
+	const computeRamoEstado = (
+		resolved: SolverOutput,
+		contextoRamo: { nota_minima: number },
+		evaluaciones: { id: string; valor_actual: number | null | undefined }[]
+	): RamoEstado => {
+		if (resolved && typeof resolved === 'object' && 'status' in resolved && resolved.status === 'error') {
+			return 'possible';
+		}
+
+		const possible = resolved?.maquina_s?.es_posible ?? true;
+		if (!possible) return 'impossible';
+
+		const plans = extractPlans(resolved);
+		const keys = Object.keys(plans);
+		if (keys.length === 0) return 'possible';
+
+		const notaMinima = contextoRamo.nota_minima;
+		const pendientes = evaluaciones
+			.filter((e) => e.valor_actual === null || e.valor_actual === undefined)
+			.map((e) => e.id);
+
+		const allAbove = keys.every((strategy) =>
+			pendientes.every((id) => {
+				const value = plans[strategy]?.notas_objetivo?.[id];
+				const rounded = value !== undefined && value !== null ? Number(value.toFixed(2)) : null;
+				return rounded !== null && rounded > notaMinima;
+			})
+		);
+
+		const allBelowEq = keys.every((strategy) =>
+			pendientes.every((id) => {
+				const value = plans[strategy]?.notas_objetivo?.[id];
+				const rounded = value !== undefined && value !== null ? Number(value.toFixed(2)) : null;
+				return rounded !== null && rounded <= notaMinima;
+			})
+		);
+
+		if (pendientes.length === 0 || allBelowEq) return 'guaranteed';
+		if (allAbove) return 'possible';
+		return 'possible';
+	};
 
 	function pickBestStrategy(
 		result: SolverOutput,
@@ -315,6 +423,86 @@
 				isSolving = false;
 			});
 	});
+
+	$effect(() => {
+		const requestId = ++summarySolveRequestId;
+		const next: Record<string, number | null> = {};
+		const nextStatuses: Record<string, RamoEstado> = {};
+		const ramos = db.ramos.list.map(([id]) => id);
+
+		if (ramos.length === 0) {
+			ramoProbabilities = {};
+			ramoStatuses = {};
+			return;
+		}
+
+		(async () => {
+			for (const ramoId of ramos) {
+				const contextoRamo = db.notas.getContexto(ramoId);
+				const evaluacionesRamo = db.notas.getEvaluacionesData(ramoId).list;
+				const restriccionesRamo = db.notas.getRestriccionesData(ramoId).list;
+				const perfilRamo = db.notas.getPerfil(ramoId);
+
+				const fallbackPerfil = {
+					simulaciones: perfilRamo?.simulaciones ?? 1000,
+					media_historica: perfilRamo?.media_historica ?? 65,
+					desviacion_estandar: perfilRamo?.desviacion_estandar ?? 10
+				};
+
+				const resolvedPerfil =
+					perfilRamo && 'mode' in perfilRamo && perfilRamo.mode === 'auto'
+						? computeAutoPerfil(contextoRamo)
+						: fallbackPerfil;
+
+				const evaluaciones = evaluacionesRamo.map(([, evaluacion]) => {
+					const peso = evaluacion.peso / 100;
+					return { ...evaluacion, peso };
+				});
+				const restricciones = restriccionesRamo.map(([, restriccion]) => restriccion);
+
+				if (!contextoRamo || evaluaciones.length === 0) {
+					next[ramoId] = null;
+					continue;
+				}
+
+				const input = {
+					contexto: contextoRamo,
+					S: { evaluaciones, restricciones },
+					P: {
+						simulaciones: resolvedPerfil.simulaciones,
+						media_historica: resolvedPerfil.media_historica,
+						desviacion_estandar: resolvedPerfil.desviacion_estandar
+					}
+				};
+
+				try {
+					const result = await solve(input);
+					if (requestId !== summarySolveRequestId) return;
+					if (result && typeof result === 'object' && 'status' in result && result.status === 'error') {
+						next[ramoId] = null;
+						nextStatuses[ramoId] = 'possible';
+						continue;
+					}
+					const resolved = result as SolverOutput;
+					const source = extractProbSource(resolved);
+					const values = Object.values(source)
+						.map((value) => value?.probabilidad_general)
+						.filter((value) => typeof value === 'number') as number[];
+					next[ramoId] = values.length
+						? values.reduce((acc, value) => acc + value, 0) / values.length
+						: null;
+					nextStatuses[ramoId] = computeRamoEstado(resolved, contextoRamo, evaluaciones);
+				} catch {
+					next[ramoId] = null;
+					nextStatuses[ramoId] = 'possible';
+				}
+			}
+
+			if (requestId !== summarySolveRequestId) return;
+			ramoProbabilities = next;
+			ramoStatuses = nextStatuses;
+		})();
+	});
 </script>
 
 
@@ -337,6 +525,9 @@
 					<div class="sm:flex-none">
 						<StatusHeader
 							{selectedRamoId}
+							summaryStats={summaryStats}
+							globalStats={globalStats}
+							selectedProbGeneral={selectedProbGeneral}
 							{strategies}
 							{selectedStrategy}
 							{probabilities}
@@ -351,7 +542,12 @@
 
 					<!-- Componente 2: Calificaciones -->
 					<div class="sm:flex-none">
-						<Grades {selectedRamoId} {predictedNotas} />
+						<Grades
+							{selectedRamoId}
+							{predictedNotas}
+							ramoProbabilities={ramoProbabilities}
+							ramoStatuses={ramoStatuses}
+						/>
 					</div>
 
 					<!-- Componente 3: Reglas de Evaluación -->

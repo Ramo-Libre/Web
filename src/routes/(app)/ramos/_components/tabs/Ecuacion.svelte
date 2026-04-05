@@ -251,9 +251,16 @@
 					<input
 						type="text"
 						bind:value={newTagName}
-						onkeydown={(e) => e.key === 'Enter' && createTag()}
+						onkeydown={(e) => {
+							if (e.key === 'Enter') {
+								e.preventDefault();
+								createTag();
+							}
+						}}
 						placeholder="Nueva etiqueta..."
 						class="w-24 bg-transparent border-none outline-none text-xs font-medium placeholder-gray-400 text-gray-700 min-w-12"
+						autocomplete="off"
+						enterkeyhint="done"
 					/>
 				</div>
 			{/if}
@@ -345,11 +352,19 @@
 								value={evaluacion.id}
 								onchange={(e) =>
 									updateEvaluacionId(evaluacionId, (e.target as HTMLInputElement).value)}
+								onkeydown={(e) => {
+									if (e.key === 'Enter') {
+										e.preventDefault();
+										(e.target as HTMLInputElement).blur();
+									}
+								}}
 								onclick={(e) => !paintMode && e.stopPropagation()}
 								disabled={paintMode}
 								class="flex-1 bg-transparent border-none outline-none font-medium text-gray-800 placeholder-gray-400 focus:ring-0 text-base min-w-0
 	                            {paintMode ? 'cursor-crosshair pointer-events-none' : ''}"
 								placeholder="Nombre de la evaluación..."
+								autocomplete="off"
+								enterkeyhint="done"
 							/>
 
 							<!-- Tags asignados - solo visible en sm+ -->
@@ -394,9 +409,18 @@
 											evaluacionId,
 											Number((e.target as HTMLInputElement).value)
 										)}
+									onkeydown={(e) => {
+										if (e.key === 'Enter') {
+											e.preventDefault();
+											(e.target as HTMLInputElement).blur();
+										}
+									}}
 									disabled={paintMode}
 									class="w-10 text-right bg-transparent outline-none font-bold text-gray-700 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none
 	                                {paintMode ? 'cursor-crosshair' : ''}"
+									autocomplete="off"
+									enterkeyhint="done"
+									inputmode="numeric"
 								/>
 								<span class="text-xs text-gray-400 font-bold">%</span>
 							</div>
@@ -463,9 +487,16 @@
 						id="new-eval-input"
 						type="text"
 						bind:value={newEvalId}
-						onkeydown={(e) => e.key === 'Enter' && addEvaluation()}
+						onkeydown={(e) => {
+							if (e.key === 'Enter') {
+								e.preventDefault();
+								addEvaluation();
+							}
+						}}
 						placeholder="Nueva evaluación (ej: Certamen 1)..."
 						class="flex-1 bg-transparent border-none outline-none text-sm text-gray-600 font-medium placeholder-gray-400 focus:ring-0"
+						autocomplete="off"
+						enterkeyhint="done"
 					/>
 				</div>
 			{/if}
