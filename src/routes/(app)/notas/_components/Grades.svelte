@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { db } from '$lib/state/index.svelte';
 
-	interface Props {
-		selectedRamoId: string;
-		predictedNotas?: Record<string, number> | null;
-	}
+	export interface Props {
+			selectedRamoId: string;
+			predictedNotas?: Record<string, number> | null;
+		}
 
 	let { selectedRamoId = '', predictedNotas = null }: Props = $props();
 

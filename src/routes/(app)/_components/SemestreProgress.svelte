@@ -2,12 +2,135 @@
 	import { CalendarClock, BookOpen, CircleCheck, CircleX, Circle } from '@lucide/svelte';
 	import { resolve } from '$app/paths';
 	import { db } from '$lib/state/index.svelte.js';
+	import solve from '@madmti/gradesolver';
+
+	type RamoEstado = 'possible' | 'impossible' | 'guaranteed';
+	type Plan = { notas_objetivo?: Record<string, number> };
+	type PlanMap = Record<string, Plan>;
+	type SolverOutput = {
+		maquina_s?: { es_posible?: boolean; restricciones_incumplibles?: string[] };
+		maquina_d?: PlanMap;
+		planes?: PlanMap;
+		status?: 'error';
+		message?: string;
+	};
 
 	// Obtener el semestre activo actual
 	const currentSemestreIndex = $derived(db.semestres.active);
 	const currentSemestreName = $derived(
 		currentSemestreIndex !== null ? db.semestres.list[currentSemestreIndex] : null
 	);
+
+	let statusByRamo = $state<Record<string, RamoEstado>>({});
+	let solveRunId = 0;
+
+	const computeAutoPerfil = (contexto: { nota_aprobacion: number; nota_maxima: number } | null) => {
+		if (!contexto) {
+			return {
+				simulaciones: 1000,
+				media_historica: 65,
+				desviacion_estandar: 10
+			};
+		}
+		const base = contexto.nota_aprobacion;
+		const media = Math.min(base * 1.1, contexto.nota_maxima);
+		const desviacion = base * 0.2;
+		return {
+			simulaciones: 1000,
+			media_historica: media,
+			desviacion_estandar: desviacion
+		};
+	};
+
+	const getRamoEstado = async (ramoId: string): Promise<RamoEstado> => {
+		try {
+			const contexto = db.notas.getContexto(ramoId);
+			const evaluaciones = db.notas
+				.getEvaluacionesData(ramoId)
+				.list.map(([, e]) => ({ ...e, peso: e.peso / 100 }));
+			const restricciones = db.notas
+				.getRestriccionesData(ramoId)
+				.list.map(([, r]) => r);
+
+			if (!contexto || evaluaciones.length === 0) {
+				return 'possible';
+			}
+
+			const perfilConfig = db.notas.getPerfil(ramoId);
+			const resolvedPerfil =
+				perfilConfig && perfilConfig.mode === 'auto'
+					? computeAutoPerfil(contexto)
+					: {
+							simulaciones: perfilConfig?.simulaciones ?? 1000,
+							media_historica: perfilConfig?.media_historica ?? 65,
+							desviacion_estandar: perfilConfig?.desviacion_estandar ?? 10
+						};
+
+			const input = {
+				contexto,
+				S: { evaluaciones, restricciones },
+				P: resolvedPerfil
+			};
+
+			const result = (await solve(input)) as SolverOutput;
+			if (result?.status === 'error') return 'possible';
+
+			const possible = result?.maquina_s?.es_posible ?? true;
+			if (!possible) return 'impossible';
+
+			const plans: PlanMap = result?.maquina_d ?? result?.planes ?? {};
+			const keys = Object.keys(plans);
+			if (keys.length === 0) return 'possible';
+
+			const notaMinima = contexto.nota_minima;
+			const pendientes = evaluaciones
+				.filter((e) => e.valor_actual === null || e.valor_actual === undefined)
+				.map((e) => e.id);
+
+			const allAbove = keys.every((strategy) =>
+				pendientes.every((id) => {
+					const value = plans[strategy]?.notas_objetivo?.[id];
+					const rounded = value !== undefined && value !== null ? Number(value.toFixed(2)) : null;
+					return rounded !== null && rounded > notaMinima;
+				})
+			);
+
+			const allBelowEq = keys.every((strategy) =>
+				pendientes.every((id) => {
+					const value = plans[strategy]?.notas_objetivo?.[id];
+					const rounded = value !== undefined && value !== null ? Number(value.toFixed(2)) : null;
+					return rounded !== null && rounded <= notaMinima;
+				})
+			);
+
+			if (pendientes.length === 0 || allBelowEq) return 'guaranteed';
+			if (allAbove) return 'possible';
+			return 'possible';
+		} catch {
+			return 'possible';
+		}
+	};
+
+	$effect(() => {
+		if (!currentSemestreName) {
+			statusByRamo = {};
+			return;
+		}
+
+		const runId = ++solveRunId;
+		const ramosIds = db.ramos.list.map(([id]) => id);
+
+		(async () => {
+			const results = await Promise.all(
+				ramosIds.map(async (id) => ({ id, estado: await getRamoEstado(id) }))
+			);
+			if (runId !== solveRunId) return;
+
+			const next: Record<string, RamoEstado> = {};
+			for (const r of results) next[r.id] = r.estado;
+			statusByRamo = next;
+		})();
+	});
 
 	// Obtener los ramos del semestre actual con sus estados reales
 	const semesterRamos = $derived(() => {
@@ -17,7 +140,7 @@
 			id,
 			name: ramo.nombre,
 			color: ramo.color,
-			estado: ramo.estado || 'possible'
+			estado: statusByRamo[id] ?? (ramo.estado || 'possible')
 		}));
 	});
 

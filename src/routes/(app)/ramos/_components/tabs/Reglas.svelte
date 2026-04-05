@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Trash2, ArrowDown, ArrowUp, Flag, Pencil } from '@lucide/svelte';
+	import { Trash2, ArrowDown, ArrowUp, Flag, Pencil, Ruler } from '@lucide/svelte';
 	import { db } from '$lib/state/index.svelte';
 	import ReglasDisplay from './ReglasDisplay.svelte';
 	import ContextoModal from './_components/ContextoModal.svelte';
@@ -147,6 +147,10 @@
 		class="w-full bg-white px-4 py-4 rounded-xl border border-gray-200 shadow-sm hover:bg-gray-50 transition-colors cursor-pointer text-left"
 	>
 		<div class="flex flex-row flex-wrap items-center gap-4 text-xs text-gray-600">
+			<div class="flex items-center gap-2 text-xs text-slate-600">
+				<Ruler size={14} class="text-slate-400" />
+				<span class="font-semibold">Escala de notas</span>
+			</div>
 			<div class="flex flex-wrap items-center gap-3">
 				<div class="flex items-center gap-1">
 					<ArrowDown size={14} class="text-slate-400" />

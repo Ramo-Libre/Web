@@ -3,7 +3,7 @@
 	import { browser } from '$app/environment';
 	import { fly } from 'svelte/transition';
 	import { db } from '$lib/state/index.svelte';
-	import solve, { type Estrategia, type SalidaCompleta } from '@madmti/gradesolver';
+	import solve, { type Estrategia, type SalidaCompleta, type Restriccion } from '@madmti/gradesolver';
 	import RamosListReadOnly from './_components/RamosListReadOnly.svelte';
 	import StatusHeader from './_components/StatusHeader.svelte';
 	import Grades from './_components/Grades.svelte';
@@ -54,11 +54,46 @@
 	const restriccionesList = $derived(
 		selectedRamoId ? db.notas.getRestriccionesData(selectedRamoId).list : []
 	);
+	const tagsList = $derived(selectedRamoId ? db.notas.getTagsData(selectedRamoId).list : []);
+	const tagsMap = $derived(new Map(tagsList));
 	const contexto = $derived(selectedRamoId ? db.notas.getContexto(selectedRamoId) : null);
+	const perfilConfig = $derived(selectedRamoId ? db.notas.getPerfil(selectedRamoId) : null);
+	const perfilFingerprint = $derived(
+		perfilConfig
+			? `${perfilConfig.mode}-${perfilConfig.simulaciones}-${perfilConfig.media_historica}-${perfilConfig.desviacion_estandar}`
+			: ''
+	);
+
+	const computeAutoPerfil = (
+		contexto: { nota_aprobacion: number; nota_maxima: number } | null
+	) => {
+		if (
+			!contexto ||
+			typeof contexto.nota_aprobacion !== 'number' ||
+			typeof contexto.nota_maxima !== 'number'
+		) {
+			return {
+				simulaciones: 1000,
+				media_historica: 65,
+				desviacion_estandar: 10
+			};
+		}
+		const base = contexto.nota_aprobacion;
+		const media = Math.min(base * 1.1, contexto.nota_maxima);
+		const desviacion = base * 0.2;
+		return {
+			simulaciones: 1000,
+			media_historica: media,
+			desviacion_estandar: desviacion
+		};
+	};
 
 	let strategies = $state<Estrategia[]>([]);
 	let probabilities = $state<Record<string, number>>({});
 	let predictedNotas = $state<Record<string, number> | null>(null);
+	let isPossible = $state<boolean | null>(null);
+	let impossibleReasons = $state<string[]>([]);
+	let approvalStatus = $state<'NO_POSIBLE' | 'POSIBLE' | 'GARANTIZADO' | null>(null);
 
 	const extractPlans = (result: SolverOutput): PlanMap => result.maquina_d ?? result.planes ?? {};
 	const extractProbSource = (result: SolverOutput): ProbMap =>
@@ -88,17 +123,86 @@
 		strategyTouched = true;
 	}
 
+	function tagName(tagId: string) {
+		return tagsMap.get(tagId)?.name || tagId;
+	}
+
+	function formatRestriccion(r: Restriccion): string {
+		switch (r.tipo) {
+			case 'PROMEDIO_SIMPLE_TAG':
+				return `Promedio ${tagName(r.tag_objetivo)} ≥ ${r.valor_minimo}`;
+			case 'NOTA_MINIMA_INDIVIDUAL_TAG':
+				return `Cada ${tagName(r.tag_objetivo)} ≥ ${r.valor_minimo}`;
+			default:
+				return r.id;
+		}
+	}
+
 	$effect(() => {
 		if (!prediction) {
 			strategies = [];
 			probabilities = {};
 			predictedNotas = null;
+			isPossible = null;
+			impossibleReasons = [];
+			approvalStatus = null;
 			return;
 		}
+
+		isPossible = prediction.maquina_s?.es_posible ?? null;
+
+		const notaMinima = contexto?.nota_minima ?? null;
+		const pendientes = evaluacionesList
+			.map(([, evaluacion]) => evaluacion)
+			.filter((e) => e.valor_actual === null || e.valor_actual === undefined)
+			.map((e) => e.id);
+
+		const restriccionesById = new Map(
+			restriccionesList.map(([, restriccion]) => [restriccion.id, restriccion])
+		);
+		const rawReasons = prediction.maquina_s?.restricciones_incumplibles ?? [];
+		impossibleReasons = rawReasons.map((id) => {
+			const restriccion = restriccionesById.get(id);
+			if (restriccion) return formatRestriccion(restriccion);
+			if (id === 'GLOBAL_PASS_LIMIT') {
+				return 'La nota de aprobación global no se puede cumplir.';
+			}
+			return `Restricción incumplible: ${id}`;
+		});
 
 		const plans = extractPlans(prediction);
 		const source = extractProbSource(prediction);
 		const keys = Object.keys(plans) as Estrategia[];
+
+		if (isPossible === false) {
+			approvalStatus = 'NO_POSIBLE';
+		} else if (isPossible === true && notaMinima !== null) {
+			const allAbove = keys.length > 0 && keys.every((strategy) =>
+				pendientes.every((id) => {
+					const value = plans[strategy]?.notas_objetivo?.[id];
+					const rounded = value !== undefined && value !== null ? Number(value.toFixed(2)) : null;
+					return rounded !== null && rounded > notaMinima;
+				})
+			);
+
+			const allBelowEq = keys.length > 0 && keys.every((strategy) =>
+				pendientes.every((id) => {
+					const value = plans[strategy]?.notas_objetivo?.[id];
+					const rounded = value !== undefined && value !== null ? Number(value.toFixed(2)) : null;
+					return rounded !== null && rounded <= notaMinima;
+				})
+			);
+
+			if (pendientes.length === 0 || allBelowEq) {
+				approvalStatus = 'GARANTIZADO';
+			} else if (allAbove) {
+				approvalStatus = 'POSIBLE';
+			} else {
+				approvalStatus = 'POSIBLE';
+			}
+		} else {
+			approvalStatus = null;
+		}
 
 		strategies = keys;
 
@@ -142,9 +246,11 @@
 			return;
 		}
 
+		const perfilKey = perfilFingerprint;
 		console.log('🧮 Ejecutando solve()', {
 			selectedRamoId,
 			contexto,
+			perfilKey,
 			evaluacionesCount: evaluacionesList.length,
 			restriccionesCount: restriccionesList.length
 		});
@@ -155,13 +261,24 @@
 		});
 		const restricciones = restriccionesList.map(([, restriccion]) => restriccion);
 
+		const fallbackPerfil = {
+			simulaciones: perfilConfig?.simulaciones ?? 1000,
+			media_historica: perfilConfig?.media_historica ?? 65,
+			desviacion_estandar: perfilConfig?.desviacion_estandar ?? 10
+		};
+
+		const resolvedPerfil =
+			perfilConfig && 'mode' in perfilConfig && perfilConfig.mode === 'auto'
+				? computeAutoPerfil(contexto)
+				: fallbackPerfil;
+
 		const input = {
 			contexto,
 			S: { evaluaciones, restricciones },
 			P: {
-				simulaciones: 1000,
-				media_historica: 65,
-				desviacion_estandar: 10
+				simulaciones: resolvedPerfil.simulaciones,
+				media_historica: resolvedPerfil.media_historica,
+				desviacion_estandar: resolvedPerfil.desviacion_estandar
 			}
 		};
 
@@ -224,6 +341,9 @@
 							{selectedStrategy}
 							{probabilities}
 							{isSolving}
+							{isPossible}
+							{impossibleReasons}
+							{approvalStatus}
 							error={predictionError}
 							onSelectStrategy={handleSelectStrategy}
 						/>
@@ -236,7 +356,7 @@
 
 					<!-- Componente 3: Reglas de Evaluación -->
 					<div class="sm:flex-none">
-						<Rules {selectedRamoId} />
+						<Rules />
 					</div>
 				</div>
 			</div>

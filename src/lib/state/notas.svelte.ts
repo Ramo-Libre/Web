@@ -18,6 +18,12 @@ type EvaluacionKey = string;
 type Restriccion = SolverRestriccion;
 type RestriccionKey = string;
 type Contexto = SolverContexto;
+type Perfil = {
+	mode: 'auto' | 'manual';
+	simulaciones: number;
+	media_historica: number;
+	desviacion_estandar: number;
+};
 type RamoKey = string;
 
 const DEFAULT_CONTEXTO: Contexto = {
@@ -26,15 +32,24 @@ const DEFAULT_CONTEXTO: Contexto = {
 	nota_aprobacion: 55
 };
 
+const DEFAULT_PERFIL: Perfil = {
+	mode: 'auto',
+	simulaciones: 1000,
+	media_historica: 65,
+	desviacion_estandar: 10
+};
+
 interface RamoData {
 	evaluaciones: SvelteMap<EvaluacionKey, Evaluacion>;
 	tags: SvelteMap<TagKey, Tag>;
 	restricciones: SvelteMap<RestriccionKey, Restriccion>;
 	contexto?: Contexto;
+	perfil?: Perfil;
 }
 
 type NotasSerial = {
 	last_contexto?: Contexto;
+	last_perfil?: Perfil;
 	ramos: [
 		RamoKey,
 		{
@@ -42,6 +57,7 @@ type NotasSerial = {
 			tags: [TagKey, Tag][];
 			restricciones: [RestriccionKey, Restriccion][];
 			contexto?: Contexto;
+			perfil?: Perfil;
 		}
 	][];
 };
@@ -49,11 +65,13 @@ type NotasSerial = {
 export class NotasManager implements Serializable<NotasSerial> {
 	private _ramos = $state<SvelteMap<RamoKey, RamoData>>(new SvelteMap<RamoKey, RamoData>());
 	private _lastContexto: Contexto | null = null;
+	private _lastPerfil: Perfil | null = null;
 
 	fromSerial(serial: NotasSerial) {
 		// console.log('NotasManager.fromSerial called with:', serial);
 		const ramosMap = new SvelteMap<RamoKey, RamoData>();
 		this._lastContexto = serial?.last_contexto ?? null;
+		this._lastPerfil = serial?.last_perfil ?? null;
 
 		// Validar que serial y serial.ramos existan
 		if (serial && serial.ramos && Array.isArray(serial.ramos)) {
@@ -65,7 +83,8 @@ export class NotasManager implements Serializable<NotasSerial> {
 					restricciones: new SvelteMap<RestriccionKey, Restriccion>(
 						ramoSerial.restricciones || []
 					),
-					contexto: ramoSerial.contexto
+					contexto: ramoSerial.contexto,
+					perfil: ramoSerial.perfil
 				});
 			});
 		} else {
@@ -78,13 +97,15 @@ export class NotasManager implements Serializable<NotasSerial> {
 	toSerial(): NotasSerial {
 		return {
 			last_contexto: this._lastContexto ?? undefined,
+			last_perfil: this._lastPerfil ?? undefined,
 			ramos: Array.from(this._ramos.entries()).map(([ramoId, ramoData]) => [
 				ramoId,
 				{
 					evaluaciones: Array.from(ramoData.evaluaciones.entries()),
 					tags: Array.from(ramoData.tags.entries()),
 					restricciones: Array.from(ramoData.restricciones.entries()),
-					contexto: ramoData.contexto
+					contexto: ramoData.contexto,
+					perfil: ramoData.perfil
 				}
 			])
 		};
@@ -93,6 +114,7 @@ export class NotasManager implements Serializable<NotasSerial> {
 	clear(): void {
 		this._ramos.clear();
 		this._lastContexto = null;
+		this._lastPerfil = null;
 	}
 
 	empty(): boolean {
@@ -106,7 +128,8 @@ export class NotasManager implements Serializable<NotasSerial> {
 				evaluaciones: new SvelteMap<EvaluacionKey, Evaluacion>(),
 				tags: new SvelteMap<TagKey, Tag>(),
 				restricciones: new SvelteMap<RestriccionKey, Restriccion>(),
-				contexto: undefined
+				contexto: undefined,
+				perfil: undefined
 			});
 		}
 		return this._ramos.get(ramoId)!;
@@ -142,6 +165,43 @@ export class NotasManager implements Serializable<NotasSerial> {
 			ramoData.contexto = { ...nextContexto };
 		}
 		this._lastContexto = { ...nextContexto };
+	}
+
+	// Obtener perfil recomendado para nuevos ramos
+	getPerfilRecomendado(): Perfil {
+		return this._lastPerfil ?? DEFAULT_PERFIL;
+	}
+
+	// Obtener perfil de un ramo (auto-inicializa con recomendado si no existe)
+	getPerfil(ramoId: RamoKey): Perfil {
+		const ramoData = this.ensureRamoData(ramoId);
+		if (!ramoData.perfil) {
+			const nextPerfil = { ...this.getPerfilRecomendado() };
+			const updated = { ...ramoData, perfil: nextPerfil };
+			this._ramos.set(ramoId, updated);
+			return nextPerfil;
+		}
+		return ramoData.perfil;
+	}
+
+	// Guardar perfil de un ramo y actualizar recomendación global
+	setPerfil(ramoId: RamoKey, perfil: Perfil): void {
+		const ramoData = this.ensureRamoData(ramoId);
+		const nextPerfil = { ...perfil };
+		const updated = { ...ramoData, perfil: nextPerfil };
+		this._ramos.set(ramoId, updated);
+		this._lastPerfil = nextPerfil;
+	}
+
+	// Aplicar perfil a todos los ramos y actualizar recomendación global
+	setPerfilForAll(perfil: Perfil): void {
+		const nextPerfil = { ...perfil };
+		for (const ramoId of this._ramos.keys()) {
+			const ramoData = this.ensureRamoData(ramoId);
+			const updated = { ...ramoData, perfil: { ...nextPerfil } };
+			this._ramos.set(ramoId, updated);
+		}
+		this._lastPerfil = { ...nextPerfil };
 	}
 
 	// Obtener datos de evaluaciones para un ramo específico (solo lectura para derivados)
