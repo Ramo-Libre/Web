@@ -267,7 +267,7 @@
 		{#if isMobileDropdownOpen}
 			<!-- Overlay para cerrar al tocar fuera -->
 			<div
-				class="fixed inset-0 z-10"
+				class="fixed inset-0 z-40"
 				onclick={closeMobileDropdown}
 				onkeydown={(e) => e.key === 'Escape' && closeMobileDropdown()}
 				role="button"
@@ -276,7 +276,7 @@
 			></div>
 
 			<div
-				class="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-200 rounded-xl shadow-lg z-20 max-h-80 overflow-y-auto"
+				class="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-200 rounded-xl shadow-lg z-50 max-h-80 overflow-y-auto"
 			>
 				{#if db.ramos.list.length > 0}
 					<div class="p-2">
@@ -286,8 +286,13 @@
 								Mis Ramos ({db.ramos.list.length})
 							</div>
 							<button
-								onclick={() => (isMobileFormVisible = !isMobileFormVisible)}
-								class="p-2 text-slate-400 hover:text-orange-600 hover:bg-orange-50 rounded transition-all {isMobileFormVisible
+								type="button"
+								style="touch-action: manipulation;"
+								onclick={(e) => {
+									e.stopPropagation();
+									isMobileFormVisible = !isMobileFormVisible;
+								}}
+								class="p-2 text-slate-400 hover:text-orange-600 hover:bg-orange-50 active:scale-95 rounded transition-all {isMobileFormVisible
 									? 'rotate-45'
 									: ''}"
 							>
@@ -308,6 +313,8 @@
 									<input
 										id="nombreRamoMobileDropdown"
 										type="text"
+										autocomplete="off"
+										enterkeyhint="done"
 										bind:value={nombreRamo}
 										onkeydown={(e) => e.key === 'Enter' && handleAgregar()}
 										placeholder="Ej: Arquitectura de Software"
@@ -315,9 +322,11 @@
 									/>
 								</div>
 								<Button
+									type="button"
+									style="touch-action: manipulation;"
 									onclick={handleAgregar}
 									disabled={!nombreRamo.trim()}
-									class="w-full bg-orange-500 hover:bg-orange-600 text-white text-sm py-2"
+									class="w-full bg-orange-500 hover:bg-orange-600 text-white text-sm py-2 inline-flex gap-2 active:scale-95 disabled:pointer-events-none"
 									size="sm"
 								>
 									<Plus class="w-3 h-3 mr-2" />
@@ -387,6 +396,8 @@
 								<input
 									id="nombreRamoMobileEmpty"
 									type="text"
+									autocomplete="off"
+									enterkeyhint="done"
 									bind:value={nombreRamo}
 									onkeydown={(e) => e.key === 'Enter' && handleAgregar()}
 									placeholder="Ej: Arquitectura de Software"
@@ -394,9 +405,11 @@
 								/>
 							</div>
 							<Button
+								type="button"
+								style="touch-action: manipulation;"
 								onclick={handleAgregar}
 								disabled={!nombreRamo.trim()}
-								class="w-full bg-orange-500 hover:bg-orange-600 text-white text-sm py-2"
+								class="w-full bg-orange-500 hover:bg-orange-600 text-white text-sm py-2 inline-flex gap-2 active:scale-95 disabled:pointer-events-none"
 								size="sm"
 							>
 								<Plus class="w-3 h-3 mr-2" />
