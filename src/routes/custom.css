@@ -11,12 +11,26 @@ body {
 	width: 100vw;
 }
 
+@media (max-width: 640px) {
+	body {
+		padding: 0;
+		height: 100dvh;
+		width: 100vw;
+	}
+}
+
 @keyframes shine {
 	0% {
+		display: block;
 		transform: translateX(-100%) skewX(-20deg);
 	}
-	100% {
+	99% {
+		display: block;
 		transform: translateX(200%) skewX(-20deg);
+	}
+	100% {
+		opacity: 0;
+		transform: translateX(0%) skewX(0deg);
 	}
 }
 
@@ -57,7 +71,7 @@ body {
 }
 
 .shine-effect {
-	animation: shine-container 1.5s ease-out;
+	animation: shine-container 1.5s ease-out forwards;
 	border-radius: 0rem;
 }
 
@@ -77,4 +91,8 @@ body {
 	animation: shine 1.5s ease-out 0ms forwards;
 	pointer-events: none;
 	z-index: 10;
+}
+
+button {
+	@apply transition-all duration-100;
 }

@@ -15,14 +15,13 @@
 	<div class="bg-white border border-slate-200 rounded-xl p-6">
 		<div class="flex items-center gap-4">
 			<div
-				class="h-12 w-12 rounded-xl text-white shadow-sm border border-white/20 flex items-center justify-center font-bold text-lg"
+				class="min-h-12 min-w-12 rounded-xl text-white shadow-sm border border-white/20 flex items-center justify-center font-bold text-lg"
 				style="background-color: {selectedRamo.color};"
 			>
 				{selectedRamo.nombre.substring(0, 2).toUpperCase()}
 			</div>
 			<div>
 				<h2 class="text-2xl font-bold text-slate-800">{selectedRamo.nombre}</h2>
-				<p class="text-sm text-slate-500">ID: {selectedRamoId}</p>
 			</div>
 		</div>
 	</div>

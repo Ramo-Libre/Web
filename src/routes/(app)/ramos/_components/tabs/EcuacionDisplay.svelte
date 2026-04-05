@@ -8,8 +8,8 @@
 	}
 
 	interface Evaluacion {
-		name: string;
-		weight: number;
+		id: string;
+		peso: number;
 		tags: string[];
 	}
 
@@ -29,11 +29,6 @@
 		const firstTag = tagsMap.get(evaluacion.tags[0]);
 		return firstTag ? ColorUtils.tailwindToHex(firstTag.color) : '#64748b';
 	}
-
-	// Calcular peso total
-	const totalWeight = $derived(
-		evaluaciones.reduce((acc, [, evaluacion]) => acc + evaluacion.weight, 0)
-	);
 </script>
 
 <div class="flex justify-center">
@@ -48,15 +43,15 @@
 			<!-- Fórmula central -->
 			<div class="text-center space-y-4">
 				<div class="flex items-center justify-center gap-2 font-mono text-sm flex-wrap p-8 mt-4">
-					{#each evaluaciones as [, evaluacion], index (evaluacion.name)}
+					{#each evaluaciones as [, evaluacion], index (evaluacion.id)}
 						{@const evalColor = getEvaluationColor(evaluacion)}
 						<div class="flex items-center gap-1">
 							<span class="font-bold" style="color: {evalColor}">
-								{evaluacion.name}
+								{evaluacion.id}
 							</span>
 							<span class="text-slate-400">×</span>
 							<span class="text-orange-500 font-medium">
-								{evaluacion.weight.toFixed(0)}%
+								{evaluacion.peso.toFixed(0)}%
 							</span>
 							{#if index < evaluaciones.length - 1}
 								<span class="text-slate-400">+</span>
@@ -64,17 +59,6 @@
 						</div>
 					{/each}
 				</div>
-
-				<!-- Información del peso total -->
-				{#if totalWeight !== 100}
-					<div class="text-xs {totalWeight > 100 ? 'text-red-500' : 'text-amber-500'} font-medium">
-						Peso total: {totalWeight}% {totalWeight > 100
-							? '(excede 100%)'
-							: totalWeight < 100
-								? '(falta ' + (100 - totalWeight) + '%)'
-								: ''}
-					</div>
-				{/if}
 			</div>
 		{:else}
 			<!-- Estado vacío -->

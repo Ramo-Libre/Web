@@ -16,10 +16,10 @@
 	let { children } = $props();
 </script>
 
-<nav class="grid grid-cols-6 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-4 sm:mb-6">
+<nav class="grid grid-cols-6 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-4 sm:mb-6 max-sm:pt-2">
 	<NavItem href="/" color="indigo" text="RamoLibre" icon={GraduationCap as Icon} />
 	<NavItem href="/horarios" color="blue" text="Horarios" icon={CalendarCheck as Icon} disabled />
-	<NavItem href="/notas" color="green" text="Notas" icon={TrendingUp as Icon} disabled />
+	<NavItem href="/notas" color="green" text="Notas" icon={TrendingUp as Icon} />
 	<NavItem
 		href="/calendario"
 		color="purple"
@@ -32,7 +32,7 @@
 </nav>
 
 <TooltipProvider delayDuration={100}>
-	<div class="flex-1 overflow-hidden overflow-y-scroll max-sm:pb-4 max-sm:mb-2">
+	<div class="flex-1 overflow-hidden overflow-y-auto max-sm:min-h-0">
 		{@render children()}
 	</div>
 </TooltipProvider>

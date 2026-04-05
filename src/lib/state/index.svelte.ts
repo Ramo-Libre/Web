@@ -86,6 +86,11 @@ class RootStore {
 		this.notas.clear();
 	}
 
+	removeRamo(ramoId: string) {
+		this._ramos.remove(ramoId);
+		this._notas.clearRamo(ramoId);
+	}
+
 	private save() {
 		console.log('RootStore save triggered');
 		if (!browser) return;

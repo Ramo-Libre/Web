@@ -10,6 +10,6 @@
 	<title>Ramo Libre</title>
 </svelte:head>
 
-<div class="h-full w-full flex flex-col max-sm:flex-col-reverse">
+<div class="h-full max-sm:h-dvh w-full flex flex-col max-sm:flex-col-reverse max-sm:p-4">
 	{@render children()}
 </div>
