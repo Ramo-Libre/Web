@@ -20,8 +20,8 @@
 	let newTagName = $state('');
 
 	// Estado para Evaluaciones
-	let newEvalName = $state('');
-	let newEvalWeight = $state(20);
+	let newEvalId = $state('');
+	let newEvalPeso = $state(20);
 
 	// --- DERIVADOS ---
 	// Usar el manager de notas con ramoId (métodos de solo lectura)
@@ -108,17 +108,17 @@
 
 	// --- LÓGICA DE EVALUACIONES ---
 	function addEvaluation() {
-		if (!newEvalName.trim() || !selectedRamoId) return;
+		if (!newEvalId.trim() || !selectedRamoId) return;
 
 		db.notas.getEvaluaciones(selectedRamoId).add({
-			name: newEvalName.trim(),
-			weight: newEvalWeight,
+			id: newEvalId.trim(),
+			peso: newEvalPeso,
 			tags: [],
-			grade: null
+			valor_actual: null
 		});
 
-		newEvalName = '';
-		newEvalWeight = Math.max(0, 100 - totalWeight);
+		newEvalId = '';
+		newEvalPeso = Math.max(0, 100 - totalWeight);
 	}
 
 	function removeEvaluation(evaluacionId: string) {
@@ -126,24 +126,24 @@
 		db.notas.getEvaluaciones(selectedRamoId).remove(evaluacionId);
 	}
 
-	function updateEvaluacionName(evaluacionId: string, newName: string) {
+	function updateEvaluacionId(evaluacionId: string, newId: string) {
 		if (!selectedRamoId) return;
 		const evaluacion = db.notas.getEvaluaciones(selectedRamoId).get(evaluacionId);
 		if (evaluacion) {
 			db.notas.getEvaluaciones(selectedRamoId).update(evaluacionId, {
 				...evaluacion,
-				name: newName
+				id: newId
 			});
 		}
 	}
 
-	function updateEvaluacionWeight(evaluacionId: string, newWeight: number) {
+	function updateEvaluacionPeso(evaluacionId: string, newPeso: number) {
 		if (!selectedRamoId) return;
 		const evaluacion = db.notas.getEvaluaciones(selectedRamoId).get(evaluacionId);
 		if (evaluacion) {
 			db.notas.getEvaluaciones(selectedRamoId).update(evaluacionId, {
 				...evaluacion,
-				weight: newWeight
+				peso: newPeso
 			});
 		}
 	}
@@ -342,9 +342,9 @@
 							<!-- Nombre de la evaluación -->
 							<input
 								type="text"
-								value={evaluacion.name}
+								value={evaluacion.id}
 								onchange={(e) =>
-									updateEvaluacionName(evaluacionId, (e.target as HTMLInputElement).value)}
+									updateEvaluacionId(evaluacionId, (e.target as HTMLInputElement).value)}
 								onclick={(e) => !paintMode && e.stopPropagation()}
 								disabled={paintMode}
 								class="flex-1 bg-transparent border-none outline-none font-medium text-gray-800 placeholder-gray-400 focus:ring-0 text-base min-w-0
@@ -388,9 +388,9 @@
 							>
 								<input
 									type="number"
-									value={evaluacion.weight}
+									value={evaluacion.peso}
 									onchange={(e) =>
-										updateEvaluacionWeight(
+										updateEvaluacionPeso(
 											evaluacionId,
 											Number((e.target as HTMLInputElement).value)
 										)}
@@ -462,7 +462,7 @@
 					<input
 						id="new-eval-input"
 						type="text"
-						bind:value={newEvalName}
+						bind:value={newEvalId}
 						onkeydown={(e) => e.key === 'Enter' && addEvaluation()}
 						placeholder="Nueva evaluación (ej: Certamen 1)..."
 						class="flex-1 bg-transparent border-none outline-none text-sm text-gray-600 font-medium placeholder-gray-400 focus:ring-0"

@@ -3,9 +3,10 @@
 
 	interface Props {
 		selectedRamoId: string;
+		predictedNotas?: Record<string, number> | null;
 	}
 
-	let { selectedRamoId = '' }: Props = $props();
+	let { selectedRamoId = '', predictedNotas = null }: Props = $props();
 
 	// Obtener las evaluaciones del ramo seleccionado
 	const evaluaciones = $derived.by(() => {
@@ -27,11 +28,11 @@
 
 		if (evaluacion) {
 			const num = parseFloat(value);
-			const newGrade = !isNaN(num) ? num : null;
+			const newValorActual = !isNaN(num) ? num : null;
 
 			evaluacionesAPI.update(evaluacionId, {
 				...evaluacion,
-				grade: newGrade
+				valor_actual: newValorActual
 			});
 		}
 	}
@@ -59,7 +60,7 @@
 	$effect(() => {
 		const newLocalValues: Record<string, string> = {};
 		evaluaciones.forEach(([id, evaluacion]) => {
-			newLocalValues[id] = evaluacion.grade?.toString() || '';
+			newLocalValues[id] = evaluacion.valor_actual?.toString() || '';
 		});
 		localValues = newLocalValues;
 	});
@@ -72,21 +73,23 @@
 				class="flex items-center justify-between p-3 bg-white border border-slate-200 rounded-lg hover:bg-slate-50"
 			>
 				<div>
-					<div class="font-medium text-slate-800">{evaluacion.name}</div>
-					<div class="text-sm text-slate-500">{evaluacion.weight}%</div>
+					<div class="font-medium text-slate-800">{evaluacion.id}</div>
+					<div class="text-sm text-slate-500">{evaluacion.peso}%</div>
 				</div>
 
 				<input
 					type="number"
 					value={localValues[id] || ''}
-					placeholder="0.0"
+					placeholder={evaluacion.valor_actual === null && predictedNotas?.[evaluacion.id] !== undefined
+						? predictedNotas[evaluacion.id].toFixed(1)
+						: '0.0'}
 					oninput={(e) => {
 						const target = e.target as HTMLInputElement;
 						handleInput(id, target.value);
 					}}
 					onblur={() => handleSave(id)}
 					onkeydown={(e) => handleKeydown(e)}
-					class="w-16 h-10 text-center font-bold border rounded-md {evaluacion.grade !== null
+					class="w-16 h-10 text-center font-bold border rounded-md {evaluacion.valor_actual !== null
 						? 'border-blue-500 bg-blue-50'
 						: 'border-dashed border-slate-300'} [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
 				/>

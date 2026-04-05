@@ -92,3 +92,7 @@ body {
 	pointer-events: none;
 	z-index: 10;
 }
+
+button {
+    @apply transition-all duration-100
+}

@@ -1,5 +1,10 @@
 import type { Serializable } from '$lib/types/state';
 import { SvelteMap } from 'svelte/reactivity';
+import type {
+	Evaluacion as SolverEvaluacion,
+	Restriccion as SolverRestriccion,
+	Contexto as SolverContexto
+} from '@madmti/gradesolver';
 
 interface Tag {
 	name: string;
@@ -7,46 +12,48 @@ interface Tag {
 }
 type TagKey = string;
 
-interface Evaluacion {
-	name: string;
-	weight: number;
-	tags: TagKey[];
-	grade: number | null;
-}
+type Evaluacion = SolverEvaluacion;
 type EvaluacionKey = string;
 
-interface Rule {
-	type: 'global_average' | 'tag_average' | 'min_grade_per_tag';
-	target: number;
-	tag_filter?: string;
-	description?: string;
-}
-type RuleKey = string;
+type Restriccion = SolverRestriccion;
+type RestriccionKey = string;
+type Contexto = SolverContexto;
 type RamoKey = string;
+
+const DEFAULT_CONTEXTO: Contexto = {
+	nota_minima: 0,
+	nota_maxima: 100,
+	nota_aprobacion: 55
+};
 
 interface RamoData {
 	evaluaciones: SvelteMap<EvaluacionKey, Evaluacion>;
 	tags: SvelteMap<TagKey, Tag>;
-	rules: SvelteMap<RuleKey, Rule>;
+	restricciones: SvelteMap<RestriccionKey, Restriccion>;
+	contexto?: Contexto;
 }
 
 type NotasSerial = {
+	last_contexto?: Contexto;
 	ramos: [
 		RamoKey,
 		{
 			evaluaciones: [EvaluacionKey, Evaluacion][];
 			tags: [TagKey, Tag][];
-			rules: [RuleKey, Rule][];
+			restricciones: [RestriccionKey, Restriccion][];
+			contexto?: Contexto;
 		}
 	][];
 };
 
 export class NotasManager implements Serializable<NotasSerial> {
 	private _ramos = $state<SvelteMap<RamoKey, RamoData>>(new SvelteMap<RamoKey, RamoData>());
+	private _lastContexto: Contexto | null = null;
 
 	fromSerial(serial: NotasSerial) {
 		// console.log('NotasManager.fromSerial called with:', serial);
 		const ramosMap = new SvelteMap<RamoKey, RamoData>();
+		this._lastContexto = serial?.last_contexto ?? null;
 
 		// Validar que serial y serial.ramos existan
 		if (serial && serial.ramos && Array.isArray(serial.ramos)) {
@@ -55,7 +62,10 @@ export class NotasManager implements Serializable<NotasSerial> {
 				ramosMap.set(ramoId, {
 					evaluaciones: new SvelteMap<EvaluacionKey, Evaluacion>(ramoSerial.evaluaciones || []),
 					tags: new SvelteMap<TagKey, Tag>(ramoSerial.tags || []),
-					rules: new SvelteMap<RuleKey, Rule>(ramoSerial.rules || [])
+					restricciones: new SvelteMap<RestriccionKey, Restriccion>(
+						ramoSerial.restricciones || []
+					),
+					contexto: ramoSerial.contexto
 				});
 			});
 		} else {
@@ -67,12 +77,14 @@ export class NotasManager implements Serializable<NotasSerial> {
 
 	toSerial(): NotasSerial {
 		return {
+			last_contexto: this._lastContexto ?? undefined,
 			ramos: Array.from(this._ramos.entries()).map(([ramoId, ramoData]) => [
 				ramoId,
 				{
 					evaluaciones: Array.from(ramoData.evaluaciones.entries()),
 					tags: Array.from(ramoData.tags.entries()),
-					rules: Array.from(ramoData.rules.entries())
+					restricciones: Array.from(ramoData.restricciones.entries()),
+					contexto: ramoData.contexto
 				}
 			])
 		};
@@ -80,6 +92,7 @@ export class NotasManager implements Serializable<NotasSerial> {
 
 	clear(): void {
 		this._ramos.clear();
+		this._lastContexto = null;
 	}
 
 	empty(): boolean {
@@ -92,10 +105,43 @@ export class NotasManager implements Serializable<NotasSerial> {
 			this._ramos.set(ramoId, {
 				evaluaciones: new SvelteMap<EvaluacionKey, Evaluacion>(),
 				tags: new SvelteMap<TagKey, Tag>(),
-				rules: new SvelteMap<RuleKey, Rule>()
+				restricciones: new SvelteMap<RestriccionKey, Restriccion>(),
+				contexto: undefined
 			});
 		}
 		return this._ramos.get(ramoId)!;
+	}
+
+	// Obtener contexto recomendado para nuevos ramos
+	getContextoRecomendado(): Contexto {
+		return this._lastContexto ?? DEFAULT_CONTEXTO;
+	}
+
+	// Obtener contexto de un ramo (auto-inicializa con recomendado si no existe)
+	getContexto(ramoId: RamoKey): Contexto {
+		const ramoData = this.ensureRamoData(ramoId);
+		if (!ramoData.contexto) {
+			ramoData.contexto = { ...this.getContextoRecomendado() };
+		}
+		return ramoData.contexto;
+	}
+
+	// Guardar contexto de un ramo y actualizar recomendación global
+	setContexto(ramoId: RamoKey, contexto: Contexto): void {
+		const ramoData = this.ensureRamoData(ramoId);
+		const nextContexto = { ...contexto };
+		ramoData.contexto = nextContexto;
+		this._lastContexto = nextContexto;
+	}
+
+	// Aplicar contexto a todos los ramos y actualizar recomendación global
+	setContextoForAll(contexto: Contexto): void {
+		const nextContexto = { ...contexto };
+		for (const ramoId of this._ramos.keys()) {
+			const ramoData = this.ensureRamoData(ramoId);
+			ramoData.contexto = { ...nextContexto };
+		}
+		this._lastContexto = { ...nextContexto };
 	}
 
 	// Obtener datos de evaluaciones para un ramo específico (solo lectura para derivados)
@@ -128,18 +174,18 @@ export class NotasManager implements Serializable<NotasSerial> {
 		};
 	}
 
-	// Obtener datos de reglas para un ramo específico (solo lectura para derivados)
-	getRulesData(ramoId: RamoKey) {
+	// Obtener datos de restricciones para un ramo específico (solo lectura para derivados)
+	getRestriccionesData(ramoId: RamoKey) {
 		const ramoData = this._ramos.get(ramoId);
 		if (!ramoData) {
 			return {
 				list: [],
-				map: new SvelteMap<RuleKey, Rule>()
+				map: new SvelteMap<RestriccionKey, Restriccion>()
 			};
 		}
 		return {
-			list: Array.from(ramoData.rules.entries()),
-			map: ramoData.rules
+			list: Array.from(ramoData.restricciones.entries()),
+			map: ramoData.restricciones
 		};
 	}
 
@@ -153,7 +199,7 @@ export class NotasManager implements Serializable<NotasSerial> {
 				const id = crypto.randomUUID();
 				ramoData.evaluaciones.set(id, {
 					...evaluacion,
-					grade: null
+					valor_actual: evaluacion.valor_actual ?? null
 				});
 				return id;
 			},
@@ -198,28 +244,28 @@ export class NotasManager implements Serializable<NotasSerial> {
 		};
 	}
 
-	// Obtener API de reglas para un ramo específico
-	getRules(ramoId: RamoKey) {
+	// Obtener API de restricciones para un ramo específico
+	getRestricciones(ramoId: RamoKey) {
 		const ramoData = this.ensureRamoData(ramoId);
 		return {
-			list: Array.from(ramoData.rules.entries()),
-			map: ramoData.rules,
-			add: (rule: Rule) => {
+			list: Array.from(ramoData.restricciones.entries()),
+			map: ramoData.restricciones,
+			add: (restriccion: Restriccion) => {
 				const id = crypto.randomUUID();
-				ramoData.rules.set(id, rule);
+				ramoData.restricciones.set(id, restriccion);
 				return id;
 			},
-			remove: (id: RuleKey) => {
-				ramoData.rules.delete(id);
+			remove: (id: RestriccionKey) => {
+				ramoData.restricciones.delete(id);
 			},
-			get: (id: RuleKey) => {
-				return ramoData.rules.get(id);
+			get: (id: RestriccionKey) => {
+				return ramoData.restricciones.get(id);
 			},
-			has: (id: RuleKey) => {
-				return ramoData.rules.has(id);
+			has: (id: RestriccionKey) => {
+				return ramoData.restricciones.has(id);
 			},
-			update: (id: RuleKey, rule: Rule) => {
-				ramoData.rules.set(id, rule);
+			update: (id: RestriccionKey, restriccion: Restriccion) => {
+				ramoData.restricciones.set(id, restriccion);
 			}
 		};
 	}
@@ -275,7 +321,7 @@ export class NotasManager implements Serializable<NotasSerial> {
 		if (!ramoData) return 0;
 
 		return Array.from(ramoData.evaluaciones.values()).reduce(
-			(acc, evaluacion) => acc + evaluacion.weight,
+			(acc, evaluacion) => acc + evaluacion.peso,
 			0
 		);
 	}
@@ -302,7 +348,11 @@ export class NotasManager implements Serializable<NotasSerial> {
 	hasRamoData(ramoId: RamoKey): boolean {
 		const ramoData = this._ramos.get(ramoId);
 		if (!ramoData) return false;
-		return ramoData.evaluaciones.size > 0 || ramoData.tags.size > 0 || ramoData.rules.size > 0;
+		return (
+			ramoData.evaluaciones.size > 0 ||
+			ramoData.tags.size > 0 ||
+			ramoData.restricciones.size > 0
+		);
 	}
 
 	// Obtener lista de ramos con datos

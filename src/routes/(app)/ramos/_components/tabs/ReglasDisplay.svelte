@@ -1,21 +1,17 @@
 <script lang="ts">
 	import { Shield } from '@lucide/svelte';
 	import { ColorUtils } from '$lib/utils/colors';
+	import type { Restriccion } from '@madmti/gradesolver';
 
 	interface TagType {
 		name: string;
 		color: string;
 	}
 
-	interface Rule {
-		type: 'global_average' | 'tag_average' | 'min_grade_per_tag';
-		target: number;
-		tag_filter?: string;
-		description?: string;
-	}
+
 
 	interface Props {
-		rules: Rule[];
+		rules: Restriccion[];
 		tags: [string, TagType][];
 	}
 
@@ -31,17 +27,15 @@
 	}
 
 	// Formatear texto de la regla
-	function formatRule(rule: Rule): string {
-		switch (rule.type) {
-			case 'global_average':
-				return `Promedio Final ≥ ${rule.target}`;
-			case 'tag_average': {
-				const tagNameAvg = tagsMap.get(rule.tag_filter!)?.name || rule.tag_filter;
-				return `Promedio ${tagNameAvg} ≥ ${rule.target}`;
+	function formatRule(rule: Restriccion): string {
+		switch (rule.tipo) {
+			case 'PROMEDIO_SIMPLE_TAG': {
+				const tagNameAvg = tagsMap.get(rule.tag_objetivo)?.name || rule.tag_objetivo;
+				return `Promedio ${tagNameAvg} ≥ ${rule.valor_minimo}`;
 			}
-			case 'min_grade_per_tag': {
-				const tagNameMin = tagsMap.get(rule.tag_filter!)?.name || rule.tag_filter;
-				return `Cada ${tagNameMin} ≥ ${rule.target}`;
+			case 'NOTA_MINIMA_INDIVIDUAL_TAG': {
+				const tagNameMin = tagsMap.get(rule.tag_objetivo)?.name || rule.tag_objetivo;
+				return `Cada ${tagNameMin} ≥ ${rule.valor_minimo}`;
 			}
 			default:
 				return 'Regla desconocida';
@@ -62,10 +56,10 @@
 			<div class="text-center space-y-4">
 				<div class="flex items-center justify-center gap-2 flex-wrap p-6 mt-4">
 					{#each rules as rule, index (index)}
-						{@const tagColor = rule.tag_filter ? getTagColor(rule.tag_filter) : null}
+						{@const tagColor = rule.tag_objetivo ? getTagColor(rule.tag_objetivo) : null}
 
 						<div class="flex items-center gap-2 px-3 py-1.5 rounded-lg border bg-white">
-							{#if rule.tag_filter}
+							{#if rule.tag_objetivo}
 								<div class="w-2 h-2 rounded-full" style="background-color: {tagColor}"></div>
 							{/if}
 
