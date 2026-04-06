@@ -10,16 +10,17 @@
 
 	interface Props {
 		selectedView: ViewMode;
+		onEditEvent?: (event: unknown) => void;
 	}
 
-	let { selectedView = 'calendar' }: Props = $props();
+	let { selectedView = 'calendar', onEditEvent }: Props = $props();
 </script>
 
-<div class="bg-white rounded-2xl border border-gray-200 shadow-sm h-full min-h-0">
+<div class="h-full min-h-0">
 		{#if selectedView === 'calendar'}
 			<Calendar />
 		{:else if selectedView === 'list'}
-			<List />
+			<List onEditEvent={onEditEvent} />
 		{:else if selectedView === 'kanban'}
 			<Kanban />
 		{:else}

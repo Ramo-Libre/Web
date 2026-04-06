@@ -6,17 +6,25 @@
 
 	let selectedView = 'calendar';
 	let isEventModalOpen = false;
+	let editingEvent = null;
 
 	function handleSelectView(view) {
 		selectedView = view;
 	}
 
 	function handleOpenEventModal() {
+		editingEvent = null;
+		isEventModalOpen = true;
+	}
+
+	function handleEditEvent(event) {
+		editingEvent = event;
 		isEventModalOpen = true;
 	}
 
 	function handleCloseEventModal() {
 		isEventModalOpen = false;
+		editingEvent = null;
 	}
 </script>
 
@@ -27,7 +35,7 @@
 			onSelectView={handleSelectView}
 			onOpenEventModal={handleOpenEventModal}
 		/>
-		<BigView selectedView={selectedView} />
+		<BigView selectedView={selectedView} onEditEvent={handleEditEvent} />
 	</div>
-	<EventModal open={isEventModalOpen} onClose={handleCloseEventModal} />
+	<EventModal open={isEventModalOpen} onClose={handleCloseEventModal} initialEvent={editingEvent} />
 </div>
