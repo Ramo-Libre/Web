@@ -20,7 +20,7 @@
 
 <div class="h-full min-h-0">
 		{#if selectedView === 'calendar'}
-			<Calendar onEditEvent={onEditEvent} />
+			<Calendar onEditEvent={onEditEvent} selectedStatus={selectedStatus} selectedRamo={selectedRamo} />
 		{:else if selectedView === 'list'}
 			<List onEditEvent={onEditEvent} selectedStatus={selectedStatus} selectedRamo={selectedRamo} />
 		{:else if selectedView === 'kanban'}

@@ -3,15 +3,27 @@
 	import { db } from '$lib/state/index.svelte';
 	import type { Event as CalendarEvent } from '$lib/state/events.svelte';
 
+	type StatusFilter = 'all' | 'upcoming' | 'overdue' | 'completed';
+
 	const today = new Date();
+	const todayKey = new Date().toISOString().slice(0, 10);
 	let currentMonth = $state(new Date(today.getFullYear(), today.getMonth(), 1));
 	let selectedDate = $state(new Date(today.getFullYear(), today.getMonth(), today.getDate()));
 
 	const weekDays = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 
+	function matchesFilters(event: CalendarEvent) {
+		if (selectedRamo !== 'all' && event.ramoId !== selectedRamo) return false;
+		if (selectedStatus === 'completed') return event.completed;
+		if (selectedStatus === 'overdue') return !event.completed && event.dueDate < todayKey;
+		if (selectedStatus === 'upcoming') return !event.completed && event.dueDate >= todayKey;
+		return true;
+	}
+
 	const eventsByDate = $derived.by(() => {
 		const map = new Map<string, CalendarEvent[]>();
 		for (const [, event] of db.events.list) {
+			if (!matchesFilters(event)) continue;
 			const key = event.dueDate;
 			if (!map.has(key)) map.set(key, []);
 			map.get(key)!.push(event);
@@ -21,9 +33,11 @@
 
 	interface Props {
 		onEditEvent?: (event: CalendarEvent) => void;
+		selectedStatus?: StatusFilter;
+		selectedRamo?: string;
 	}
 
-	let { onEditEvent }: Props = $props();
+	let { onEditEvent, selectedStatus = 'all', selectedRamo = 'all' }: Props = $props();
 
 	const ramosMap = $derived.by(() => new Map(db.ramos.list));
 
