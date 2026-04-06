@@ -35,6 +35,30 @@
 	}: Props = $props();
 
 	const ramos = $derived.by(() => db.ramos.list);
+	const todayKey = new Date().toISOString().slice(0, 10);
+
+	const stats = $derived.by(() => {
+		let upcoming = 0;
+		let overdue = 0;
+		let completed = 0;
+		let total = 0;
+
+		for (const [, event] of db.events.list) {
+			if (selectedRamo !== 'all' && event.ramoId !== selectedRamo) continue;
+			total += 1;
+			if (event.completed) {
+				completed += 1;
+				continue;
+			}
+			if (event.dueDate < todayKey) {
+				overdue += 1;
+			} else {
+				upcoming += 1;
+			}
+		}
+
+		return { upcoming, overdue, completed, total };
+	});
 </script>
 
 <div class="space-y-4">
@@ -43,7 +67,7 @@
 			<div class="flex items-center justify-between">
 				<div>
 					<div class="text-xs uppercase tracking-wider text-blue-500">Próximos</div>
-					<div class="sm:text-2xl text-md font-semibold">0</div>
+					<div class="sm:text-2xl text-md font-semibold">{stats.upcoming}</div>
 				</div>
 				<ChevronsRight class="sm:w-6 sm:h-6 w-5 h-5 text-blue-500" />
 			</div>
@@ -53,7 +77,7 @@
 			<div class="flex items-center justify-between">
 				<div>
 					<div class="text-xs uppercase tracking-wider text-red-500">Vencidos</div>
-					<div class="sm:text-2xl text-md font-semibold">0</div>
+					<div class="sm:text-2xl text-md font-semibold">{stats.overdue}</div>
 				</div>
 				<AlertTriangle class="sm:w-6 sm:h-6 w-5 h-5 text-red-500" />
 			</div>
@@ -63,7 +87,7 @@
 			<div class="flex items-center justify-between">
 				<div>
 					<div class="text-xs uppercase tracking-wider text-emerald-500">Completados</div>
-					<div class="sm:text-2xl text-md font-semibold">0</div>
+					<div class="sm:text-2xl text-md font-semibold">{stats.completed}</div>
 				</div>
 				<CheckCircle2 class="sm:w-6 sm:h-6 w-5 h-5 text-emerald-500" />
 			</div>
@@ -73,7 +97,7 @@
 			<div class="flex items-center justify-between">
 				<div>
 					<div class="text-xs uppercase tracking-wider text-purple-500">Total</div>
-					<div class="sm:text-2xl text-md font-semibold">0</div>
+					<div class="sm:text-2xl text-md font-semibold">{stats.total}</div>
 				</div>
 				<BarChart3 class="sm:w-6 sm:h-6 w-5 h-5 text-purple-500" />
 			</div>
