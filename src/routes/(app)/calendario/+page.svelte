@@ -5,11 +5,21 @@
 	import EventModal from './_components/EventModal.svelte';
 
 	let selectedView = 'calendar';
+	let selectedStatus = 'all';
+	let selectedRamo = 'all';
 	let isEventModalOpen = false;
 	let editingEvent = null;
 
 	function handleSelectView(view) {
 		selectedView = view;
+	}
+
+	function handleSelectStatus(status) {
+		selectedStatus = status;
+	}
+
+	function handleSelectRamo(ramoId) {
+		selectedRamo = ramoId;
 	}
 
 	function handleOpenEventModal() {
@@ -32,10 +42,19 @@
 	<div class="flex flex-col gap-6">
 		<ViewBar
 			selectedView={selectedView}
+			selectedStatus={selectedStatus}
+			selectedRamo={selectedRamo}
 			onSelectView={handleSelectView}
+			onSelectStatus={handleSelectStatus}
+			onSelectRamo={handleSelectRamo}
 			onOpenEventModal={handleOpenEventModal}
 		/>
-		<BigView selectedView={selectedView} onEditEvent={handleEditEvent} />
+		<BigView
+			selectedView={selectedView}
+			selectedStatus={selectedStatus}
+			selectedRamo={selectedRamo}
+			onEditEvent={handleEditEvent}
+		/>
 	</div>
 	<EventModal open={isEventModalOpen} onClose={handleCloseEventModal} initialEvent={editingEvent} />
 </div>

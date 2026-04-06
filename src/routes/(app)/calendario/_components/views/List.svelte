@@ -1,16 +1,38 @@
 <script lang="ts">
 	import { db } from '$lib/state/index.svelte';
-	import { Pencil, Trash2, CheckCircle2, Circle } from '@lucide/svelte';
+	import { Pencil, Trash2, CheckCircle2, Circle, CalendarDays, MapPin, FileText } from '@lucide/svelte';
 	import type { Event as CalendarEvent } from '$lib/state/events.svelte';
+
+	type StatusFilter = 'all' | 'upcoming' | 'overdue' | 'completed';
 
 	interface Props {
 		onEditEvent?: (event: CalendarEvent) => void;
+		selectedStatus?: StatusFilter;
+		selectedRamo?: string;
 	}
 
-	let { onEditEvent }: Props = $props();
+	let { onEditEvent, selectedStatus = 'all', selectedRamo = 'all' }: Props = $props();
 
 	const events = $derived.by(() => {
-		const list = db.events.list.map(([, event]) => event);
+		const today = new Date().toISOString().slice(0, 10);
+		const list = db.events.list
+			.map(([, event]) => event)
+			.filter((event) => {
+				if (selectedRamo !== 'all' && event.ramoId !== selectedRamo) {
+					return false;
+				}
+				if (selectedStatus === 'completed') {
+					return event.completed;
+				}
+				if (selectedStatus === 'overdue') {
+					return !event.completed && event.dueDate < today;
+				}
+				if (selectedStatus === 'upcoming') {
+					return !event.completed && event.dueDate >= today;
+				}
+				return true;
+			});
+
 		return list.sort((a, b) => (a.dueDate ?? '').localeCompare(b.dueDate ?? ''));
 	});
 
@@ -53,7 +75,89 @@
 	{#if events.length === 0}
 		<div class="p-6 text-sm text-slate-500">No hay eventos registrados.</div>
 	{:else}
-		<div class="overflow-x-auto">
+		<div class="lg:hidden space-y-3 p-4">
+			{#each events as event (event.id)}
+				<div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+					<div class="flex items-start justify-between gap-3">
+						<div class="min-w-0 flex-1">
+							<div class="font-semibold text-slate-800 truncate" title={event.title}>{event.title}</div>
+							<div class="mt-1 flex items-center gap-2 text-xs text-slate-500">
+								<FileText class="w-3.5 h-3.5 text-slate-400 shrink-0" />
+								<span class="truncate min-w-0 flex-1" title={event.description ?? '—'}>{event.description ?? '—'}</span>
+							</div>
+						</div>
+						<div class="flex items-center gap-2 shrink-0">
+							<button
+								class="cursor-pointer text-emerald-600 hover:text-emerald-700"
+								aria-label={event.completed ? 'Marcar como pendiente' : 'Marcar como completado'}
+								onclick={() => db.events.toggleCompleted(event.id)}
+							>
+								{#if event.completed}
+									<CheckCircle2 class="w-4 h-4" />
+								{:else}
+									<Circle class="w-4 h-4" />
+								{/if}
+							</button>
+							<button
+								class="cursor-pointer text-blue-600 hover:text-blue-700"
+								aria-label="Editar evento"
+								onclick={() => onEditEvent?.(event)}
+							>
+								<Pencil class="w-4 h-4" />
+							</button>
+							<button
+								class="cursor-pointer text-rose-600 hover:text-rose-700"
+								aria-label="Borrar evento"
+								onclick={() => db.events.remove(event.id)}
+							>
+								<Trash2 class="w-4 h-4" />
+							</button>
+						</div>
+					</div>
+
+					<div class="mt-3 flex flex-wrap gap-2 text-xs">
+						<span
+							class={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${priorityClasses(
+								event.priority
+							)}`}
+						>
+							{priorityLabel(event.priority)}
+						</span>
+						<span
+							class={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${
+								event.completed
+									? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+									: event.dueDate < new Date().toISOString().slice(0, 10)
+										? 'bg-red-50 text-red-700 border border-red-200'
+										: 'bg-slate-50 text-slate-600 border border-slate-200'
+							}`}
+						>
+							{event.completed
+								? 'Completado'
+								: event.dueDate < new Date().toISOString().slice(0, 10)
+									? 'Vencido'
+									: 'Pendiente'}
+						</span>
+						<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold border border-slate-200 text-slate-600">
+							{getRamoName(event.ramoId)}
+						</span>
+					</div>
+
+					<div class="mt-3 text-xs text-slate-600 space-y-1">
+						<div class="flex items-center gap-2">
+							<CalendarDays class="w-3.5 h-3.5 text-slate-400 shrink-0" />
+							<span>{(new Date(event.dueDate)).toLocaleDateString('es-CL')}</span>
+						</div>
+						<div class="flex items-center gap-2">
+							<MapPin class="w-3.5 h-3.5 text-slate-400 shrink-0" />
+							<span class="truncate min-w-0 flex-1" title={event.location ?? '—'}>{event.location ?? '—'}</span>
+						</div>
+					</div>
+				</div>
+			{/each}
+		</div>
+
+		<div class="hidden lg:block overflow-x-auto">
 			<table class="min-w-full text-sm table-fixed">
 				<thead class="bg-slate-50 text-xs uppercase tracking-wider text-slate-500">
 					<tr>
@@ -95,10 +199,16 @@
 									class={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${
 										event.completed
 											? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-											: 'bg-slate-50 text-slate-600 border border-slate-200'
+											: event.dueDate < new Date().toISOString().slice(0, 10)
+												? 'bg-red-50 text-red-700 border border-red-200'
+												: 'bg-slate-50 text-slate-600 border border-slate-200'
 									}`}
 								>
-									{event.completed ? 'Completado' : 'Pendiente'}
+									{event.completed
+										? 'Completado'
+										: event.dueDate < new Date().toISOString().slice(0, 10)
+											? 'Vencido'
+											: 'Pendiente'}
 								</span>
 							</td>
 							<td class="px-4 py-3">

@@ -9,20 +9,32 @@
 		CheckCircle2,
 		BarChart3
 	} from '@lucide/svelte';
+	import { db } from '$lib/state/index.svelte';
 
 	type ViewMode = 'calendar' | 'list' | 'kanban' | 'timeline';
+	type StatusFilter = 'all' | 'upcoming' | 'overdue' | 'completed';
 
 	interface Props {
 		selectedView: ViewMode;
 		onSelectView: (view: ViewMode) => void;
 		onOpenEventModal: () => void;
+		selectedStatus?: StatusFilter;
+		selectedRamo?: string;
+		onSelectStatus?: (value: StatusFilter) => void;
+		onSelectRamo?: (value: string) => void;
 	}
 
 	let {
 		selectedView = 'calendar',
 		onSelectView,
-		onOpenEventModal
+		onOpenEventModal,
+		selectedStatus = 'all',
+		selectedRamo = 'all',
+		onSelectStatus = () => {},
+		onSelectRamo = () => {}
 	}: Props = $props();
+
+	const ramos = $derived.by(() => db.ramos.list);
 </script>
 
 <div class="space-y-4">
@@ -118,21 +130,29 @@
 		<div class="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:items-center sm:gap-3">
 			<label class="flex items-center gap-2 text-sm text-slate-600 w-full justify-between sm:w-auto sm:justify-start">
 				<span>Estado:</span>
-				<select class="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 w-full sm:w-auto">
-					<option>Todos</option>
-					<option>Próximos</option>
-					<option>Vencidos</option>
-					<option>Completados</option>
+				<select
+					class="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 w-full sm:w-auto"
+					value={selectedStatus}
+					onchange={(e) =>
+						onSelectStatus((e.target as HTMLSelectElement).value as StatusFilter)}
+				>
+					<option value="all">Todos</option>
+					<option value="upcoming">Próximos</option>
+					<option value="overdue">Vencidos</option>
+					<option value="completed">Completados</option>
 				</select>
 			</label>
 			<label class="flex items-center gap-2 text-sm text-slate-600 w-full justify-between sm:w-auto sm:justify-start">
 				<span>Materia:</span>
-				<select class="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 w-full sm:w-auto">
-					<option>Todas</option>
-					<option>ISW</option>
-					<option>PSI</option>
-					<option>FAC</option>
-					<option>YT</option>
+				<select
+					class="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 w-full sm:w-auto"
+					value={selectedRamo}
+					onchange={(e) => onSelectRamo((e.target as HTMLSelectElement).value)}
+				>
+					<option value="all">Todas</option>
+					{#each ramos as [id, ramo] (id)}
+						<option value={id}>{ramo.nombre}</option>
+					{/each}
 				</select>
 			</label>
 			<button
