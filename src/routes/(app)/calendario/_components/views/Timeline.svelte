@@ -2,7 +2,17 @@
 	import { onMount, tick } from 'svelte';
 	import { db } from '$lib/state/index.svelte';
 	import type { Event as CalendarEvent } from '$lib/state/events.svelte';
-	import { CalendarDays, MapPin, FileText, Pencil, Trash2, CheckCircle2, Circle, ChevronLeft, ChevronRight } from '@lucide/svelte';
+	import {
+		CalendarDays,
+		MapPin,
+		FileText,
+		Pencil,
+		Trash2,
+		CheckCircle2,
+		Circle,
+		ChevronLeft,
+		ChevronRight
+	} from '@lucide/svelte';
 	import * as AlertDialog from '$lib/components/ui/alert-dialog';
 
 	type StatusFilter = 'all' | 'upcoming' | 'overdue' | 'completed';
@@ -139,7 +149,11 @@
 			return label.charAt(0).toUpperCase() + label.slice(1);
 		}
 		const start = startOfWeek(anchorDate);
-		const formatter = new Intl.DateTimeFormat('es-CL', { day: 'numeric', month: 'long', year: 'numeric' });
+		const formatter = new Intl.DateTimeFormat('es-CL', {
+			day: 'numeric',
+			month: 'long',
+			year: 'numeric'
+		});
 		const label = formatter.format(start);
 		return `Semana del ${label}`;
 	});
@@ -226,7 +240,9 @@
 				if (!isInRange(event.dueDate, start, end)) return false;
 				return true;
 			})
-			.sort((a, b) => (a.dueDate ?? '').localeCompare(b.dueDate ?? '') || a.title.localeCompare(b.title));
+			.sort(
+				(a, b) => (a.dueDate ?? '').localeCompare(b.dueDate ?? '') || a.title.localeCompare(b.title)
+			);
 
 		const map = new Map<string, CalendarEvent[]>();
 		for (const ev of list) {
@@ -243,7 +259,8 @@
 		<div class="text-sm font-semibold text-slate-700">Línea de tiempo</div>
 		<div class="flex items-center gap-2">
 			<button
-				class="cursor-pointer px-3 py-1.5 rounded-lg text-xs font-semibold border {rangeMode === 'month'
+				class="cursor-pointer px-3 py-1.5 rounded-lg text-xs font-semibold border {rangeMode ===
+				'month'
 					? 'bg-blue-600 text-white border-blue-600'
 					: 'border-slate-200 text-slate-600 hover:bg-slate-50'}"
 				onclick={() => setRangeMode('month')}
@@ -251,7 +268,8 @@
 				Mes
 			</button>
 			<button
-				class="cursor-pointer px-3 py-1.5 rounded-lg text-xs font-semibold border {rangeMode === 'week'
+				class="cursor-pointer px-3 py-1.5 rounded-lg text-xs font-semibold border {rangeMode ===
+				'week'
 					? 'bg-blue-600 text-white border-blue-600'
 					: 'border-slate-200 text-slate-600 hover:bg-slate-50'}"
 				onclick={() => setRangeMode('week')}
@@ -287,16 +305,18 @@
 			<div class="space-y-6">
 				{#each groups as group (group.date)}
 					<div class="relative">
-						<div class="absolute -left-4 top-[5px] h-3 w-3 -translate-x-1/2 rounded-full bg-blue-500"></div>
+						<div
+							class="absolute -left-4 top-[5px] h-3 w-3 -translate-x-1/2 rounded-full bg-blue-500"
+						></div>
 						<div class="flex items-center gap-2 text-sm font-semibold text-slate-700">
 							<span>{formatDateLabel(group.date)}</span>
 							{#if group.date === todayKey}
-								<span class="text-[10px] px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-200">
+								<span
+									class="text-[10px] px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-200"
+								>
 									Hoy
 								</span>
 							{/if}
-
-
 						</div>
 
 						<div class="mt-3 space-y-3">
@@ -320,7 +340,9 @@
 										<div class="flex items-center gap-2 shrink-0">
 											<button
 												class="cursor-pointer text-emerald-600 hover:text-emerald-700"
-												aria-label={ev.completed ? 'Marcar como pendiente' : 'Marcar como completado'}
+												aria-label={ev.completed
+													? 'Marcar como pendiente'
+													: 'Marcar como completado'}
 												onclick={() => db.events.toggleCompleted(ev.id)}
 											>
 												{#if ev.completed}
@@ -362,7 +384,9 @@
 											{statusLabel(getStatus(ev))}
 										</span>
 										{#if ev.ramoId}
-											<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold border border-slate-200 text-slate-600">
+											<span
+												class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold border border-slate-200 text-slate-600"
+											>
 												{getRamoName(ev.ramoId)}
 											</span>
 										{/if}
@@ -396,8 +420,11 @@
 				<AlertDialog.Title>¿Confirmar eliminación?</AlertDialog.Title>
 				<AlertDialog.Description>
 					{#if deleteConfirmEvent}
-						Esta acción eliminará permanentemente el evento <strong>"{deleteConfirmEvent.title.length > 30 ? `${deleteConfirmEvent.title.slice(0, 30)}…` : deleteConfirmEvent.title}"</strong>.
-						Esta acción no se puede deshacer.
+						Esta acción eliminará permanentemente el evento <strong
+							>"{deleteConfirmEvent.title.length > 30
+								? `${deleteConfirmEvent.title.slice(0, 30)}…`
+								: deleteConfirmEvent.title}"</strong
+						>. Esta acción no se puede deshacer.
 					{/if}
 				</AlertDialog.Description>
 			</AlertDialog.Header>

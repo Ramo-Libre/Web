@@ -1,5 +1,15 @@
 <script lang="ts">
-	import { CalendarDays, ChevronLeft, ChevronRight, FileText, MapPin, Pencil, Trash2, CheckCircle2, Circle } from '@lucide/svelte';
+	import {
+		CalendarDays,
+		ChevronLeft,
+		ChevronRight,
+		FileText,
+		MapPin,
+		Pencil,
+		Trash2,
+		CheckCircle2,
+		Circle
+	} from '@lucide/svelte';
 	import * as AlertDialog from '$lib/components/ui/alert-dialog';
 	import { db } from '$lib/state/index.svelte';
 	import type { Event as CalendarEvent } from '$lib/state/events.svelte';
@@ -39,12 +49,7 @@
 		focusEventId?: string;
 	}
 
-	let {
-		onEditEvent,
-		selectedStatus = 'all',
-		selectedRamo = 'all',
-		focusEventId
-	}: Props = $props();
+	let { onEditEvent, selectedStatus = 'all', selectedRamo = 'all', focusEventId }: Props = $props();
 
 	let deleteConfirmEvent = $state<CalendarEvent | null>(null);
 	let highlightEventId = $state<string | null>(null);
@@ -132,7 +137,9 @@
 	}
 
 	function isCurrentMonth(d: Date) {
-		return d.getMonth() === currentMonth.getMonth() && d.getFullYear() === currentMonth.getFullYear();
+		return (
+			d.getMonth() === currentMonth.getMonth() && d.getFullYear() === currentMonth.getFullYear()
+		);
 	}
 
 	function goPrev() {
@@ -349,7 +356,9 @@
 											: 'Pendiente'}
 								</span>
 								{#if ev.ramoId}
-									<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold border border-slate-200 text-slate-600">
+									<span
+										class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold border border-slate-200 text-slate-600"
+									>
 										{getRamoName(ev.ramoId)}
 									</span>
 								{/if}
@@ -377,12 +386,17 @@
 				<AlertDialog.Title>¿Confirmar eliminación?</AlertDialog.Title>
 				<AlertDialog.Description>
 					{#if deleteConfirmEvent}
-						Esta acción eliminará permanentemente el evento <strong class="inline-block max-w-[20ch] align-bottom truncate">"{deleteConfirmEvent.title}"</strong>. Esta acción no se puede deshacer.
+						Esta acción eliminará permanentemente el evento <strong
+							class="inline-block max-w-[20ch] align-bottom truncate"
+							>"{deleteConfirmEvent.title}"</strong
+						>. Esta acción no se puede deshacer.
 					{/if}
 				</AlertDialog.Description>
 			</AlertDialog.Header>
 			<AlertDialog.Footer>
-				<AlertDialog.Cancel onclick={cancelDelete} class="cursor-pointer">Cancelar</AlertDialog.Cancel>
+				<AlertDialog.Cancel onclick={cancelDelete} class="cursor-pointer"
+					>Cancelar</AlertDialog.Cancel
+				>
 				<AlertDialog.Action
 					onclick={confirmDelete}
 					class="bg-red-600 hover:bg-red-700 cursor-pointer"

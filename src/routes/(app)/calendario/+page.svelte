@@ -80,20 +80,20 @@
 <div in:fly={{ y: 10, duration: 300, delay: 100 }} class="sm:h-full">
 	<div class="flex flex-col gap-6">
 		<ViewBar
-			selectedView={selectedView}
-			selectedStatus={selectedStatus}
-			selectedRamo={selectedRamo}
+			{selectedView}
+			{selectedStatus}
+			{selectedRamo}
 			onSelectView={handleSelectView}
 			onSelectStatus={handleSelectStatus}
 			onSelectRamo={handleSelectRamo}
 			onOpenEventModal={handleOpenEventModal}
 		/>
 		<BigView
-			selectedView={selectedView}
-			selectedStatus={selectedStatus}
-			selectedRamo={selectedRamo}
+			{selectedView}
+			{selectedStatus}
+			{selectedRamo}
 			onEditEvent={handleEditEvent}
-			focusEventId={focusEventId}
+			{focusEventId}
 		/>
 	</div>
 	<EventModal open={isEventModalOpen} onClose={handleCloseEventModal} initialEvent={editingEvent} />

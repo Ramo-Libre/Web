@@ -84,7 +84,8 @@
 
 {#if open}
 	<div class="fixed inset-0 z-50 flex items-center justify-center">
-		<button class="absolute inset-0 bg-black/40" aria-label="Cerrar" onclick={handleCancel}></button>
+		<button class="absolute inset-0 bg-black/40" aria-label="Cerrar" onclick={handleCancel}
+		></button>
 		<div class="relative w-full max-w-lg bg-white rounded-2xl shadow-xl border border-gray-200 p-6">
 			<div class="text-sm font-semibold text-slate-700 uppercase tracking-wide">
 				{isEditing ? 'Editar evento' : 'Nuevo evento'}

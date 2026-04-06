@@ -1,5 +1,3 @@
-
-
 <script lang="ts">
 	import Calendar from './views/Calendar.svelte';
 	import List from './views/List.svelte';
@@ -26,33 +24,13 @@
 </script>
 
 <div class="h-full min-h-0">
-		{#if selectedView === 'calendar'}
-			<Calendar
-				onEditEvent={onEditEvent}
-				selectedStatus={selectedStatus}
-				selectedRamo={selectedRamo}
-				focusEventId={focusEventId}
-			/>
-		{:else if selectedView === 'list'}
-			<List
-				onEditEvent={onEditEvent}
-				selectedStatus={selectedStatus}
-				selectedRamo={selectedRamo}
-				focusEventId={focusEventId}
-			/>
-		{:else if selectedView === 'kanban'}
-			<Kanban
-				onEditEvent={onEditEvent}
-				selectedStatus={selectedStatus}
-				selectedRamo={selectedRamo}
-				focusEventId={focusEventId}
-			/>
-		{:else}
-			<Timeline
-				onEditEvent={onEditEvent}
-				selectedStatus={selectedStatus}
-				selectedRamo={selectedRamo}
-				focusEventId={focusEventId}
-			/>
-		{/if}
+	{#if selectedView === 'calendar'}
+		<Calendar {onEditEvent} {selectedStatus} {selectedRamo} {focusEventId} />
+	{:else if selectedView === 'list'}
+		<List {onEditEvent} {selectedStatus} {selectedRamo} {focusEventId} />
+	{:else if selectedView === 'kanban'}
+		<Kanban {onEditEvent} {selectedStatus} {selectedRamo} {focusEventId} />
+	{:else}
+		<Timeline {onEditEvent} {selectedStatus} {selectedRamo} {focusEventId} />
+	{/if}
 </div>

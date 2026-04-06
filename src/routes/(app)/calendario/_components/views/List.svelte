@@ -1,7 +1,15 @@
 <script lang="ts">
 	import { onMount, tick } from 'svelte';
 	import { db } from '$lib/state/index.svelte';
-	import { Pencil, Trash2, CheckCircle2, Circle, CalendarDays, MapPin, FileText } from '@lucide/svelte';
+	import {
+		Pencil,
+		Trash2,
+		CheckCircle2,
+		Circle,
+		CalendarDays,
+		MapPin,
+		FileText
+	} from '@lucide/svelte';
 	import * as AlertDialog from '$lib/components/ui/alert-dialog';
 	import type { Event as CalendarEvent } from '$lib/state/events.svelte';
 
@@ -129,10 +137,14 @@
 				>
 					<div class="flex items-start justify-between gap-3">
 						<div class="min-w-0 flex-1">
-							<div class="font-semibold text-slate-800 truncate" title={event.title}>{event.title}</div>
+							<div class="font-semibold text-slate-800 truncate" title={event.title}>
+								{event.title}
+							</div>
 							<div class="mt-1 flex items-center gap-2 text-xs text-slate-500">
 								<FileText class="w-3.5 h-3.5 text-slate-400 shrink-0" />
-								<span class="truncate min-w-0 flex-1" title={event.description ?? '—'}>{event.description ?? '—'}</span>
+								<span class="truncate min-w-0 flex-1" title={event.description ?? '—'}
+									>{event.description ?? '—'}</span
+								>
 							</div>
 						</div>
 						<div class="flex items-center gap-2 shrink-0">
@@ -187,7 +199,9 @@
 									? 'Vencido'
 									: 'Pendiente'}
 						</span>
-						<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold border border-slate-200 text-slate-600">
+						<span
+							class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold border border-slate-200 text-slate-600"
+						>
 							{getRamoName(event.ramoId)}
 						</span>
 					</div>
@@ -195,11 +209,13 @@
 					<div class="mt-3 text-xs text-slate-600 space-y-1">
 						<div class="flex items-center gap-2">
 							<CalendarDays class="w-3.5 h-3.5 text-slate-400 shrink-0" />
-							<span>{(new Date(event.dueDate)).toLocaleDateString('es-CL')}</span>
+							<span>{new Date(event.dueDate).toLocaleDateString('es-CL')}</span>
 						</div>
 						<div class="flex items-center gap-2">
 							<MapPin class="w-3.5 h-3.5 text-slate-400 shrink-0" />
-							<span class="truncate min-w-0 flex-1" title={event.location ?? '—'}>{event.location ?? '—'}</span>
+							<span class="truncate min-w-0 flex-1" title={event.location ?? '—'}
+								>{event.location ?? '—'}</span
+							>
 						</div>
 					</div>
 				</div>
@@ -233,9 +249,11 @@
 								</div>
 							</td>
 							<td class={`px-4 py-3 text-slate-600 ${isFocused ? 'shine-effect' : ''}`}>
-								{(new Date(event.dueDate)).toLocaleDateString('es-CL')}
+								{new Date(event.dueDate).toLocaleDateString('es-CL')}
 							</td>
-							<td class={`px-4 py-3 text-slate-600 max-w-[20ch] truncate ${isFocused ? 'shine-effect' : ''}`}>
+							<td
+								class={`px-4 py-3 text-slate-600 max-w-[20ch] truncate ${isFocused ? 'shine-effect' : ''}`}
+							>
 								{event.location ?? '—'}
 							</td>
 							<td class={`px-4 py-3 ${isFocused ? 'shine-effect' : ''}`}>
@@ -247,7 +265,9 @@
 									{priorityLabel(event.priority)}
 								</span>
 							</td>
-							<td class={`px-4 py-3 text-slate-600 max-w-[20ch] truncate ${isFocused ? 'shine-effect' : ''}`}>
+							<td
+								class={`px-4 py-3 text-slate-600 max-w-[20ch] truncate ${isFocused ? 'shine-effect' : ''}`}
+							>
 								{getRamoName(event.ramoId)}
 							</td>
 							<td class={`px-4 py-3 ${isFocused ? 'shine-effect' : ''}`}>
@@ -271,7 +291,9 @@
 								<div class="flex items-center gap-2">
 									<button
 										class="cursor-pointer text-emerald-600 hover:text-emerald-700"
-										aria-label={event.completed ? 'Marcar como pendiente' : 'Marcar como completado'}
+										aria-label={event.completed
+											? 'Marcar como pendiente'
+											: 'Marcar como completado'}
 										onclick={() => db.events.toggleCompleted(event.id)}
 									>
 										{#if event.completed}
@@ -313,8 +335,9 @@
 				<AlertDialog.Description>
 					{#if deleteConfirmEvent}
 						Esta acción eliminará permanentemente el evento
-						<strong class="inline-block max-w-[20ch] truncate align-bottom">"{deleteConfirmEvent.title}"</strong>.
-						Esta acción no se puede deshacer.
+						<strong class="inline-block max-w-[20ch] truncate align-bottom"
+							>"{deleteConfirmEvent.title}"</strong
+						>. Esta acción no se puede deshacer.
 					{/if}
 				</AlertDialog.Description>
 			</AlertDialog.Header>

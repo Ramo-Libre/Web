@@ -2,7 +2,15 @@
 	import { onMount, tick } from 'svelte';
 	import { db } from '$lib/state/index.svelte';
 	import type { Event as CalendarEvent } from '$lib/state/events.svelte';
-	import { CalendarDays, MapPin, FileText, Pencil, Trash2, CheckCircle2, Circle } from '@lucide/svelte';
+	import {
+		CalendarDays,
+		MapPin,
+		FileText,
+		Pencil,
+		Trash2,
+		CheckCircle2,
+		Circle
+	} from '@lucide/svelte';
 	import * as AlertDialog from '$lib/components/ui/alert-dialog';
 
 	type StatusFilter = 'all' | 'upcoming' | 'overdue' | 'completed';
@@ -169,7 +177,8 @@
 <div class="space-y-4">
 	<div class="flex gap-2 sm:hidden">
 		<button
-			class="cursor-pointer transition duration-100 flex-1 px-3 py-2 rounded-lg text-sm font-semibold border {selectedColumn === 'upcoming'
+			class="cursor-pointer transition duration-100 flex-1 px-3 py-2 rounded-lg text-sm font-semibold border {selectedColumn ===
+			'upcoming'
 				? 'bg-blue-600 text-white border-blue-600'
 				: 'bg-slate-200 border-slate-200 text-slate-600 hover:bg-slate-50'}"
 			onclick={() => (selectedColumn = 'upcoming')}
@@ -177,7 +186,8 @@
 			Próximos
 		</button>
 		<button
-			class="cursor-pointer transition duration-100 flex-1 px-3 py-2 rounded-lg text-sm font-semibold border {selectedColumn === 'overdue'
+			class="cursor-pointer transition duration-100 flex-1 px-3 py-2 rounded-lg text-sm font-semibold border {selectedColumn ===
+			'overdue'
 				? 'bg-blue-600 text-white border-blue-600'
 				: 'bg-slate-200 border-slate-200 text-slate-600 hover:bg-slate-50'}"
 			onclick={() => (selectedColumn = 'overdue')}
@@ -185,7 +195,8 @@
 			Vencidos
 		</button>
 		<button
-			class="cursor-pointer transition duration-100 flex-1 px-3 py-2 rounded-lg text-sm font-semibold border {selectedColumn === 'completed'
+			class="cursor-pointer transition duration-100 flex-1 px-3 py-2 rounded-lg text-sm font-semibold border {selectedColumn ===
+			'completed'
 				? 'bg-blue-600 text-white border-blue-600'
 				: 'bg-slate-200 border-slate-200 text-slate-600 hover:bg-slate-50'}"
 			onclick={() => (selectedColumn = 'completed')}
@@ -225,7 +236,9 @@
 										<div class="flex items-center gap-2 shrink-0">
 											<button
 												class="cursor-pointer text-emerald-600 hover:text-emerald-700"
-												aria-label={ev.completed ? 'Marcar como pendiente' : 'Marcar como completado'}
+												aria-label={ev.completed
+													? 'Marcar como pendiente'
+													: 'Marcar como completado'}
 												onclick={() => db.events.toggleCompleted(ev.id)}
 											>
 												{#if ev.completed}
@@ -267,7 +280,9 @@
 											{statusLabel(getStatus(ev))}
 										</span>
 										{#if ev.ramoId}
-											<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold border border-slate-200 text-slate-600">
+											<span
+												class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold border border-slate-200 text-slate-600"
+											>
 												{getRamoName(ev.ramoId)}
 											</span>
 										{/if}
@@ -302,8 +317,9 @@
 				<AlertDialog.Description>
 					{#if deleteConfirmEvent}
 						Esta acción eliminará permanentemente el evento
-						<strong class="inline-block max-w-[20ch] truncate align-bottom">"{deleteConfirmEvent.title}"</strong>.
-						Esta acción no se puede deshacer.
+						<strong class="inline-block max-w-[20ch] truncate align-bottom"
+							>"{deleteConfirmEvent.title}"</strong
+						>. Esta acción no se puede deshacer.
 					{/if}
 				</AlertDialog.Description>
 			</AlertDialog.Header>
@@ -393,7 +409,9 @@
 										{statusLabel(getStatus(ev))}
 									</span>
 									{#if ev.ramoId}
-										<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold border border-slate-200 text-slate-600">
+										<span
+											class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold border border-slate-200 text-slate-600"
+										>
 											{getRamoName(ev.ramoId)}
 										</span>
 									{/if}

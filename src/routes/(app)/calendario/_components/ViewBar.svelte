@@ -104,7 +104,9 @@
 		</div>
 	</div>
 
-	<div class="flex flex-col gap-4 rounded-xl border border-slate-200 bg-white px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+	<div
+		class="flex flex-col gap-4 rounded-xl border border-slate-200 bg-white px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+	>
 		<div class="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
 			<button
 				onclick={() => onSelectView('calendar')}
@@ -152,13 +154,14 @@
 			</button>
 		</div>
 		<div class="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:items-center sm:gap-3">
-			<label class="flex items-center gap-2 text-sm text-slate-600 w-full justify-between sm:w-auto sm:justify-start">
+			<label
+				class="flex items-center gap-2 text-sm text-slate-600 w-full justify-between sm:w-auto sm:justify-start"
+			>
 				<span>Estado:</span>
 				<select
 					class="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 w-full sm:w-auto"
 					value={selectedStatus}
-					onchange={(e) =>
-						onSelectStatus((e.target as HTMLSelectElement).value as StatusFilter)}
+					onchange={(e) => onSelectStatus((e.target as HTMLSelectElement).value as StatusFilter)}
 				>
 					<option value="all">Todos</option>
 					<option value="upcoming">Próximos</option>
@@ -166,7 +169,9 @@
 					<option value="completed">Completados</option>
 				</select>
 			</label>
-			<label class="flex items-center gap-2 text-sm text-slate-600 w-full justify-between sm:w-auto sm:justify-start">
+			<label
+				class="flex items-center gap-2 text-sm text-slate-600 w-full justify-between sm:w-auto sm:justify-start"
+			>
 				<span>Materia:</span>
 				<select
 					class="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 w-full sm:w-auto"

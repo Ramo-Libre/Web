@@ -6,8 +6,6 @@
 
 	const todayKey = new Date().toISOString().slice(0, 10);
 
-
-
 	function keyToDate(key: string): Date {
 		const [y, m, d] = key.split('-').map(Number);
 		return new Date(y, m - 1, d);
@@ -62,7 +60,7 @@
 	});
 
 	const selectedEvents = $derived.by(() =>
-		selectedKey ? eventsByDate.get(selectedKey) ?? [] : []
+		selectedKey ? (eventsByDate.get(selectedKey) ?? []) : []
 	);
 
 	function eventBadgeClasses(priority: CalendarEvent['priority']) {
