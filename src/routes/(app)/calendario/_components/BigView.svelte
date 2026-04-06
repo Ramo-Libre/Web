@@ -13,19 +13,46 @@
 		selectedStatus?: string;
 		selectedRamo?: string;
 		onEditEvent?: (event: unknown) => void;
+		focusEventId?: string;
 	}
 
-	let { selectedView = 'calendar', selectedStatus = 'all', selectedRamo = 'all', onEditEvent }: Props = $props();
+	let {
+		selectedView = 'calendar',
+		selectedStatus = 'all',
+		selectedRamo = 'all',
+		onEditEvent,
+		focusEventId
+	}: Props = $props();
 </script>
 
 <div class="h-full min-h-0">
 		{#if selectedView === 'calendar'}
-			<Calendar onEditEvent={onEditEvent} selectedStatus={selectedStatus} selectedRamo={selectedRamo} />
+			<Calendar
+				onEditEvent={onEditEvent}
+				selectedStatus={selectedStatus}
+				selectedRamo={selectedRamo}
+				focusEventId={focusEventId}
+			/>
 		{:else if selectedView === 'list'}
-			<List onEditEvent={onEditEvent} selectedStatus={selectedStatus} selectedRamo={selectedRamo} />
+			<List
+				onEditEvent={onEditEvent}
+				selectedStatus={selectedStatus}
+				selectedRamo={selectedRamo}
+				focusEventId={focusEventId}
+			/>
 		{:else if selectedView === 'kanban'}
-			<Kanban onEditEvent={onEditEvent} selectedStatus={selectedStatus} selectedRamo={selectedRamo} />
+			<Kanban
+				onEditEvent={onEditEvent}
+				selectedStatus={selectedStatus}
+				selectedRamo={selectedRamo}
+				focusEventId={focusEventId}
+			/>
 		{:else}
-			<Timeline onEditEvent={onEditEvent} selectedStatus={selectedStatus} selectedRamo={selectedRamo} />
+			<Timeline
+				onEditEvent={onEditEvent}
+				selectedStatus={selectedStatus}
+				selectedRamo={selectedRamo}
+				focusEventId={focusEventId}
+			/>
 		{/if}
 </div>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount, tick } from 'svelte';
 	import { db } from '$lib/state/index.svelte';
 	import type { Event as CalendarEvent } from '$lib/state/events.svelte';
 	import { CalendarDays, MapPin, FileText, Pencil, Trash2, CheckCircle2, Circle } from '@lucide/svelte';
@@ -10,12 +11,52 @@
 		onEditEvent?: (event: CalendarEvent) => void;
 		selectedStatus?: StatusFilter;
 		selectedRamo?: string;
+		focusEventId?: string;
 	}
 
-	let { onEditEvent, selectedStatus = 'all', selectedRamo = 'all' }: Props = $props();
+	let { onEditEvent, selectedStatus = 'all', selectedRamo = 'all', focusEventId }: Props = $props();
 	let selectedColumn = $state('upcoming');
 
 	let deleteConfirmEvent = $state<CalendarEvent | null>(null);
+	let handledFocusEvent = $state(false);
+	let handledScroll = $state(false);
+	let isDesktop = $state(false);
+
+	onMount(() => {
+		if (typeof window === 'undefined') return;
+		const media = window.matchMedia('(min-width: 640px)');
+		const update = (e: MediaQueryListEvent) => {
+			isDesktop = e.matches;
+		};
+		isDesktop = media.matches;
+		media.addEventListener('change', update);
+		return () => media.removeEventListener('change', update);
+	});
+
+	$effect(() => {
+		if (handledFocusEvent || !focusEventId) return;
+		const event = db.events.get(focusEventId);
+		if (!event) {
+			handledFocusEvent = true;
+			return;
+		}
+		selectedColumn = getStatus(event);
+		handledFocusEvent = true;
+	});
+
+	$effect(() => {
+		if (!focusEventId || handledScroll) return;
+		if (typeof document === 'undefined') return;
+		tick().then(() => {
+			const selector = isDesktop
+				? `.kanban-event--desktop[data-event-id="${focusEventId}"]`
+				: `.kanban-event--mobile[data-event-id="${focusEventId}"]`;
+			const el = document.querySelector(selector);
+			if (!el) return;
+			el.scrollIntoView({ behavior: 'smooth', block: isDesktop ? 'center' : 'nearest' });
+			handledScroll = true;
+		});
+	});
 
 	function openDeleteConfirm(event: CalendarEvent) {
 		deleteConfirmEvent = event;
@@ -165,7 +206,12 @@
 							<div class="text-sm text-slate-500">Sin eventos</div>
 						{:else}
 							{#each column.items as ev (ev.id)}
-								<div class="rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+								<div
+									data-event-id={ev.id}
+									class={`kanban-event kanban-event--mobile rounded-xl border border-slate-200 bg-white p-3 shadow-sm ${
+										ev.id === focusEventId ? 'shine-effect' : ''
+									}`}
+								>
 									<div class="flex items-start justify-between gap-2">
 										<div class="min-w-0 flex-1">
 											<div class="font-semibold text-slate-800 truncate">{ev.title}</div>
@@ -286,7 +332,12 @@
 						<div class="text-sm text-slate-500">Sin eventos</div>
 					{:else}
 						{#each column.items as ev (ev.id)}
-							<div class="rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+							<div
+								data-event-id={ev.id}
+								class={`kanban-event kanban-event--desktop rounded-xl border border-slate-200 bg-white p-3 shadow-sm ${
+									ev.id === focusEventId ? 'shine-effect' : ''
+								}`}
+							>
 								<div class="flex items-start justify-between gap-2">
 									<div class="min-w-0 flex-1">
 										<div class="font-semibold text-slate-800 truncate">{ev.title}</div>

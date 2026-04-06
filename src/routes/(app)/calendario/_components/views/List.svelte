@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount, tick } from 'svelte';
 	import { db } from '$lib/state/index.svelte';
 	import { Pencil, Trash2, CheckCircle2, Circle, CalendarDays, MapPin, FileText } from '@lucide/svelte';
 	import * as AlertDialog from '$lib/components/ui/alert-dialog';
@@ -10,11 +11,39 @@
 		onEditEvent?: (event: CalendarEvent) => void;
 		selectedStatus?: StatusFilter;
 		selectedRamo?: string;
+		focusEventId?: string;
 	}
 
-	let { onEditEvent, selectedStatus = 'all', selectedRamo = 'all' }: Props = $props();
+	let { onEditEvent, selectedStatus = 'all', selectedRamo = 'all', focusEventId }: Props = $props();
 
 	let deleteConfirmEvent = $state<CalendarEvent | null>(null);
+	let handledScroll = $state(false);
+	let isDesktop = $state(false);
+
+	onMount(() => {
+		if (typeof window === 'undefined') return;
+		const media = window.matchMedia('(min-width: 1024px)');
+		const update = (e: MediaQueryListEvent) => {
+			isDesktop = e.matches;
+		};
+		isDesktop = media.matches;
+		media.addEventListener('change', update);
+		return () => media.removeEventListener('change', update);
+	});
+
+	$effect(() => {
+		if (!focusEventId || handledScroll) return;
+		if (typeof document === 'undefined') return;
+		tick().then(() => {
+			const selector = isDesktop
+				? `.event-row[data-event-id="${focusEventId}"]`
+				: `.event-card[data-event-id="${focusEventId}"]`;
+			const el = document.querySelector(selector);
+			if (!el) return;
+			el.scrollIntoView({ behavior: 'smooth', block: isDesktop ? 'center' : 'nearest' });
+			handledScroll = true;
+		});
+	});
 
 	function openDeleteConfirm(event: CalendarEvent) {
 		deleteConfirmEvent = event;
@@ -94,7 +123,10 @@
 	{:else}
 		<div class="lg:hidden space-y-3 p-4">
 			{#each events as event (event.id)}
-				<div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+				<div
+					data-event-id={event.id}
+					class={`event-card rounded-xl border border-slate-200 bg-white p-4 shadow-sm ${event.id === focusEventId ? 'shine-effect' : ''}`}
+				>
 					<div class="flex items-start justify-between gap-3">
 						<div class="min-w-0 flex-1">
 							<div class="font-semibold text-slate-800 truncate" title={event.title}>{event.title}</div>
@@ -190,18 +222,23 @@
 				</thead>
 				<tbody class="divide-y divide-slate-100">
 					{#each events as event (event.id)}
-						<tr class="hover:bg-slate-50">
-							<td class="px-4 py-3 font-medium text-slate-800">
+						{@const isFocused = event.id === focusEventId}
+						<tr class="event-row hover:bg-slate-50" data-event-id={event.id}>
+							<td class={`px-4 py-3 font-medium text-slate-800 ${isFocused ? 'shine-effect' : ''}`}>
 								<div class="max-w-[20ch] truncate" title={event.title}>{event.title}</div>
 							</td>
-							<td class="px-4 py-3 text-slate-600">
+							<td class={`px-4 py-3 text-slate-600 ${isFocused ? 'shine-effect' : ''}`}>
 								<div class="max-w-[20ch] truncate" title={event.description ?? '—'}>
 									{event.description ?? '—'}
 								</div>
 							</td>
-							<td class="px-4 py-3 text-slate-600">{(new Date(event.dueDate)).toLocaleDateString('es-CL')}</td>
-							<td class="px-4 py-3 text-slate-600 max-w-[20ch] truncate">{event.location ?? '—'}</td>
-							<td class="px-4 py-3">
+							<td class={`px-4 py-3 text-slate-600 ${isFocused ? 'shine-effect' : ''}`}>
+								{(new Date(event.dueDate)).toLocaleDateString('es-CL')}
+							</td>
+							<td class={`px-4 py-3 text-slate-600 max-w-[20ch] truncate ${isFocused ? 'shine-effect' : ''}`}>
+								{event.location ?? '—'}
+							</td>
+							<td class={`px-4 py-3 ${isFocused ? 'shine-effect' : ''}`}>
 								<span
 									class={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${priorityClasses(
 										event.priority
@@ -210,8 +247,10 @@
 									{priorityLabel(event.priority)}
 								</span>
 							</td>
-							<td class="px-4 py-3 text-slate-600 max-w-[20ch] truncate">{getRamoName(event.ramoId)}</td>
-							<td class="px-4 py-3">
+							<td class={`px-4 py-3 text-slate-600 max-w-[20ch] truncate ${isFocused ? 'shine-effect' : ''}`}>
+								{getRamoName(event.ramoId)}
+							</td>
+							<td class={`px-4 py-3 ${isFocused ? 'shine-effect' : ''}`}>
 								<span
 									class={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${
 										event.completed
@@ -228,7 +267,7 @@
 											: 'Pendiente'}
 								</span>
 							</td>
-							<td class="px-4 py-3">
+							<td class={`px-4 py-3 ${isFocused ? 'shine-effect' : ''}`}>
 								<div class="flex items-center gap-2">
 									<button
 										class="cursor-pointer text-emerald-600 hover:text-emerald-700"

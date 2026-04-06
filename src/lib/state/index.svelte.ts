@@ -3,15 +3,18 @@ import { SemestresManager } from './semestres.svelte';
 import { RamosManager } from './ramos.svelte';
 import { NotasManager } from './notas.svelte';
 import { EventsManager } from './events.svelte';
+import { PreferencesManager } from './preferences.svelte';
 
 const STORAGE_KEY = (sem: string) => `RAMOLIBRE_ROOT_STORE_V1_${sem}`;
 const SEMESTER_KEY = 'RAMOLIBRE_SEMESTER';
+const PREFERENCES_KEY = 'RAMOLIBRE_PREFERENCES_V1';
 
 class RootStore {
 	private _semestres = new SemestresManager();
 	private _ramos = new RamosManager();
 	private _notas = new NotasManager();
 	private _events = new EventsManager();
+	private _preferences = new PreferencesManager();
 
 	get semestres() {
 		return this._semestres;
@@ -27,6 +30,10 @@ class RootStore {
 
 	get events() {
 		return this._events;
+	}
+
+	get preferences() {
+		return this._preferences;
 	}
 
 	get empty(): boolean {
@@ -55,6 +62,9 @@ class RootStore {
 		// Load semester data first
 		const semesterData = JSON.parse(localStorage.getItem(SEMESTER_KEY) || '{}');
 		if (semesterData) this.semestres.fromSerial(semesterData);
+
+		const preferencesData = JSON.parse(localStorage.getItem(PREFERENCES_KEY) || '{}');
+		if (preferencesData) this.preferences.fromSerial(preferencesData);
 
 		// Load current semester's ramo data
 		this.loadCurrentSemesterRamos();
@@ -113,6 +123,7 @@ class RootStore {
 
 		localStorage.setItem(STORAGE_KEY(semester), JSON.stringify(semesterSnapshot));
 		localStorage.setItem(SEMESTER_KEY, JSON.stringify(semesters));
+		localStorage.setItem(PREFERENCES_KEY, JSON.stringify(this.preferences.toSerial()));
 	}
 }
 

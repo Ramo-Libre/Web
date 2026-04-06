@@ -36,11 +36,19 @@
 		onEditEvent?: (event: CalendarEvent) => void;
 		selectedStatus?: StatusFilter;
 		selectedRamo?: string;
+		focusEventId?: string;
 	}
 
-	let { onEditEvent, selectedStatus = 'all', selectedRamo = 'all' }: Props = $props();
+	let {
+		onEditEvent,
+		selectedStatus = 'all',
+		selectedRamo = 'all',
+		focusEventId
+	}: Props = $props();
 
 	let deleteConfirmEvent = $state<CalendarEvent | null>(null);
+	let highlightEventId = $state<string | null>(null);
+	let handledFocusEvent = $state(false);
 
 	function openDeleteConfirm(event: CalendarEvent) {
 		deleteConfirmEvent = event;
@@ -71,6 +79,11 @@
 		return `${y}-${m}-${day}`;
 	}
 
+	function keyToDate(key: string): Date {
+		const [y, m, d] = key.split('-').map(Number);
+		return new Date(y, m - 1, d);
+	}
+
 	const monthLabel = $derived.by(() => {
 		const formatter = new Intl.DateTimeFormat('es-CL', { month: 'long', year: 'numeric' });
 		const label = formatter.format(currentMonth);
@@ -95,6 +108,20 @@
 
 	const selectedKey = $derived.by(() => dateToKey(selectedDate));
 	const selectedEvents = $derived.by(() => eventsByDate.get(selectedKey) ?? []);
+
+	$effect(() => {
+		if (handledFocusEvent || !focusEventId) return;
+		const event = db.events.get(focusEventId);
+		if (!event) {
+			handledFocusEvent = true;
+			return;
+		}
+		const focusDate = keyToDate(event.dueDate);
+		selectedDate = focusDate;
+		currentMonth = new Date(focusDate.getFullYear(), focusDate.getMonth(), 1);
+		highlightEventId = event.id;
+		handledFocusEvent = true;
+	});
 
 	function isSameDay(a: Date, b: Date) {
 		return (
@@ -254,7 +281,11 @@
 			{:else}
 				<ul class="mt-3 space-y-2">
 					{#each selectedEvents as ev (ev.id)}
-						<li class="rounded-lg border border-slate-200 bg-white p-3 shadow-sm">
+						<li
+							class={`rounded-lg border border-slate-200 bg-white p-3 shadow-sm ${
+								ev.id === highlightEventId ? 'shine-effect' : ''
+							}`}
+						>
 							<div class="flex items-start justify-between gap-2">
 								<div class="min-w-0 flex-1">
 									<div class="font-semibold text-slate-800 truncate">{ev.title}</div>
