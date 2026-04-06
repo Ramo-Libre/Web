@@ -38,7 +38,7 @@
 	}
 </script>
 
-<div in:fly={{ y: 10, duration: 300, delay: 100 }} class="sm:h-full sm:overflow-hidden">
+<div in:fly={{ y: 10, duration: 300, delay: 100 }} class="sm:h-full">
 	<div class="flex flex-col gap-6">
 		<ViewBar
 			selectedView={selectedView}
