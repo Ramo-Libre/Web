@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { db } from '$lib/state/index.svelte';
 	import { Pencil, Trash2, CheckCircle2, Circle, CalendarDays, MapPin, FileText } from '@lucide/svelte';
+	import * as AlertDialog from '$lib/components/ui/alert-dialog';
 	import type { Event as CalendarEvent } from '$lib/state/events.svelte';
 
 	type StatusFilter = 'all' | 'upcoming' | 'overdue' | 'completed';
@@ -12,6 +13,22 @@
 	}
 
 	let { onEditEvent, selectedStatus = 'all', selectedRamo = 'all' }: Props = $props();
+
+	let deleteConfirmEvent = $state<CalendarEvent | null>(null);
+
+	function openDeleteConfirm(event: CalendarEvent) {
+		deleteConfirmEvent = event;
+	}
+
+	function confirmDelete() {
+		if (!deleteConfirmEvent) return;
+		db.events.remove(deleteConfirmEvent.id);
+		deleteConfirmEvent = null;
+	}
+
+	function cancelDelete() {
+		deleteConfirmEvent = null;
+	}
 
 	const events = $derived.by(() => {
 		const today = new Date().toISOString().slice(0, 10);
@@ -108,7 +125,7 @@
 							<button
 								class="cursor-pointer text-rose-600 hover:text-rose-700"
 								aria-label="Borrar evento"
-								onclick={() => db.events.remove(event.id)}
+								onclick={() => openDeleteConfirm(event)}
 							>
 								<Trash2 class="w-4 h-4" />
 							</button>
@@ -234,7 +251,7 @@
 									<button
 										class="cursor-pointer text-rose-600 hover:text-rose-700"
 										aria-label="Borrar evento"
-										onclick={() => db.events.remove(event.id)}
+										onclick={() => openDeleteConfirm(event)}
 									>
 										<Trash2 class="w-4 h-4" />
 									</button>
@@ -246,4 +263,33 @@
 			</table>
 		</div>
 	{/if}
+
+	<AlertDialog.Root
+		open={deleteConfirmEvent !== null}
+		onOpenChange={(open) => !open && cancelDelete()}
+	>
+		<AlertDialog.Content>
+			<AlertDialog.Header>
+				<AlertDialog.Title>¿Confirmar eliminación?</AlertDialog.Title>
+				<AlertDialog.Description>
+					{#if deleteConfirmEvent}
+						Esta acción eliminará permanentemente el evento
+						<strong class="inline-block max-w-[20ch] truncate align-bottom">"{deleteConfirmEvent.title}"</strong>.
+						Esta acción no se puede deshacer.
+					{/if}
+				</AlertDialog.Description>
+			</AlertDialog.Header>
+			<AlertDialog.Footer>
+				<AlertDialog.Cancel onclick={cancelDelete} class="cursor-pointer">
+					Cancelar
+				</AlertDialog.Cancel>
+				<AlertDialog.Action
+					onclick={confirmDelete}
+					class="bg-red-600 hover:bg-red-700 cursor-pointer"
+				>
+					Eliminar
+				</AlertDialog.Action>
+			</AlertDialog.Footer>
+		</AlertDialog.Content>
+	</AlertDialog.Root>
 </div>

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { CalendarDays, ChevronLeft, ChevronRight, FileText, MapPin, Pencil, Trash2, CheckCircle2, Circle } from '@lucide/svelte';
+	import * as AlertDialog from '$lib/components/ui/alert-dialog';
 	import { db } from '$lib/state/index.svelte';
 	import type { Event as CalendarEvent } from '$lib/state/events.svelte';
 
@@ -38,6 +39,22 @@
 	}
 
 	let { onEditEvent, selectedStatus = 'all', selectedRamo = 'all' }: Props = $props();
+
+	let deleteConfirmEvent = $state<CalendarEvent | null>(null);
+
+	function openDeleteConfirm(event: CalendarEvent) {
+		deleteConfirmEvent = event;
+	}
+
+	function cancelDelete() {
+		deleteConfirmEvent = null;
+	}
+
+	function confirmDelete() {
+		if (!deleteConfirmEvent) return;
+		db.events.remove(deleteConfirmEvent.id);
+		deleteConfirmEvent = null;
+	}
 
 	const ramosMap = $derived.by(() => new Map(db.ramos.list));
 
@@ -270,7 +287,7 @@
 									<button
 										class="cursor-pointer text-rose-600 hover:text-rose-700"
 										aria-label="Borrar evento"
-										onclick={() => db.events.remove(ev.id)}
+										onclick={() => openDeleteConfirm(ev)}
 									>
 										<Trash2 class="w-4 h-4" />
 									</button>
@@ -319,4 +336,29 @@
 			{/if}
 		</div>
 	</div>
+
+	<AlertDialog.Root
+		open={deleteConfirmEvent !== null}
+		onOpenChange={(open) => !open && cancelDelete()}
+	>
+		<AlertDialog.Content>
+			<AlertDialog.Header>
+				<AlertDialog.Title>¿Confirmar eliminación?</AlertDialog.Title>
+				<AlertDialog.Description>
+					{#if deleteConfirmEvent}
+						Esta acción eliminará permanentemente el evento <strong class="inline-block max-w-[20ch] align-bottom truncate">"{deleteConfirmEvent.title}"</strong>. Esta acción no se puede deshacer.
+					{/if}
+				</AlertDialog.Description>
+			</AlertDialog.Header>
+			<AlertDialog.Footer>
+				<AlertDialog.Cancel onclick={cancelDelete} class="cursor-pointer">Cancelar</AlertDialog.Cancel>
+				<AlertDialog.Action
+					onclick={confirmDelete}
+					class="bg-red-600 hover:bg-red-700 cursor-pointer"
+				>
+					Eliminar
+				</AlertDialog.Action>
+			</AlertDialog.Footer>
+		</AlertDialog.Content>
+	</AlertDialog.Root>
 </div>

@@ -2,6 +2,7 @@
 	import { db } from '$lib/state/index.svelte';
 	import type { Event as CalendarEvent } from '$lib/state/events.svelte';
 	import { CalendarDays, MapPin, FileText, Pencil, Trash2, CheckCircle2, Circle } from '@lucide/svelte';
+	import * as AlertDialog from '$lib/components/ui/alert-dialog';
 
 	type StatusFilter = 'all' | 'upcoming' | 'overdue' | 'completed';
 
@@ -13,6 +14,22 @@
 
 	let { onEditEvent, selectedStatus = 'all', selectedRamo = 'all' }: Props = $props();
 	let selectedColumn = $state('upcoming');
+
+	let deleteConfirmEvent = $state<CalendarEvent | null>(null);
+
+	function openDeleteConfirm(event: CalendarEvent) {
+		deleteConfirmEvent = event;
+	}
+
+	function cancelDelete() {
+		deleteConfirmEvent = null;
+	}
+
+	function confirmDelete() {
+		if (!deleteConfirmEvent) return;
+		db.events.remove(deleteConfirmEvent.id);
+		deleteConfirmEvent = null;
+	}
 
 	const todayKey = new Date().toISOString().slice(0, 10);
 
@@ -181,7 +198,7 @@
 											<button
 												class="cursor-pointer text-rose-600 hover:text-rose-700"
 												aria-label="Borrar evento"
-												onclick={() => db.events.remove(ev.id)}
+												onclick={() => openDeleteConfirm(ev)}
 											>
 												<Trash2 class="w-4 h-4" />
 											</button>
@@ -229,6 +246,35 @@
 		{/each}
 	</div>
 
+	<AlertDialog.Root
+		open={deleteConfirmEvent !== null}
+		onOpenChange={(open) => !open && cancelDelete()}
+	>
+		<AlertDialog.Content>
+			<AlertDialog.Header>
+				<AlertDialog.Title>¿Confirmar eliminación?</AlertDialog.Title>
+				<AlertDialog.Description>
+					{#if deleteConfirmEvent}
+						Esta acción eliminará permanentemente el evento
+						<strong class="inline-block max-w-[20ch] truncate align-bottom">"{deleteConfirmEvent.title}"</strong>.
+						Esta acción no se puede deshacer.
+					{/if}
+				</AlertDialog.Description>
+			</AlertDialog.Header>
+			<AlertDialog.Footer>
+				<AlertDialog.Cancel onclick={cancelDelete} class="cursor-pointer">
+					Cancelar
+				</AlertDialog.Cancel>
+				<AlertDialog.Action
+					onclick={confirmDelete}
+					class="bg-red-600 hover:bg-red-700 cursor-pointer"
+				>
+					Eliminar
+				</AlertDialog.Action>
+			</AlertDialog.Footer>
+		</AlertDialog.Content>
+	</AlertDialog.Root>
+
 	<div class="hidden sm:grid grid-cols-1 lg:grid-cols-3 gap-4">
 		{#each columns as column (column.key)}
 			<div class="rounded-xl border border-slate-200 bg-white shadow-sm">
@@ -273,7 +319,7 @@
 										<button
 											class="cursor-pointer text-rose-600 hover:text-rose-700"
 											aria-label="Borrar evento"
-											onclick={() => db.events.remove(ev.id)}
+											onclick={() => openDeleteConfirm(ev)}
 										>
 											<Trash2 class="w-4 h-4" />
 										</button>
