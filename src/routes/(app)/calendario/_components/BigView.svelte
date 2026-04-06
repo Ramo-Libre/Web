@@ -26,6 +26,6 @@
 		{:else if selectedView === 'kanban'}
 			<Kanban onEditEvent={onEditEvent} selectedStatus={selectedStatus} selectedRamo={selectedRamo} />
 		{:else}
-			<Timeline />
+			<Timeline onEditEvent={onEditEvent} selectedStatus={selectedStatus} selectedRamo={selectedRamo} />
 		{/if}
 </div>
