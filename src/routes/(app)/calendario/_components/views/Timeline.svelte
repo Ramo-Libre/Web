@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount, tick } from 'svelte';
+	import { SvelteDate, SvelteMap } from 'svelte/reactivity';
 	import { db } from '$lib/state/index.svelte';
 	import type { Event as CalendarEvent } from '$lib/state/events.svelte';
 	import {
@@ -49,7 +50,10 @@
 			handledFocusEvent = true;
 			return;
 		}
-		anchorDate = new Date(`${event.dueDate}T00:00:00`);
+		const focusDate = new SvelteDate(`${event.dueDate}T00:00:00`);
+		anchorDate.setFullYear(focusDate.getFullYear());
+		anchorDate.setMonth(focusDate.getMonth(), 1);
+		anchorDate.setDate(focusDate.getDate());
 		handledFocusEvent = true;
 	});
 
@@ -81,10 +85,10 @@
 	const today = new Date();
 	const todayKey = today.toISOString().slice(0, 10);
 	let rangeMode = $state<'week' | 'month'>('month');
-	let anchorDate = $state(new Date(today.getFullYear(), today.getMonth(), today.getDate()));
+	let anchorDate = new SvelteDate(today.getFullYear(), today.getMonth(), today.getDate());
 
 	function startOfWeek(date: Date) {
-		const d = new Date(date);
+		const d = new SvelteDate(date);
 		const day = d.getDay();
 		const diff = day === 0 ? -6 : 1 - day;
 		d.setDate(d.getDate() + diff);
@@ -94,7 +98,7 @@
 
 	function endOfWeek(date: Date) {
 		const start = startOfWeek(date);
-		const end = new Date(start);
+		const end = new SvelteDate(start);
 		end.setDate(start.getDate() + 6);
 		end.setHours(23, 59, 59, 999);
 		return end;
@@ -104,42 +108,41 @@
 		if (rangeMode === 'week') {
 			return { start: startOfWeek(anchorDate), end: endOfWeek(anchorDate) };
 		}
-		const start = new Date(anchorDate.getFullYear(), anchorDate.getMonth(), 1);
-		const end = new Date(anchorDate.getFullYear(), anchorDate.getMonth() + 1, 0);
+		const start = new SvelteDate(anchorDate.getFullYear(), anchorDate.getMonth(), 1);
+		const end = new SvelteDate(anchorDate.getFullYear(), anchorDate.getMonth() + 1, 0);
 		end.setHours(23, 59, 59, 999);
 		return { start, end };
 	}
 
 	function isInRange(dateStr: string, start: Date, end: Date) {
-		const d = new Date(`${dateStr}T00:00:00`);
+		const d = new SvelteDate(`${dateStr}T00:00:00`);
 		return d >= start && d <= end;
 	}
 
 	function setRangeMode(mode: 'week' | 'month') {
 		rangeMode = mode;
 		if (mode === 'month') {
-			anchorDate = new Date(anchorDate.getFullYear(), anchorDate.getMonth(), 1);
+			anchorDate.setMonth(anchorDate.getMonth(), 1);
+			anchorDate.setDate(1);
 		}
 	}
 
 	function goPrev() {
 		if (rangeMode === 'month') {
-			anchorDate = new Date(anchorDate.getFullYear(), anchorDate.getMonth() - 1, 1);
+			anchorDate.setMonth(anchorDate.getMonth() - 1, 1);
+			anchorDate.setDate(1);
 			return;
 		}
-		const d = new Date(anchorDate);
-		d.setDate(d.getDate() - 7);
-		anchorDate = d;
+		anchorDate.setDate(anchorDate.getDate() - 7);
 	}
 
 	function goNext() {
 		if (rangeMode === 'month') {
-			anchorDate = new Date(anchorDate.getFullYear(), anchorDate.getMonth() + 1, 1);
+			anchorDate.setMonth(anchorDate.getMonth() + 1, 1);
+			anchorDate.setDate(1);
 			return;
 		}
-		const d = new Date(anchorDate);
-		d.setDate(d.getDate() + 7);
-		anchorDate = d;
+		anchorDate.setDate(anchorDate.getDate() + 7);
 	}
 
 	const rangeLabel = $derived.by(() => {
@@ -244,7 +247,7 @@
 				(a, b) => (a.dueDate ?? '').localeCompare(b.dueDate ?? '') || a.title.localeCompare(b.title)
 			);
 
-		const map = new Map<string, CalendarEvent[]>();
+		const map = new SvelteMap<string, CalendarEvent[]>();
 		for (const ev of list) {
 			if (!map.has(ev.dueDate)) map.set(ev.dueDate, []);
 			map.get(ev.dueDate)!.push(ev);

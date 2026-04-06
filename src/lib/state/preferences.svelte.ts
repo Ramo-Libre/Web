@@ -39,6 +39,18 @@ export class PreferencesManager implements Serializable<PreferencesSerial> {
 		return this._prefs;
 	}
 
+	clear(): void {
+		this._prefs = DEFAULT_PREFERENCES;
+	}
+
+	empty(): boolean {
+		return (
+			this._prefs.calendar.view === DEFAULT_PREFERENCES.calendar.view &&
+			this._prefs.calendar.status === DEFAULT_PREFERENCES.calendar.status &&
+			this._prefs.calendar.ramo === DEFAULT_PREFERENCES.calendar.ramo
+		);
+	}
+
 	get calendarView() {
 		return this._prefs.calendar.view;
 	}

@@ -3,14 +3,16 @@
 	import List from './views/List.svelte';
 	import Kanban from './views/Kanban.svelte';
 	import Timeline from './views/Timeline.svelte';
+	import type { Event as CalendarEvent } from '$lib/state/events.svelte';
 
 	type ViewMode = 'calendar' | 'list' | 'kanban' | 'timeline';
+	type StatusFilter = 'all' | 'upcoming' | 'overdue' | 'completed';
 
 	interface Props {
 		selectedView: ViewMode;
-		selectedStatus?: string;
+		selectedStatus?: StatusFilter;
 		selectedRamo?: string;
-		onEditEvent?: (event: unknown) => void;
+		onEditEvent?: (event: CalendarEvent) => void;
 		focusEventId?: string;
 	}
 

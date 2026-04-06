@@ -1,10 +1,12 @@
 <script lang="ts">
 	import { CalendarDays, MapPin, CheckCircle2, Circle } from '@lucide/svelte';
 	import { resolve } from '$app/paths';
+	import { SvelteMap } from 'svelte/reactivity';
 	import { db } from '$lib/state/index.svelte';
 	import type { Event as CalendarEvent } from '$lib/state/events.svelte';
 
 	const todayKey = new Date().toISOString().slice(0, 10);
+	const calendarPath = resolve('/calendario' as const);
 
 	function keyToDate(key: string): Date {
 		const [y, m, d] = key.split('-').map(Number);
@@ -28,7 +30,7 @@
 	}
 
 	const eventsByDate = $derived.by(() => {
-		const map = new Map<string, CalendarEvent[]>();
+		const map = new SvelteMap<string, CalendarEvent[]>();
 		for (const [, event] of db.events.list) {
 			if (event.dueDate < todayKey) continue;
 			const key = event.dueDate;
@@ -116,7 +118,7 @@
 			{#each selectedEvents as ev (ev.id)}
 				<li>
 					<a
-						href={`${resolve('/calendario' as '/calendario')}#${ev.id}`}
+						href={`${calendarPath}#${ev.id}`}
 						class="block rounded-lg border border-slate-200 bg-white p-2 cursor-pointer hover:bg-slate-50"
 					>
 						<div class="flex items-start justify-between gap-2">

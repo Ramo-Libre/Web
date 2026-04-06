@@ -12,14 +12,15 @@
 	} from '@lucide/svelte';
 	import * as AlertDialog from '$lib/components/ui/alert-dialog';
 	import { db } from '$lib/state/index.svelte';
+	import { SvelteDate, SvelteMap } from 'svelte/reactivity';
 	import type { Event as CalendarEvent } from '$lib/state/events.svelte';
 
 	type StatusFilter = 'all' | 'upcoming' | 'overdue' | 'completed';
 
 	const today = new Date();
 	const todayKey = new Date().toISOString().slice(0, 10);
-	let currentMonth = $state(new Date(today.getFullYear(), today.getMonth(), 1));
-	let selectedDate = $state(new Date(today.getFullYear(), today.getMonth(), today.getDate()));
+	let currentMonth = new SvelteDate(today.getFullYear(), today.getMonth(), 1);
+	let selectedDate = new SvelteDate(today.getFullYear(), today.getMonth(), today.getDate());
 
 	const weekDays = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 
@@ -32,7 +33,7 @@
 	}
 
 	const eventsByDate = $derived.by(() => {
-		const map = new Map<string, CalendarEvent[]>();
+		const map = new SvelteMap<string, CalendarEvent[]>();
 		for (const [, event] of db.events.list) {
 			if (!matchesFilters(event)) continue;
 			const key = event.dueDate;
@@ -84,9 +85,9 @@
 		return `${y}-${m}-${day}`;
 	}
 
-	function keyToDate(key: string): Date {
+	function keyToDate(key: string): SvelteDate {
 		const [y, m, d] = key.split('-').map(Number);
-		return new Date(y, m - 1, d);
+		return new SvelteDate(y, m - 1, d);
 	}
 
 	const monthLabel = $derived.by(() => {
@@ -98,13 +99,13 @@
 	const days = $derived.by(() => {
 		const year = currentMonth.getFullYear();
 		const month = currentMonth.getMonth();
-		const firstDay = new Date(year, month, 1);
+		const firstDay = new SvelteDate(year, month, 1);
 		const startOffset = firstDay.getDay();
-		const startDate = new Date(year, month, 1 - startOffset);
+		const startDate = new SvelteDate(year, month, 1 - startOffset);
 
-		const cells: Date[] = [];
+		const cells: SvelteDate[] = [];
 		for (let i = 0; i < 42; i++) {
-			const d = new Date(startDate);
+			const d = new SvelteDate(startDate);
 			d.setDate(startDate.getDate() + i);
 			cells.push(d);
 		}
@@ -122,8 +123,12 @@
 			return;
 		}
 		const focusDate = keyToDate(event.dueDate);
-		selectedDate = focusDate;
-		currentMonth = new Date(focusDate.getFullYear(), focusDate.getMonth(), 1);
+		selectedDate.setFullYear(focusDate.getFullYear());
+		selectedDate.setMonth(focusDate.getMonth());
+		selectedDate.setDate(focusDate.getDate());
+		currentMonth.setFullYear(focusDate.getFullYear());
+		currentMonth.setMonth(focusDate.getMonth(), 1);
+		currentMonth.setDate(1);
 		highlightEventId = event.id;
 		handledFocusEvent = true;
 	});
@@ -143,24 +148,28 @@
 	}
 
 	function goPrev() {
-		const y = currentMonth.getFullYear();
-		const m = currentMonth.getMonth();
-		currentMonth = new Date(y, m - 1, 1);
+		currentMonth.setMonth(currentMonth.getMonth() - 1, 1);
+		currentMonth.setDate(1);
 	}
 
 	function goNext() {
-		const y = currentMonth.getFullYear();
-		const m = currentMonth.getMonth();
-		currentMonth = new Date(y, m + 1, 1);
+		currentMonth.setMonth(currentMonth.getMonth() + 1, 1);
+		currentMonth.setDate(1);
 	}
 
 	function goToday() {
-		currentMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-		selectedDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+		currentMonth.setFullYear(today.getFullYear());
+		currentMonth.setMonth(today.getMonth(), 1);
+		currentMonth.setDate(1);
+		selectedDate.setFullYear(today.getFullYear());
+		selectedDate.setMonth(today.getMonth());
+		selectedDate.setDate(today.getDate());
 	}
 
 	function selectDate(d: Date) {
-		selectedDate = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+		selectedDate.setFullYear(d.getFullYear());
+		selectedDate.setMonth(d.getMonth());
+		selectedDate.setDate(d.getDate());
 	}
 
 	function formatDayTitle(d: Date) {
@@ -228,7 +237,7 @@
 					{@const dayEvents = eventsByDate.get(dayKey) ?? []}
 					<button
 						onclick={() => selectDate(day)}
-						class={`relative text-left rounded-lg border p-1 sm:p-2 min-h-[56px] sm:min-h-[90px] transition-colors cursor-pointer ${
+						class={`relative text-left rounded-lg border p-1 sm:p-2 min-h-14 sm:min-h-[90px] transition-colors cursor-pointer ${
 							isSameDay(day, selectedDate)
 								? 'border-blue-500'
 								: 'border-slate-200 hover:bg-slate-50'

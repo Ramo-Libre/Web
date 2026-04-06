@@ -93,8 +93,9 @@
 
 			<form class="mt-4 space-y-4" onsubmit={handleSubmit}>
 				<div>
-					<label class="text-sm font-medium text-slate-600">Título</label>
+					<label for="event-title" class="text-sm font-medium text-slate-600">Título</label>
 					<input
+						id="event-title"
 						type="text"
 						bind:value={title}
 						placeholder="Ej: Control 2"
@@ -104,8 +105,11 @@
 				</div>
 
 				<div>
-					<label class="text-sm font-medium text-slate-600">Descripción</label>
+					<label for="event-description" class="text-sm font-medium text-slate-600"
+						>Descripción</label
+					>
 					<textarea
+						id="event-description"
 						bind:value={description}
 						placeholder="Detalles del evento..."
 						rows="3"
@@ -115,8 +119,9 @@
 
 				<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 					<div>
-						<label class="text-sm font-medium text-slate-600">Fecha</label>
+						<label for="event-date" class="text-sm font-medium text-slate-600">Fecha</label>
 						<input
+							id="event-date"
 							type="date"
 							bind:value={dueDate}
 							class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
@@ -124,8 +129,9 @@
 						/>
 					</div>
 					<div>
-						<label class="text-sm font-medium text-slate-600">Lugar</label>
+						<label for="event-location" class="text-sm font-medium text-slate-600">Lugar</label>
 						<input
+							id="event-location"
 							type="text"
 							bind:value={location}
 							placeholder="Ej: Sala A"
@@ -136,8 +142,9 @@
 
 				<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 					<div>
-						<label class="text-sm font-medium text-slate-600">Prioridad</label>
+						<label for="event-priority" class="text-sm font-medium text-slate-600">Prioridad</label>
 						<select
+							id="event-priority"
 							bind:value={priority}
 							class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
 						>
@@ -147,8 +154,9 @@
 						</select>
 					</div>
 					<div>
-						<label class="text-sm font-medium text-slate-600">Ramo</label>
+						<label for="event-ramo" class="text-sm font-medium text-slate-600">Ramo</label>
 						<select
+							id="event-ramo"
 							bind:value={ramoId}
 							class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
 						>

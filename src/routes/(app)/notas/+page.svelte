@@ -162,7 +162,7 @@
 		if (!prediction) return null;
 		const source = extractProbSource(prediction);
 		const values = Object.values(source)
-			.map((value) => value?.probabilidad_general)
+			.map((value) => value?.probabilidad_del_plan)
 			.filter((value) => typeof value === 'number') as number[];
 		return values.length ? values.reduce((acc, value) => acc + value, 0) / values.length : null;
 	});
@@ -506,7 +506,7 @@
 					const resolved = result as SolverOutput;
 					const source = extractProbSource(resolved);
 					const values = Object.values(source)
-						.map((value) => value?.probabilidad_general)
+						.map((value) => value?.probabilidad_del_plan)
 						.filter((value) => typeof value === 'number') as number[];
 					next[ramoId] = values.length
 						? values.reduce((acc, value) => acc + value, 0) / values.length

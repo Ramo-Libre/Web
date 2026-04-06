@@ -1,20 +1,24 @@
-<script>
+<script lang="ts">
 	import { fly } from 'svelte/transition';
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
 	import { db } from '$lib/state/index.svelte';
+	import type { Event as CalendarEvent } from '$lib/state/events.svelte';
 	import BigView from './_components/BigView.svelte';
 	import ViewBar from './_components/ViewBar.svelte';
 	import EventModal from './_components/EventModal.svelte';
 
-	let selectedView = db.preferences.calendarView;
-	let selectedStatus = db.preferences.calendarStatus;
-	let selectedRamo = db.preferences.calendarRamo;
+	type ViewMode = 'calendar' | 'list' | 'kanban' | 'timeline';
+	type StatusFilter = 'all' | 'upcoming' | 'overdue' | 'completed';
+
+	let selectedView: ViewMode = db.preferences.calendarView;
+	let selectedStatus: StatusFilter = db.preferences.calendarStatus;
+	let selectedRamo: string = db.preferences.calendarRamo;
 	let isEventModalOpen = false;
-	let editingEvent = null;
+	let editingEvent: CalendarEvent | null = null;
 	let handledHash = false;
 	let hashEventId = '';
-	let focusEventId = null;
+	let focusEventId: string | undefined = undefined;
 
 	onMount(() => {
 		const hash = page.url.hash.slice(1);
@@ -22,7 +26,7 @@
 		hashEventId = hash;
 		if (handledHash) return;
 
-		const handlers = {
+		const handlers: Record<ViewMode, (id: string) => void> = {
 			calendar: (id) => {
 				focusEventId = id;
 				console.log('calendar handler', id);
@@ -46,17 +50,17 @@
 		handledHash = true;
 	});
 
-	function handleSelectView(view) {
+	function handleSelectView(view: ViewMode) {
 		selectedView = view;
 		db.preferences.setCalendarView(view);
 	}
 
-	function handleSelectStatus(status) {
+	function handleSelectStatus(status: StatusFilter) {
 		selectedStatus = status;
 		db.preferences.setCalendarStatus(status);
 	}
 
-	function handleSelectRamo(ramoId) {
+	function handleSelectRamo(ramoId: string) {
 		selectedRamo = ramoId;
 		db.preferences.setCalendarRamo(ramoId);
 	}
@@ -66,8 +70,8 @@
 		isEventModalOpen = true;
 	}
 
-	function handleEditEvent(event) {
-		editingEvent = event;
+	function handleEditEvent(event: unknown) {
+		editingEvent = event as CalendarEvent;
 		isEventModalOpen = true;
 	}
 
