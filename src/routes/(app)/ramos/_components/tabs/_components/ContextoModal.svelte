@@ -11,7 +11,7 @@
 
 	let { open = false, contexto, onApply, onApplyAll, onClose }: Props = $props();
 
-	let draft = $state<Contexto>(contexto);
+	let draft = $state<Contexto>({ nota_minima: 0, nota_maxima: 0, nota_aprobacion: 0 });
 
 	$effect(() => {
 		if (open) {

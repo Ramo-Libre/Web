@@ -20,13 +20,7 @@
 	<NavItem href="/" color="indigo" text="RamoLibre" icon={GraduationCap as Icon} />
 	<NavItem href="/horarios" color="blue" text="Horarios" icon={CalendarCheck as Icon} disabled />
 	<NavItem href="/notas" color="green" text="Notas" icon={TrendingUp as Icon} />
-	<NavItem
-		href="/calendario"
-		color="purple"
-		text="Calendario"
-		icon={CalendarDays as Icon}
-		disabled
-	/>
+	<NavItem href="/calendario" color="purple" text="Calendario" icon={CalendarDays as Icon} />
 	<NavItem href="/ramos" color="orange" text="Ramos" icon={BookMarked as Icon} />
 	<NavItem href="/configuracion" color="slate" text="Config" icon={Bolt as Icon} />
 </nav>

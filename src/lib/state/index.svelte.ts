@@ -2,14 +2,21 @@ import { browser } from '$app/environment';
 import { SemestresManager } from './semestres.svelte';
 import { RamosManager } from './ramos.svelte';
 import { NotasManager } from './notas.svelte';
+import { EventsManager } from './events.svelte';
+import { PreferencesManager } from './preferences.svelte';
+import { EvaluacionEventsManager } from './evaluacion-events.svelte';
 
 const STORAGE_KEY = (sem: string) => `RAMOLIBRE_ROOT_STORE_V1_${sem}`;
 const SEMESTER_KEY = 'RAMOLIBRE_SEMESTER';
+const PREFERENCES_KEY = 'RAMOLIBRE_PREFERENCES_V1';
 
 class RootStore {
 	private _semestres = new SemestresManager();
 	private _ramos = new RamosManager();
 	private _notas = new NotasManager();
+	private _events = new EventsManager();
+	private _preferences = new PreferencesManager();
+	private _evaluacionEvents = new EvaluacionEventsManager();
 
 	get semestres() {
 		return this._semestres;
@@ -21,6 +28,18 @@ class RootStore {
 
 	get notas() {
 		return this._notas;
+	}
+
+	get events() {
+		return this._events;
+	}
+
+	get preferences() {
+		return this._preferences;
+	}
+
+	get evaluacionEvents() {
+		return this._evaluacionEvents;
 	}
 
 	get empty(): boolean {
@@ -50,6 +69,9 @@ class RootStore {
 		const semesterData = JSON.parse(localStorage.getItem(SEMESTER_KEY) || '{}');
 		if (semesterData) this.semestres.fromSerial(semesterData);
 
+		const preferencesData = JSON.parse(localStorage.getItem(PREFERENCES_KEY) || '{}');
+		if (preferencesData) this.preferences.fromSerial(preferencesData);
+
 		// Load current semester's ramo data
 		this.loadCurrentSemesterRamos();
 	}
@@ -61,6 +83,8 @@ class RootStore {
 		// Cargar datos
 		this.ramos.fromSerial(data.ramos ?? []);
 		this.notas.fromSerial(data.notas ?? { ramos: [] });
+		this.events.fromSerial(data.events ?? []);
+		this.evaluacionEvents.fromSerial(data.evaluacionEvents ?? []);
 	}
 
 	deleteSemesterData(semesterName: string) {
@@ -84,11 +108,24 @@ class RootStore {
 		}
 		this.ramos.clear();
 		this.notas.clear();
+		this.events.clear();
+		this.evaluacionEvents.clear();
 	}
 
 	removeRamo(ramoId: string) {
 		this._ramos.remove(ramoId);
 		this._notas.clearRamo(ramoId);
+		this._evaluacionEvents.removeByRamo(ramoId);
+	}
+
+	removeEvent(eventId: string) {
+		this._events.remove(eventId);
+		this._evaluacionEvents.removeByEventId(eventId);
+	}
+
+	removeEvaluacion(ramoId: string, evaluacionId: string) {
+		this._notas.getEvaluaciones(ramoId).remove(evaluacionId);
+		this._evaluacionEvents.removeByEvaluacion(ramoId, evaluacionId);
 	}
 
 	private save() {
@@ -97,13 +134,16 @@ class RootStore {
 		// Recolectar los datos de cada manager
 		const semesterSnapshot = {
 			ramos: this.ramos.toSerial(),
-			notas: this.notas.toSerial()
+			notas: this.notas.toSerial(),
+			events: this.events.toSerial(),
+			evaluacionEvents: this.evaluacionEvents.toSerial()
 		};
 		const semester = this.semestres.activeName ?? 'default';
 		const semesters = this.semestres.toSerial();
 
 		localStorage.setItem(STORAGE_KEY(semester), JSON.stringify(semesterSnapshot));
 		localStorage.setItem(SEMESTER_KEY, JSON.stringify(semesters));
+		localStorage.setItem(PREFERENCES_KEY, JSON.stringify(this.preferences.toSerial()));
 	}
 }
 
