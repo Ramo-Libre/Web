@@ -120,7 +120,9 @@
 	<div class="fixed inset-0 z-50 flex items-center justify-center">
 		<button class="absolute inset-0 bg-black/40 z-0" aria-label="Cerrar" onclick={handleCancel}
 		></button>
-		<div class="relative z-10 w-full max-w-lg bg-white rounded-2xl shadow-xl border border-gray-200 p-6">
+		<div
+			class="relative z-10 w-full max-w-lg bg-white rounded-2xl shadow-xl border border-gray-200 p-6"
+		>
 			<div class="text-sm font-semibold text-slate-700 uppercase tracking-wide">
 				{isEditing ? 'Editar evento' : 'Nuevo evento'}
 			</div>

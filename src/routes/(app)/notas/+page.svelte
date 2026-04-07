@@ -615,7 +615,7 @@
 				open={isEventModalOpen}
 				onClose={handleCloseEventModal}
 				prefill={eventPrefill}
-				lockRamo={lockRamo}
+				{lockRamo}
 				onCreated={handleEventCreated}
 			/>
 		</div>
