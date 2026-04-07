@@ -2,15 +2,30 @@
 	import { db } from '$lib/state/index.svelte';
 	import type { Event as CalendarEvent } from '$lib/state/events.svelte';
 
+	type Prefill = Partial<
+		Pick<CalendarEvent, 'title' | 'description' | 'dueDate' | 'location' | 'priority' | 'ramoId'>
+	> | null;
+
 	interface Props {
 		open: boolean;
 		onClose: () => void;
 		initialEvent?: CalendarEvent | null;
+		prefill?: Prefill;
+		lockRamo?: boolean;
+		onCreated?: (eventId: string) => void;
 	}
 
-	let { open = false, onClose, initialEvent = null }: Props = $props();
+	let {
+		open = false,
+		onClose,
+		initialEvent = null,
+		prefill = null,
+		lockRamo = false,
+		onCreated
+	}: Props = $props();
 
 	const isEditing = $derived.by(() => Boolean(initialEvent));
+	const isRamoLocked = $derived.by(() => !isEditing && lockRamo);
 
 	const ramos = $derived.by(() => db.ramos.list);
 
@@ -20,6 +35,7 @@
 	let location = $state('');
 	let priority = $state<'low' | 'medium' | 'high'>('medium');
 	let ramoId = $state('');
+	let lastInitKey = $state<string | null>(null);
 
 	function resetForm() {
 		title = '';
@@ -30,17 +46,34 @@
 		ramoId = '';
 	}
 
+	const prefillKey = $derived.by(() => (open ? JSON.stringify(prefill ?? {}) : null));
+
 	$effect(() => {
-		if (open) {
-			if (initialEvent) {
-				title = initialEvent.title ?? '';
-				description = initialEvent.description ?? '';
-				dueDate = initialEvent.dueDate ?? '';
-				location = initialEvent.location ?? '';
-				priority = initialEvent.priority ?? 'medium';
-				ramoId = initialEvent.ramoId ?? '';
-			} else {
-				resetForm();
+		if (!open) {
+			lastInitKey = null;
+			return;
+		}
+
+		const nextKey = initialEvent?.id ? `edit:${initialEvent.id}` : `new:${prefillKey ?? ''}`;
+		if (lastInitKey === nextKey) return;
+		lastInitKey = nextKey;
+
+		if (initialEvent) {
+			title = initialEvent.title ?? '';
+			description = initialEvent.description ?? '';
+			dueDate = initialEvent.dueDate ?? '';
+			location = initialEvent.location ?? '';
+			priority = initialEvent.priority ?? 'medium';
+			ramoId = initialEvent.ramoId ?? '';
+		} else {
+			resetForm();
+			if (prefill) {
+				title = prefill.title ?? title;
+				description = prefill.description ?? description;
+				dueDate = prefill.dueDate ?? dueDate;
+				location = prefill.location ?? location;
+				priority = prefill.priority ?? priority;
+				ramoId = prefill.ramoId ?? ramoId;
 			}
 		}
 	});
@@ -66,7 +99,7 @@
 				completed: initialEvent.completed ?? false
 			});
 		} else {
-			db.events.add({
+			const newId = db.events.add({
 				title: title.trim(),
 				description: description.trim() || undefined,
 				dueDate,
@@ -75,6 +108,7 @@
 				ramoId: ramoId || undefined,
 				completed: false
 			});
+			onCreated?.(newId);
 		}
 
 		resetForm();
@@ -84,9 +118,9 @@
 
 {#if open}
 	<div class="fixed inset-0 z-50 flex items-center justify-center">
-		<button class="absolute inset-0 bg-black/40" aria-label="Cerrar" onclick={handleCancel}
+		<button class="absolute inset-0 bg-black/40 z-0" aria-label="Cerrar" onclick={handleCancel}
 		></button>
-		<div class="relative w-full max-w-lg bg-white rounded-2xl shadow-xl border border-gray-200 p-6">
+		<div class="relative z-10 w-full max-w-lg bg-white rounded-2xl shadow-xl border border-gray-200 p-6">
 			<div class="text-sm font-semibold text-slate-700 uppercase tracking-wide">
 				{isEditing ? 'Editar evento' : 'Nuevo evento'}
 			</div>
@@ -158,7 +192,8 @@
 						<select
 							id="event-ramo"
 							bind:value={ramoId}
-							class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+							disabled={isRamoLocked}
+							class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 disabled:cursor-not-allowed disabled:opacity-60"
 						>
 							<option value="">Sin ramo</option>
 							{#each ramos as [id, ramo] (id)}

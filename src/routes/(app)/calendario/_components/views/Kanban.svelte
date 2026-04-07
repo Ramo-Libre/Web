@@ -76,7 +76,7 @@
 
 	function confirmDelete() {
 		if (!deleteConfirmEvent) return;
-		db.events.remove(deleteConfirmEvent.id);
+		db.removeEvent(deleteConfirmEvent.id);
 		deleteConfirmEvent = null;
 	}
 

@@ -123,7 +123,7 @@
 
 	function removeEvaluation(evaluacionId: string) {
 		if (!selectedRamoId) return;
-		db.notas.getEvaluaciones(selectedRamoId).remove(evaluacionId);
+		db.removeEvaluacion(selectedRamoId, evaluacionId);
 	}
 
 	function updateEvaluacionId(evaluacionId: string, newId: string) {

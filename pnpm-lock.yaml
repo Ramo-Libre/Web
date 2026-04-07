@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@madmti/gradesolver':
-        specifier: file:madmti-gradesolver-1.0.0.tgz
-        version: file:madmti-gradesolver-1.0.0.tgz
+        specifier: ^1.0.0
+        version: 1.0.0
     devDependencies:
       '@eslint/compat':
         specifier: 2.0.0
@@ -681,9 +681,8 @@ packages:
     peerDependencies:
       svelte: ^5
 
-  '@madmti/gradesolver@file:madmti-gradesolver-1.0.0.tgz':
-    resolution: {integrity: sha512-AHnDyI6DVSL7d58Wdir4MpwhHrB7RSZDzVYpmOts30tMCoY1+tIkt8F1qdZI5rcq0o4RZ+afoPM5t1JqeXArkA==, tarball: file:madmti-gradesolver-1.0.0.tgz}
-    version: 1.0.0
+  '@madmti/gradesolver@1.0.0':
+    resolution: {integrity: sha512-kInN0BMXqEOHpKRkbq3in4X+k+Py2RSEDkMZE5/KsO+0fFp7ye+HhGzQFQ3313pVTK0C/7DA3fzYYxPF45+UCA==}
 
   '@polka/url@1.0.0-next.29':
     resolution: {integrity: sha512-wwQAWhWSuHaag8c4q/KN/vCoeOJYshAIvMQwD4GpSb3OiZklFfvAgmj0VCBBImRpuF/aFgIRzllXlVX93Jevww==}
@@ -2327,7 +2326,7 @@ snapshots:
     dependencies:
       svelte: 5.45.8
 
-  '@madmti/gradesolver@file:madmti-gradesolver-1.0.0.tgz': {}
+  '@madmti/gradesolver@1.0.0': {}
 
   '@polka/url@1.0.0-next.29': {}
 

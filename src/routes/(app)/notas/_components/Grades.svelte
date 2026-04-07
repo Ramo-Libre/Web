@@ -1,19 +1,27 @@
 <script lang="ts">
+	import { resolve } from '$app/paths';
 	import { db } from '$lib/state/index.svelte';
-	import { CircleCheck, CircleX } from '@lucide/svelte';
+	import { CalendarCheck, CalendarPlus, CircleCheck, CircleX } from '@lucide/svelte';
 
 	export interface Props {
 		selectedRamoId: string;
 		predictedNotas?: Record<string, number> | null;
 		ramoProbabilities?: Record<string, number | null>;
 		ramoStatuses?: Record<string, 'possible' | 'impossible' | 'guaranteed'>;
+		onScheduleEvaluacion?: (payload: {
+			ramoId: string;
+			evaluacionId: string;
+			evaluacionName: string;
+			ramoName: string;
+		}) => void;
 	}
 
 	let {
 		selectedRamoId = '',
 		predictedNotas = null,
 		ramoProbabilities = {},
-		ramoStatuses = {}
+		ramoStatuses = {},
+		onScheduleEvaluacion
 	}: Props = $props();
 
 	// Obtener las evaluaciones del ramo seleccionado
@@ -24,6 +32,19 @@
 		const data = db.notas.getEvaluacionesData(selectedRamoId);
 		return data.list;
 	});
+
+	const selectedRamo = $derived.by(() => (selectedRamoId ? db.ramos.get(selectedRamoId) : null));
+
+	function getEvaluacionEventId(evaluacionId: string) {
+		if (!selectedRamoId) return null;
+		return db.evaluacionEvents.getEventId(selectedRamoId, evaluacionId);
+	}
+
+	function handleScheduleEvaluacion(evaluacionId: string, evaluacionName: string) {
+		if (!selectedRamoId) return;
+		const ramoName = selectedRamo?.nombre ?? 'Asignatura';
+		onScheduleEvaluacion?.({ ramoId: selectedRamoId, evaluacionId, evaluacionName, ramoName });
+	}
 
 	const ramosSummary = $derived.by(() => {
 		return db.ramos.list.map(([id, ramo]) => {
@@ -100,6 +121,7 @@
 {#if selectedRamoId}
 	<div class="space-y-3">
 		{#each evaluaciones as [id, evaluacion] (id)}
+			{@const eventId = getEvaluacionEventId(id)}
 			<div
 				class="flex items-center justify-between p-3 bg-white border border-slate-200 rounded-lg hover:bg-slate-50"
 			>
@@ -108,23 +130,44 @@
 					<div class="text-sm text-slate-500">{evaluacion.peso}%</div>
 				</div>
 
-				<input
-					type="number"
-					value={localValues[id] || ''}
-					placeholder={evaluacion.valor_actual === null &&
-					predictedNotas?.[evaluacion.id] !== undefined
-						? predictedNotas[evaluacion.id].toFixed(1)
-						: '0.0'}
-					oninput={(e) => {
-						const target = e.target as HTMLInputElement;
-						handleInput(id, target.value);
-					}}
-					onblur={() => handleSave(id)}
-					onkeydown={(e) => handleKeydown(e)}
-					class="w-16 h-10 text-center font-bold border rounded-md {evaluacion.valor_actual !== null
-						? 'border-blue-500 bg-blue-50'
-						: 'border-dashed border-slate-300'} [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-				/>
+				<div class="flex items-center gap-2">
+					{#if eventId}
+						<a
+							href={`${resolve('/calendario' as '/calendario')}#${eventId}`}
+							class="inline-flex items-center gap-1 rounded-md border border-emerald-200 bg-emerald-50 px-2 py-1 text-[11px] font-semibold text-emerald-700 hover:bg-emerald-100 cursor-pointer"
+						>
+							<CalendarCheck class="w-3.5 h-3.5" />
+							Agendado
+						</a>
+					{:else}
+						<button
+							type="button"
+							onclick={() => handleScheduleEvaluacion(id, evaluacion.id)}
+							class="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] font-semibold text-slate-600 hover:bg-slate-50 cursor-pointer"
+						>
+							<CalendarPlus class="w-3.5 h-3.5" />
+							Agendar
+						</button>
+					{/if}
+
+					<input
+						type="number"
+						value={localValues[id] || ''}
+						placeholder={evaluacion.valor_actual === null &&
+						predictedNotas?.[evaluacion.id] !== undefined
+							? predictedNotas[evaluacion.id].toFixed(1)
+							: '0.0'}
+						oninput={(e) => {
+							const target = e.target as HTMLInputElement;
+							handleInput(id, target.value);
+						}}
+						onblur={() => handleSave(id)}
+						onkeydown={(e) => handleKeydown(e)}
+						class="w-16 h-10 text-center font-bold border rounded-md {evaluacion.valor_actual !== null
+							? 'border-blue-500 bg-blue-50'
+							: 'border-dashed border-slate-300'} [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+					/>
+				</div>
 			</div>
 		{:else}
 			<div class="text-center py-8">

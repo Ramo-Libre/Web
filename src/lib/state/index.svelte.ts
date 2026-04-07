@@ -4,6 +4,7 @@ import { RamosManager } from './ramos.svelte';
 import { NotasManager } from './notas.svelte';
 import { EventsManager } from './events.svelte';
 import { PreferencesManager } from './preferences.svelte';
+import { EvaluacionEventsManager } from './evaluacion-events.svelte';
 
 const STORAGE_KEY = (sem: string) => `RAMOLIBRE_ROOT_STORE_V1_${sem}`;
 const SEMESTER_KEY = 'RAMOLIBRE_SEMESTER';
@@ -15,6 +16,7 @@ class RootStore {
 	private _notas = new NotasManager();
 	private _events = new EventsManager();
 	private _preferences = new PreferencesManager();
+	private _evaluacionEvents = new EvaluacionEventsManager();
 
 	get semestres() {
 		return this._semestres;
@@ -34,6 +36,10 @@ class RootStore {
 
 	get preferences() {
 		return this._preferences;
+	}
+
+	get evaluacionEvents() {
+		return this._evaluacionEvents;
 	}
 
 	get empty(): boolean {
@@ -78,6 +84,7 @@ class RootStore {
 		this.ramos.fromSerial(data.ramos ?? []);
 		this.notas.fromSerial(data.notas ?? { ramos: [] });
 		this.events.fromSerial(data.events ?? []);
+		this.evaluacionEvents.fromSerial(data.evaluacionEvents ?? []);
 	}
 
 	deleteSemesterData(semesterName: string) {
@@ -102,11 +109,23 @@ class RootStore {
 		this.ramos.clear();
 		this.notas.clear();
 		this.events.clear();
+		this.evaluacionEvents.clear();
 	}
 
 	removeRamo(ramoId: string) {
 		this._ramos.remove(ramoId);
 		this._notas.clearRamo(ramoId);
+		this._evaluacionEvents.removeByRamo(ramoId);
+	}
+
+	removeEvent(eventId: string) {
+		this._events.remove(eventId);
+		this._evaluacionEvents.removeByEventId(eventId);
+	}
+
+	removeEvaluacion(ramoId: string, evaluacionId: string) {
+		this._notas.getEvaluaciones(ramoId).remove(evaluacionId);
+		this._evaluacionEvents.removeByEvaluacion(ramoId, evaluacionId);
 	}
 
 	private save() {
@@ -116,7 +135,8 @@ class RootStore {
 		const semesterSnapshot = {
 			ramos: this.ramos.toSerial(),
 			notas: this.notas.toSerial(),
-			events: this.events.toSerial()
+			events: this.events.toSerial(),
+			evaluacionEvents: this.evaluacionEvents.toSerial()
 		};
 		const semester = this.semestres.activeName ?? 'default';
 		const semesters = this.semestres.toSerial();
