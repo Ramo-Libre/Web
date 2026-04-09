@@ -10,7 +10,7 @@
 		CheckCircle2,
 		Circle
 	} from '@lucide/svelte';
-	import * as AlertDialog from '$lib/components/ui/alert-dialog';
+	// Eliminada la importación de AlertDialog de Shadcn
 	import { db } from '$lib/state/index.svelte';
 	import { SvelteDate, SvelteMap } from 'svelte/reactivity';
 	import type { Event as CalendarEvent } from '$lib/state/events.svelte';
@@ -184,22 +184,22 @@
 	function eventBadgeClasses(priority: CalendarEvent['priority']) {
 		switch (priority) {
 			case 'high':
-				return 'bg-red-50 text-red-700 border border-red-200';
+				return 'bg-error-400 text-error-100 border border-error-300';
 			case 'medium':
-				return 'bg-amber-50 text-amber-700 border border-amber-200';
+				return 'bg-warning-400 text-warning-100 border border-warning-300';
 			case 'low':
 			default:
-				return 'bg-emerald-50 text-emerald-700 border border-emerald-200';
+				return 'bg-success-400 text-success-100 border border-success-300';
 		}
 	}
 </script>
 
-<div class="bg-white rounded-2xl border border-gray-200 shadow-sm sm:p-6 p-4 h-full">
+<div class="bg-base-100 rounded-2xl border border-base-400 shadow-sm sm:p-6 p-4 h-full relative">
 	<div class="flex items-center justify-between">
 		<div class="flex items-center gap-3">
-			<h2 class="text-lg font-semibold text-slate-800">{monthLabel}</h2>
+			<h2 class="text-lg font-semibold text-content">{monthLabel}</h2>
 			<button
-				class="px-3 py-1.5 rounded-lg border border-slate-200 text-sm text-slate-600 hover:bg-slate-50 cursor-pointer"
+				class="px-3 py-1.5 rounded-lg border border-base-400 text-sm text-content/70 hover:bg-base-200 hover:text-content cursor-pointer transition-colors"
 				onclick={goToday}
 			>
 				Hoy
@@ -207,14 +207,14 @@
 		</div>
 		<div class="flex items-center gap-2">
 			<button
-				class="p-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 cursor-pointer"
+				class="p-2 rounded-lg border border-base-400 text-content/70 hover:bg-base-200 hover:text-content cursor-pointer transition-colors"
 				onclick={goPrev}
 				aria-label="Mes anterior"
 			>
 				<ChevronLeft class="w-4 h-4" />
 			</button>
 			<button
-				class="p-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 cursor-pointer"
+				class="p-2 rounded-lg border border-base-400 text-content/70 hover:bg-base-200 hover:text-content cursor-pointer transition-colors"
 				onclick={goNext}
 				aria-label="Mes siguiente"
 			>
@@ -225,7 +225,7 @@
 
 	<div class="mt-6 flex flex-col lg:flex-row gap-4">
 		<div class="flex-1">
-			<div class="grid grid-cols-7 gap-2 text-xs font-semibold text-slate-500">
+			<div class="grid grid-cols-7 gap-2 text-xs font-semibold text-content/50">
 				{#each weekDays as day (day)}
 					<div class="text-center">{day}</div>
 				{/each}
@@ -239,31 +239,34 @@
 						onclick={() => selectDate(day)}
 						class={`relative text-left rounded-lg border p-1 sm:p-2 min-h-14 sm:min-h-[90px] transition-colors cursor-pointer ${
 							isSameDay(day, selectedDate)
-								? 'border-blue-500'
-								: 'border-slate-200 hover:bg-slate-50'
-						} ${isSameDay(day, new Date()) ? 'bg-blue-50' : ''} ${
-							isCurrentMonth(day) ? 'text-slate-800' : 'text-slate-400'
+								? 'border-calendar-100 ring-1 ring-calendar-100/50'
+								: 'border-base-400 hover:bg-base-200'
+						} ${isSameDay(day, new Date()) ? 'bg-calendar-400' : ''} ${
+							isCurrentMonth(day) ? 'text-content' : 'text-content/40'
 						}`}
 					>
 						<div class="text-xs font-semibold">{day.getDate()}</div>
+
 						<div class="mt-1 space-y-1">
 							<div class="flex items-center gap-1 sm:hidden">
 								{#if dayEvents.length === 0}
-									<span class="text-[10px] text-slate-300">·</span>
+									<span class="text-[10px] text-content/30">·</span>
 								{:else}
 									{#each dayEvents.slice(0, 3) as ev (ev.id)}
 										<span
-											class={`h-1.5 w-1.5 rounded-full ${eventBadgeClasses(ev.priority)} border`}
+											class={`h-1.5 w-1.5 rounded-full ${eventBadgeClasses(ev.priority)}`}
 											title={ev.title}
 										></span>
 									{/each}
 								{/if}
 							</div>
+
 							{#if dayEvents.length > 3}
-								<span class="sm:hidden absolute top-1 right-1 text-[10px] text-slate-500">
+								<span class="sm:hidden absolute top-1 right-1 text-[10px] text-content/50">
 									+{dayEvents.length - 3}
 								</span>
 							{/if}
+
 							<div class="hidden sm:block space-y-1">
 								{#each dayEvents.slice(0, 2) as ev (ev.id)}
 									<div
@@ -276,7 +279,7 @@
 									</div>
 								{/each}
 								{#if dayEvents.length > 2}
-									<div class="text-[10px] text-slate-500">+{dayEvents.length - 2} más</div>
+									<div class="text-[10px] text-content/50">+{dayEvents.length - 2} más</div>
 								{/if}
 							</div>
 						</div>
@@ -285,36 +288,37 @@
 			</div>
 		</div>
 
-		<div class="lg:w-[320px] lg:border-l lg:border-slate-200 lg:pl-4 mt-4 lg:mt-0">
-			<div class="text-sm font-semibold text-slate-700">
+		<div class="lg:w-[320px] lg:border-l lg:border-base-400 lg:pl-4 mt-4 lg:mt-0">
+			<div class="text-sm font-semibold text-content/90">
 				Eventos - {formatDayTitle(selectedDate)}
 			</div>
+
 			{#if selectedEvents.length === 0}
-				<div class="mt-6 flex flex-col items-center justify-center text-slate-500 text-sm">
-					<CalendarDays class="w-8 h-8 text-slate-300 mb-2" />
+				<div class="mt-6 flex flex-col items-center justify-center text-content/50 text-sm">
+					<CalendarDays class="w-8 h-8 text-content/30 mb-2" />
 					No hay eventos para este día
 				</div>
 			{:else}
 				<ul class="mt-3 space-y-2">
 					{#each selectedEvents as ev (ev.id)}
 						<li
-							class={`rounded-lg border border-slate-200 bg-white p-3 shadow-sm ${
-								ev.id === highlightEventId ? 'shine-effect' : ''
+							class={`rounded-lg border border-base-400 bg-base-100 p-3 shadow-sm transition-all ${
+								ev.id === highlightEventId ? 'shine-effect ring-2 ring-calendar-100/50' : ''
 							}`}
 						>
 							<div class="flex items-start justify-between gap-2">
 								<div class="min-w-0 flex-1">
-									<div class="font-semibold text-slate-800 truncate">{ev.title}</div>
+									<div class="font-semibold text-content truncate">{ev.title}</div>
 									{#if ev.description}
-										<div class="mt-1 flex items-center gap-2 text-xs text-slate-500">
-											<FileText class="w-3.5 h-3.5 text-slate-400 shrink-0" />
+										<div class="mt-1 flex items-center gap-2 text-xs text-content/60">
+											<FileText class="w-3.5 h-3.5 text-content/40 shrink-0" />
 											<span class="truncate min-w-0 flex-1">{ev.description}</span>
 										</div>
 									{/if}
 								</div>
 								<div class="flex items-center gap-2 shrink-0">
 									<button
-										class="cursor-pointer text-emerald-600 hover:text-emerald-700"
+										class="cursor-pointer text-success-100 hover:opacity-80 transition-opacity"
 										aria-label={ev.completed ? 'Marcar como pendiente' : 'Marcar como completado'}
 										onclick={() => db.events.toggleCompleted(ev.id)}
 									>
@@ -324,15 +328,17 @@
 											<Circle class="w-4 h-4" />
 										{/if}
 									</button>
+
 									<button
-										class="cursor-pointer text-blue-600 hover:text-blue-700"
+										class="cursor-pointer text-calendar-100 hover:opacity-80 transition-opacity"
 										aria-label="Editar evento"
 										onclick={() => onEditEvent?.(ev)}
 									>
 										<Pencil class="w-4 h-4" />
 									</button>
+
 									<button
-										class="cursor-pointer text-rose-600 hover:text-rose-700"
+										class="cursor-pointer text-error-100 hover:opacity-80 transition-opacity"
 										aria-label="Borrar evento"
 										onclick={() => openDeleteConfirm(ev)}
 									>
@@ -349,13 +355,14 @@
 								>
 									{ev.priority === 'high' ? 'Alta' : ev.priority === 'medium' ? 'Media' : 'Baja'}
 								</span>
+
 								<span
 									class={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${
 										ev.completed
-											? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+											? 'bg-success-400 text-success-100 border border-success-300'
 											: ev.dueDate < new Date().toISOString().slice(0, 10)
-												? 'bg-red-50 text-red-700 border border-red-200'
-												: 'bg-slate-50 text-slate-600 border border-slate-200'
+												? 'bg-error-400 text-error-100 border border-error-300'
+												: 'bg-base-300 text-content/70 border border-base-400'
 									}`}
 								>
 									{ev.completed
@@ -364,9 +371,10 @@
 											? 'Vencido'
 											: 'Pendiente'}
 								</span>
+
 								{#if ev.ramoId}
 									<span
-										class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold border border-slate-200 text-slate-600"
+										class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-base-200 border border-base-400 text-content/70"
 									>
 										{getRamoName(ev.ramoId)}
 									</span>
@@ -374,8 +382,8 @@
 							</div>
 
 							{#if ev.location}
-								<div class="mt-2 flex items-center gap-2 text-xs text-slate-500">
-									<MapPin class="w-3.5 h-3.5 text-slate-400 shrink-0" />
+								<div class="mt-2 flex items-center gap-2 text-xs text-content/60">
+									<MapPin class="w-3.5 h-3.5 text-content/40 shrink-0" />
 									<span class="truncate min-w-0 flex-1">{ev.location}</span>
 								</div>
 							{/if}
@@ -386,33 +394,42 @@
 		</div>
 	</div>
 
-	<AlertDialog.Root
-		open={deleteConfirmEvent !== null}
-		onOpenChange={(open) => !open && cancelDelete()}
-	>
-		<AlertDialog.Content>
-			<AlertDialog.Header>
-				<AlertDialog.Title>¿Confirmar eliminación?</AlertDialog.Title>
-				<AlertDialog.Description>
-					{#if deleteConfirmEvent}
-						Esta acción eliminará permanentemente el evento <strong
-							class="inline-block max-w-[20ch] align-bottom truncate"
-							>"{deleteConfirmEvent.title}"</strong
-						>. Esta acción no se puede deshacer.
-					{/if}
-				</AlertDialog.Description>
-			</AlertDialog.Header>
-			<AlertDialog.Footer>
-				<AlertDialog.Cancel onclick={cancelDelete} class="cursor-pointer"
-					>Cancelar</AlertDialog.Cancel
-				>
-				<AlertDialog.Action
-					onclick={confirmDelete}
-					class="bg-red-600 hover:bg-red-700 cursor-pointer"
-				>
-					Eliminar
-				</AlertDialog.Action>
-			</AlertDialog.Footer>
-		</AlertDialog.Content>
-	</AlertDialog.Root>
+	{#if deleteConfirmEvent !== null}
+		<div class="fixed inset-0 z-50 flex items-center justify-center">
+			<button
+				class="absolute inset-0 bg-black/40 z-0 backdrop-blur-sm cursor-pointer transition-all"
+				aria-label="Cerrar"
+				onclick={cancelDelete}
+			></button>
+
+			<div
+				class="relative z-10 w-full max-w-md bg-base-100 rounded-2xl shadow-xl border border-base-400 p-6 m-4"
+			>
+				<h3 class="text-lg font-bold text-content mb-2">¿Confirmar eliminación?</h3>
+				<p class="text-sm text-content/70 mb-6">
+					Esta acción eliminará permanentemente el evento
+					<strong
+						class="font-semibold text-content inline-block max-w-[20ch] align-bottom truncate"
+					>
+						"{deleteConfirmEvent.title}"
+					</strong>. Esta acción no se puede deshacer.
+				</p>
+
+				<div class="flex justify-end gap-3">
+					<button
+						onclick={cancelDelete}
+						class="px-4 py-2 rounded-lg border border-base-400 text-content/70 text-sm font-semibold hover:bg-base-200 hover:text-content transition-colors cursor-pointer"
+					>
+						Cancelar
+					</button>
+					<button
+						onclick={confirmDelete}
+						class="px-4 py-2 rounded-lg bg-error-100 text-base-100 text-sm font-semibold hover:opacity-90 transition-opacity cursor-pointer"
+					>
+						Eliminar
+					</button>
+				</div>
+			</div>
+		</div>
+	{/if}
 </div>

@@ -8,25 +8,31 @@
 	let syncStatus = 'Synced';
 
 	const provider = 'Github';
+
+	// Mapeamos los proveedores a la escala semántica y al token primary
 	const providerColors = {
-		Github: 'bg-gray-800 text-white hover:bg-gray-700',
-		Google: 'bg-red-500 text-white hover:bg-red-600',
-		Facebook: 'bg-blue-600 text-white hover:bg-blue-700'
+		// Github se adapta al tema base (claro/oscuro)
+		Github: 'bg-base-200 text-content border border-base-400 hover:bg-base-300',
+		// Google usa la escala de error (por el tono rojo)
+		Google: 'bg-error-400 text-error-100 border border-error-300 hover:bg-error-300',
+		// Facebook usa la escala primaria (por el tono azul/morado)
+		Facebook: 'bg-primary-400 text-primary-100 border border-primary-300 hover:bg-primary-300'
 	};
+
 	const providerIcons = {
 		Github: GithubIcon,
 		Google: null,
 		Facebook: null
 	};
 
+	// Mapeamos los estados de sincronización a los indicadores
 	const syncStatusColors = {
-		Synced: 'bg-green-100 text-green-800 hover:bg-green-200',
-		Syncing: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200',
-		Error: 'bg-red-100 text-red-800 hover:bg-red-200'
+		Synced: 'bg-success-400 text-success-100 border border-success-300 hover:bg-success-300',
+		Syncing: 'bg-warning-400 text-warning-100 border border-warning-300 hover:bg-warning-300',
+		Error: 'bg-error-400 text-error-100 border border-error-300 hover:bg-error-300'
 	};
 
 	function handleProviderClick() {
-		// Handle provider badge click
 		console.log('Provider badge clicked');
 	}
 
@@ -36,18 +42,18 @@
 </script>
 
 <div
-	class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm flex items-center justify-between"
+	class="bg-base-100 rounded-lg border border-base-400 p-6 shadow-sm flex items-center justify-between"
 >
 	<div>
-		<h1 class="text-xl sm:text-2xl font-bold text-gray-800">Hola, {userName} 👋</h1>
-		<p class="text-gray-500 text-sm">Aquí está tu resumen de hoy.</p>
+		<h1 class="text-xl sm:text-2xl font-bold text-content">Hola, {userName} 👋</h1>
+		<p class="text-content/50 text-sm">Aquí está tu resumen de hoy.</p>
 	</div>
 	<div class="flex items-center space-x-3 justify-end">
 		<div class="text-sm text-right">
-			<div class="font-medium text-gray-900">{userMail}</div>
-			<div class="text-gray-500 flex items-center justify-end space-x-1 mt-1">
+			<div class="font-medium text-content">{userMail}</div>
+			<div class="text-content/50 flex items-center justify-end space-x-1 mt-1">
 				<button
-					on:click={handleSyncClick}
+					onclick={handleSyncClick}
 					class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium cursor-pointer transition-colors duration-200 {syncStatusColors[
 						syncStatus as keyof typeof syncStatusColors
 					]} gap-1"
@@ -56,20 +62,24 @@
 					{syncStatus}
 				</button>
 				<button
-					on:click={handleProviderClick}
+					onclick={handleProviderClick}
 					class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium cursor-pointer transition-colors duration-200 {providerColors[
-						provider
+						provider as keyof typeof providerColors
 					]} gap-1"
 				>
-					{#if providerIcons[provider]}
-						<svelte:component this={providerIcons[provider]} size={12} />
+					{#if providerIcons[provider as keyof typeof providerIcons]}
+						<svelte:component
+							this={providerIcons[provider as keyof typeof providerIcons]}
+							size={12}
+						/>
 					{/if}
 					<span>{provider}</span>
 				</button>
 			</div>
 		</div>
+
 		<div
-			class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold"
+			class="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center text-base-100 font-semibold shadow-sm"
 		>
 			{userName.charAt(0).toUpperCase()}
 		</div>

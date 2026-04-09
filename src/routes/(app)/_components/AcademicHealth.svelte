@@ -57,42 +57,42 @@
 </script>
 
 <div
-	class="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm h-64 relative overflow-hidden"
+	class="bg-base-100 rounded-2xl p-5 border border-base-400 shadow-sm h-64 relative overflow-hidden"
 >
 	<div class="flex items-center gap-2 mb-4">
-		<TrendingUp class="w-5 h-5 text-green-500" />
-		<h3 class="text-sm font-bold text-gray-400 uppercase tracking-widest">Conteo evaluaciones</h3>
+		<TrendingUp class="w-5 h-5 text-emerald-500" />
+		<h3 class="text-sm font-bold text-content/50 uppercase tracking-widest">Conteo evaluaciones</h3>
 	</div>
 
 	<div class="grid grid-cols-2 gap-3">
-		<div class="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
-			<div class="text-xs text-slate-500">Pendientes</div>
-			<div class="text-xl font-semibold text-slate-800">{summaryStats.pendientes}</div>
+		<div class="rounded-lg border border-base-400 bg-base-200 px-4 py-3">
+			<div class="text-xs text-content/70">Pendientes</div>
+			<div class="text-xl font-semibold text-content">{summaryStats.pendientes}</div>
 		</div>
-		<div class="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
-			<div class="text-xs text-slate-500">Buenas notas</div>
-			<div class="text-xl font-semibold text-slate-800">{summaryStats.buenas}</div>
+		<div class="rounded-lg border border-base-400 bg-base-200 px-4 py-3">
+			<div class="text-xs text-content/70">Buenas notas</div>
+			<div class="text-xl font-semibold text-content">{summaryStats.buenas}</div>
 		</div>
-		<div class="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
-			<div class="text-xs text-slate-500">Malas notas</div>
-			<div class="text-xl font-semibold text-slate-800">{summaryStats.malas}</div>
+		<div class="rounded-lg border border-base-400 bg-base-200 px-4 py-3">
+			<div class="text-xs text-content/70">Malas notas</div>
+			<div class="text-xl font-semibold text-content">{summaryStats.malas}</div>
 		</div>
-		<div class="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
-			<div class="text-xs text-slate-500">Total</div>
-			<div class="text-xl font-semibold text-slate-800">{summaryStats.total}</div>
+		<div class="rounded-lg border border-base-400 bg-base-200 px-4 py-3">
+			<div class="text-xs text-content/70">Total</div>
+			<div class="text-xl font-semibold text-content">{summaryStats.total}</div>
 		</div>
 	</div>
 
-	<div class="mt-4 flex items-center justify-center gap-4 text-xs text-gray-600">
+	<div class="mt-4 flex items-center justify-center gap-4 text-xs text-content/80">
 		<div class="flex items-center gap-1">
-			<Activity size={14} class="text-slate-400" />
-			<span class="font-semibold text-slate-700">{globalStats.media.toFixed(1)}</span>
-			<span class="text-[11px] text-slate-400">Media</span>
+			<Activity size={14} class="text-content/50" />
+			<span class="font-semibold text-content/90">{globalStats.media.toFixed(1)}</span>
+			<span class="text-[11px] text-content/50">Media</span>
 		</div>
 		<div class="flex items-center gap-1">
-			<Activity size={14} class="text-slate-400" />
-			<span class="font-semibold text-slate-700">{globalStats.desviacion.toFixed(1)}</span>
-			<span class="text-[11px] text-slate-400">Desviación</span>
+			<Activity size={14} class="text-content/50" />
+			<span class="font-semibold text-content/90">{globalStats.desviacion.toFixed(1)}</span>
+			<span class="text-[11px] text-content/50">Desviación</span>
 		</div>
 	</div>
 </div>

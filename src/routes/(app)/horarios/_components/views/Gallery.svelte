@@ -89,7 +89,7 @@
 </script>
 
 {#if galleryData.length === 0}
-	<div class="text-center py-20 text-slate-400">
+	<div class="text-center py-20 text-content/50">
 		<BookOpen class="w-12 h-12 mx-auto mb-3 opacity-20" />
 		<p>No hay ramos agregados todavía.</p>
 	</div>
@@ -97,10 +97,10 @@
 	<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
 		{#each galleryData as ramo (ramo.id)}
 			<div
-				class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow"
+				class="bg-base-100 rounded-2xl border border-base-400 shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow"
 			>
 				<div
-					class="p-5 border-b border-slate-100 flex items-start gap-4"
+					class="p-5 border-b border-base-300 flex items-start gap-4"
 					style="background: linear-gradient(to bottom right, {ramo.color}15, transparent);"
 				>
 					<div
@@ -108,18 +108,18 @@
 						style="background-color: {ramo.color}"
 					></div>
 					<div class="flex-1">
-						<h3 class="text-lg font-bold text-slate-800 leading-tight mb-1">
+						<h3 class="text-lg font-bold text-content leading-tight mb-1">
 							{ramo.nombre}
 						</h3>
 
 						{#if ramo.estado}
 							<span
-								class="inline-flex text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md
+								class="inline-flex text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md border
                                     {ramo.estado === 'guaranteed'
-									? 'bg-green-100 text-green-700'
+									? 'bg-success-400 text-success-100 border-success-300'
 									: ramo.estado === 'possible'
-										? 'bg-blue-100 text-blue-700'
-										: 'bg-red-100 text-red-700'}"
+										? 'bg-base-200 text-content/80 border-base-400'
+										: 'bg-error-400 text-error-100 border-error-300'}"
 							>
 								{ramo.estado === 'guaranteed'
 									? 'Garantizado'
@@ -131,9 +131,11 @@
 					</div>
 				</div>
 
-				<div class="p-5 flex-1 bg-white">
+				<div class="p-5 flex-1 bg-base-100">
 					{#if ramo.schedules.length === 0}
-						<div class="text-sm text-slate-400 italic text-center py-4">Sin horarios asignados</div>
+						<div class="text-sm text-content/50 italic text-center py-4">
+							Sin horarios asignados
+						</div>
 					{:else}
 						<div class="space-y-3">
 							{#each ramo.schedules as sch (sch.id)}
@@ -141,28 +143,28 @@
 
 								<div
 									class="flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-xl border {sch.isActive
-										? 'bg-blue-50/50 border-blue-200'
-										: 'bg-slate-50/50 border-slate-100'} gap-2"
+										? 'bg-schedule-400 border-schedule-300'
+										: 'bg-base-200 border-base-300'} gap-2"
 								>
 									<div class="flex items-center gap-3">
 										<div class="w-10 text-center">
-											<span class="block text-[10px] font-bold uppercase text-slate-500"
+											<span class="block text-[10px] font-bold uppercase text-content/50"
 												>{dayNames[sch.day].slice(0, 3)}</span
 											>
 										</div>
 										<div>
 											<div
 												class="flex items-center gap-1.5 font-bold {sch.isActive
-													? 'text-blue-700'
-													: 'text-slate-700'}"
+													? 'text-schedule-100'
+													: 'text-content/90'}"
 											>
 												{#if sch.isActive}
-													<div class="w-1.5 h-1.5 bg-blue-600 rounded-full animate-pulse"></div>
+													<div class="w-1.5 h-1.5 bg-schedule-100 rounded-full animate-pulse"></div>
 												{/if}
 												{sch.start} - {sch.end}
 											</div>
 											<div
-												class="flex items-center gap-1 text-[11px] text-slate-500 font-medium mt-0.5"
+												class="flex items-center gap-1 text-[11px] text-content/60 font-medium mt-0.5"
 											>
 												<Icon class="w-3 h-3" />
 												{typeLabels[sch.type]}
@@ -172,9 +174,9 @@
 
 									{#if sch.location}
 										<div
-											class="flex justify-center items-center gap-1.5 text-xs text-slate-600 bg-white border border-slate-200 px-2.5 py-1 rounded-lg shadow-sm"
+											class="flex justify-center items-center gap-1.5 text-xs text-content/80 bg-base-100 border border-base-400 px-2.5 py-1 rounded-lg shadow-sm"
 										>
-											<MapPin class="w-3.5 h-3.5 text-slate-400" />
+											<MapPin class="w-3.5 h-3.5 text-content/50" />
 											<span class="truncate max-w-[120px]">{sch.location}</span>
 										</div>
 									{/if}

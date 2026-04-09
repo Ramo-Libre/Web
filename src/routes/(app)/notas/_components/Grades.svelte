@@ -123,18 +123,18 @@
 		{#each evaluaciones as [id, evaluacion] (id)}
 			{@const eventId = getEvaluacionEventId(id)}
 			<div
-				class="flex items-center justify-between p-3 bg-white border border-slate-200 rounded-lg hover:bg-slate-50"
+				class="flex items-center justify-between p-3 bg-base-100 border border-base-400 rounded-lg hover:bg-base-200 transition-colors"
 			>
 				<div>
-					<div class="font-medium text-slate-800">{evaluacion.id}</div>
-					<div class="text-sm text-slate-500">{evaluacion.peso}%</div>
+					<div class="font-medium text-content">{evaluacion.id}</div>
+					<div class="text-sm text-content/60">{evaluacion.peso}%</div>
 				</div>
 
 				<div class="flex items-center gap-2">
 					{#if eventId}
 						<a
 							href={resolve(`/calendario#${eventId}` as '/calendario')}
-							class="inline-flex items-center gap-1 rounded-md border border-emerald-200 bg-emerald-50 px-2 py-1 text-[11px] font-semibold text-emerald-700 hover:bg-emerald-100 cursor-pointer"
+							class="inline-flex items-center gap-1 rounded-md border border-calendar-300 bg-calendar-400 px-2 py-1 text-[11px] font-semibold text-calendar-100 hover:bg-calendar-300 transition-colors cursor-pointer"
 						>
 							<CalendarCheck class="w-3.5 h-3.5" />
 							Agendado
@@ -143,7 +143,7 @@
 						<button
 							type="button"
 							onclick={() => handleScheduleEvaluacion(id, evaluacion.id)}
-							class="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] font-semibold text-slate-600 hover:bg-slate-50 cursor-pointer"
+							class="inline-flex items-center gap-1 rounded-md border border-base-400 bg-base-100 px-2 py-1 text-[11px] font-semibold text-content/70 hover:bg-base-200 transition-colors cursor-pointer"
 						>
 							<CalendarPlus class="w-3.5 h-3.5" />
 							Agendar
@@ -163,16 +163,16 @@
 						}}
 						onblur={() => handleSave(id)}
 						onkeydown={(e) => handleKeydown(e)}
-						class="w-16 h-10 text-center font-bold border rounded-md {evaluacion.valor_actual !==
+						class="w-16 h-10 text-center font-bold border rounded-md text-content transition-colors focus:outline-none focus:ring-2 focus:ring-grades-100 {evaluacion.valor_actual !==
 						null
-							? 'border-blue-500 bg-blue-50'
-							: 'border-dashed border-slate-300'} [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+							? 'border-grades-300 bg-grades-400'
+							: 'border-dashed border-base-400 bg-base-100'} [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
 					/>
 				</div>
 			</div>
 		{:else}
 			<div class="text-center py-8">
-				<div class="text-gray-400 mb-4">
+				<div class="text-content/30 mb-4">
 					<svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path
 							stroke-linecap="round"
@@ -182,7 +182,7 @@
 						></path>
 					</svg>
 				</div>
-				<p class="text-gray-500">No hay evaluaciones configuradas</p>
+				<p class="text-content/50">No hay evaluaciones configuradas</p>
 			</div>
 		{/each}
 	</div>
@@ -195,38 +195,40 @@
 					class="flex items-center gap-3 p-3 border rounded-lg transition-colors {ramoStatuses[
 						ramo.id
 					] === 'guaranteed'
-						? 'bg-emerald-50 border-emerald-200 hover:bg-emerald-100'
+						? 'bg-success-400 border-success-300 hover:bg-success-300'
 						: ramoStatuses[ramo.id] === 'impossible'
-							? 'bg-red-50 border-red-200 hover:bg-red-100'
-							: 'bg-white border-slate-200 hover:bg-slate-50'}"
+							? 'bg-error-400 border-error-300 hover:bg-error-300'
+							: 'bg-base-100 border-base-400 hover:bg-base-200'}"
 				>
 					<div
-						class="h-10 w-10 rounded-lg text-white shadow-sm border border-white/20 flex items-center justify-center font-bold text-sm"
+						class="h-10 w-10 rounded-lg text-base-100 shadow-sm border border-base-100/20 flex items-center justify-center font-bold text-sm"
 						style="background-color: {ramo.color};"
 					>
 						{ramo.nombre.substring(0, 2).toUpperCase()}
 					</div>
 					<div class="min-w-0">
-						<div class="font-medium text-slate-800 truncate">{ramo.nombre}</div>
-						<div class="text-xs text-slate-500">
+						<div class="font-medium text-content truncate">{ramo.nombre}</div>
+						<div class="text-xs text-content/60">
 							{formatScore(ramo.acumulado)}/{formatScore(ramo.notaAprobacion)}
 						</div>
 					</div>
 					<div class="ml-auto text-right">
 						{#if ramoStatuses[ramo.id] === 'guaranteed'}
-							<CircleCheck class="text-green-600 ml-auto" size={18} />
+							<CircleCheck class="text-success-100 ml-auto" size={18} />
 						{:else if ramoStatuses[ramo.id] === 'impossible'}
-							<CircleX class="text-red-600 ml-auto" size={18} />
+							<CircleX class="text-error-100 ml-auto" size={18} />
 						{:else}
-							<div class="text-[10px] text-slate-400">Prob.</div>
-							<div class="text-sm font-semibold text-slate-800">
+							<div class="text-[10px] text-content/50">Prob.</div>
+							<div class="text-sm font-semibold text-content">
 								{formatProbability(ramoProbabilities[ramo.id])}
 							</div>
 						{/if}
 					</div>
 				</a>
 			{:else}
-				<div class="text-center text-gray-500 py-6">No hay ramos registrados.</div>
+				<div class="text-center text-content/50 py-6 sm:col-span-2 lg:col-span-3">
+					No hay ramos registrados.
+				</div>
 			{/each}
 		</div>
 	</div>
