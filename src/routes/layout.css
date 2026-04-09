@@ -209,3 +209,63 @@
     --color-warning-100: oklch(70% 0.16 75);  /* Miel */
     --color-error-100: oklch(55% 0.18 25);   /* Velvet Red */
 }
+
+.retrowave {
+    --color-base-100: oklch(18% 0.04 280);    /* Azul noche muy profundo */
+    --color-base-200: oklch(22% 0.04 280);    /* Cards */
+    --color-base-300: oklch(26% 0.04 280);    /* Dividers */
+    --color-base-400: oklch(32% 0.06 280);    /* Bordes */
+    --color-content: oklch(95% 0.02 280);     /* Blanco azulado */
+
+    --color-primary-100: oklch(70% 0.25 330);  /* Neón Fuchsia */
+    --color-schedule-100: oklch(75% 0.18 200); /* Eléctrico Cyan */
+    --color-grades-100: oklch(85% 0.20 120);   /* Lima Neón */
+    --color-calendar-100: oklch(65% 0.22 300); /* Violeta Laser */
+    --color-classes-100: oklch(75% 0.20 20);    /* Sunset Orange */
+    --color-config-100: oklch(50% 0.10 280);   /* Indigo Night */
+}
+
+.forest {
+    --color-base-100: oklch(22% 0.02 150);    /* Verde Pino muy profundo */
+    --color-base-200: oklch(26% 0.02 150);    /* Cards */
+    --color-base-300: oklch(30% 0.02 150);    /* Dividers */
+    --color-base-400: oklch(36% 0.03 150);    /* Bordes */
+    --color-content: oklch(92% 0.03 120);     /* Crema Verdoso */
+
+    --color-primary-100: oklch(72% 0.11 150);  /* Verde Hoja */
+    --color-schedule-100: oklch(65% 0.08 180); /* Aqua Mate */
+    --color-grades-100: oklch(82% 0.14 85);   /* Oro Solar */
+    --color-calendar-100: oklch(60% 0.12 35);   /* Arcilla / Terracota */
+    --color-classes-100: oklch(55% 0.08 120);  /* Musgo */
+    --color-config-100: oklch(45% 0.04 160);  /* Eucalipto */
+}
+
+.dracula {
+    --color-base-100: oklch(23% 0.03 272);    /* El clásico fondo Dracula */
+    --color-base-200: oklch(28% 0.03 272);    /* Cards */
+    --color-base-300: oklch(33% 0.03 272);    /* Dividers */
+    --color-base-400: oklch(40% 0.04 272);    /* Bordes */
+    --color-content: oklch(95% 0.01 272);     /* Texto casi blanco */
+
+    --color-primary-100: oklch(78% 0.13 285);  /* Morado Dracula */
+    --color-schedule-100: oklch(88% 0.10 200); /* Cyan */
+    --color-grades-100: oklch(85% 0.18 145);   /* Verde */
+    --color-calendar-100: oklch(80% 0.15 350); /* Rosa */
+    --color-classes-100: oklch(82% 0.16 70);   /* Naranja */
+    --color-config-100: oklch(65% 0.05 272);  /* Gris Dracula */
+}
+
+.sakura {
+    --color-base-100: oklch(97% 0.01 350);    /* Blanco rosado muy tenue */
+    --color-base-200: oklch(94% 0.02 350);    /* Cards */
+    --color-base-300: oklch(90% 0.03 350);    /* Dividers */
+    --color-base-400: oklch(85% 0.04 350);    /* Bordes */
+    --color-content: oklch(35% 0.05 350);     /* Ciruela oscuro para texto */
+
+    --color-primary-100: oklch(75% 0.12 350);  /* Rosa Pétalo */
+    --color-schedule-100: oklch(70% 0.10 300); /* Lavanda */
+    --color-grades-100: oklch(80% 0.11 150);  /* Matcha claro */
+    --color-calendar-100: oklch(65% 0.15 15);   /* Carmesí suave */
+    --color-classes-100: oklch(72% 0.10 50);   /* Durazno */
+    --color-config-100: oklch(55% 0.03 350);  /* Gris Rosado */
+}
