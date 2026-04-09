@@ -65,7 +65,8 @@
 	let bannerLabel = $state('Predicción');
 	let bannerTitle = $state('Predicción');
 	let bannerSubtitle = $state('Esperando datos para calcular.');
-	let bannerClasses = $state('bg-linear-to-r from-indigo-600 to-indigo-700 text-white');
+	// Estado inicial: usando Primary para la espera
+	let bannerClasses = $state('bg-primary-100 text-base-100');
 	let BannerIcon = $state(Shield);
 
 	$effect(() => {
@@ -74,14 +75,16 @@
 			bannerLabel = 'Resumen';
 			bannerTitle = 'General';
 			bannerSubtitle = 'Resumen general de tus notas.';
-			bannerClasses = 'bg-linear-to-r from-slate-600 to-slate-700 text-white';
+			// Resumen general usa color base
+			bannerClasses = 'bg-base-400 text-content';
 			BannerIcon = Shield;
 			return;
 		}
 		if (isSolving) {
 			bannerTitle = 'Calculando…';
 			bannerSubtitle = 'Generando predicciones para el ramo.';
-			bannerClasses = 'bg-linear-to-r from-blue-600 to-blue-700 text-white';
+			// Calculando usa Primary
+			bannerClasses = 'bg-primary-100 text-base-100';
 			BannerIcon = Shield;
 			return;
 		}
@@ -93,39 +96,42 @@
 		if (status === 'NO_POSIBLE') {
 			bannerTitle = 'No es posible';
 			bannerSubtitle = 'Las restricciones actuales no se pueden cumplir.';
-			bannerClasses = 'bg-linear-to-r from-red-600 to-red-700 text-white';
+			// Imposible usa Error
+			bannerClasses = 'bg-error-100 text-base-100';
 			BannerIcon = ShieldX;
 			return;
 		}
 		if (status === 'GARANTIZADO') {
 			bannerTitle = 'Garantizado';
 			bannerSubtitle = 'Las notas mínimas aseguran la aprobación.';
-			bannerClasses = 'bg-linear-to-r from-emerald-600 to-emerald-700 text-white';
+			// Garantizado usa Success
+			bannerClasses = 'bg-success-100 text-base-100';
 			BannerIcon = ShieldCheck;
 			return;
 		}
 		if (status === 'POSIBLE') {
 			bannerTitle = 'Es posible aprobar';
 			bannerSubtitle = 'Puedes cumplir las restricciones actuales.';
-			bannerClasses = 'bg-linear-to-r from-blue-500 to-blue-700 text-white';
+			// Posible usa Grades (ya que es para pasar el ramo)
+			bannerClasses = 'bg-warning-100 text-base-100';
 			BannerIcon = ShieldCheck;
 			return;
 		}
 
 		bannerTitle = 'Predicción';
 		bannerSubtitle = 'Esperando datos para calcular.';
-		bannerClasses = 'bg-linear-to-r from-indigo-600 to-indigo-700 text-white';
+		bannerClasses = 'bg-primary-100 text-base-100';
 		BannerIcon = Shield;
 	});
 </script>
 
-<div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-	<div class={`relative p-6 sm:p-8 ${bannerClasses} transition-all`}>
+<div class="bg-base-100 rounded-2xl border border-base-400 shadow-sm overflow-hidden">
+	<div class={`relative p-6 sm:p-8 ${bannerClasses} transition-all overflow-hidden`}>
 		<div class="text-xs font-semibold uppercase tracking-wider opacity-80">{bannerLabel}</div>
 		<div class="text-2xl font-semibold mt-1">{bannerTitle}</div>
 		<div class="text-sm opacity-90 mt-1">{bannerSubtitle}</div>
 		<BannerIcon
-			class="absolute -right-5 -bottom-5 text-white/10 rotate-12 pointer-events-none"
+			class="absolute -right-5 -bottom-5 opacity-10 rotate-12 pointer-events-none"
 			size={160}
 		/>
 	</div>
@@ -133,16 +139,17 @@
 	<div class="p-6 space-y-4">
 		{#if selectedRamoId}
 			{#if selectedProbGeneral !== null}
-				<div class="flex items-center gap-2 text-xs text-slate-600">
-					<Activity size={14} class="text-slate-400" />
-					<span class="font-semibold text-slate-700"> Probabilidad general: </span>
-					<span class="font-semibold text-slate-800">
+				<div class="flex items-center gap-2 text-xs text-content/70">
+					<Activity size={14} class="text-content/50" />
+					<span class="font-semibold text-content/80"> Probabilidad general: </span>
+					<span class="font-semibold text-content">
 						{(selectedProbGeneral * 100).toFixed(1)}%
 					</span>
 				</div>
 			{/if}
+
 			{#if isPossible === false && impossibleReasons.length > 0}
-				<div class="text-xs text-red-600">
+				<div class="text-xs text-error-100">
 					<div class="font-semibold mb-1">Restricciones incumplibles</div>
 					<ul class="list-disc list-inside space-y-1">
 						{#each impossibleReasons as reason (reason)}
@@ -159,56 +166,58 @@
 							<button
 								onclick={() => onSelectStrategy(strategy)}
 								class="text-left px-3 py-3 rounded-lg border transition-all cursor-pointer
-								{selectedStrategy === strategy
-									? 'border-emerald-500 bg-emerald-50 shadow-sm'
-									: 'border-gray-200 bg-white hover:border-emerald-200 hover:bg-emerald-50/40'}"
+                                {selectedStrategy === strategy
+									? 'border-grades-300 bg-grades-400 shadow-sm'
+									: 'border-base-400 bg-base-100 hover:border-grades-300 hover:bg-grades-400/50'}"
 							>
-								<div class="text-xs text-gray-500">Estrategia</div>
-								<div class="font-semibold text-slate-800">{labelFor(strategy)}</div>
-								<div class="text-xs text-slate-500 mt-1">Éxito: {probLabel(strategy)}</div>
+								<div class="text-xs text-content/50">Estrategia</div>
+								<div class="font-semibold text-content">{labelFor(strategy)}</div>
+								<div class="text-xs text-content/60 mt-1">Éxito: {probLabel(strategy)}</div>
 							</button>
 						{/each}
 					</div>
 				{:else}
-					<p class="text-gray-500 text-sm">No hay estrategias disponibles todavía.</p>
+					<p class="text-content/50 text-sm">No hay estrategias disponibles todavía.</p>
 				{/if}
 			{/if}
 
 			{#if error}
-				<div class="text-sm text-red-600 font-medium">{error}</div>
+				<div class="text-sm text-error-100 font-medium">{error}</div>
 			{/if}
 		{:else}
 			<div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
-				<div class="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
-					<div class="text-xs text-slate-500">Pendientes</div>
-					<div class="text-xl font-semibold text-slate-800">{summaryStats?.pendientes ?? 0}</div>
+				<div class="rounded-lg border border-base-400 bg-base-200 px-4 py-3">
+					<div class="text-xs text-content/70">Pendientes</div>
+					<div class="text-xl font-semibold text-content">{summaryStats?.pendientes ?? 0}</div>
 				</div>
-				<div class="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
-					<div class="text-xs text-slate-500">Buenas notas</div>
-					<div class="text-xl font-semibold text-slate-800">{summaryStats?.buenas ?? 0}</div>
+				<div class="rounded-lg border border-base-400 bg-base-200 px-4 py-3">
+					<div class="text-xs text-content/70">Buenas notas</div>
+					<div class="text-xl font-semibold text-content">{summaryStats?.buenas ?? 0}</div>
 				</div>
-				<div class="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
-					<div class="text-xs text-slate-500">Malas notas</div>
-					<div class="text-xl font-semibold text-slate-800">{summaryStats?.malas ?? 0}</div>
+				<div class="rounded-lg border border-base-400 bg-base-200 px-4 py-3">
+					<div class="text-xs text-content/70">Malas notas</div>
+					<div class="text-xl font-semibold text-content">{summaryStats?.malas ?? 0}</div>
 				</div>
-				<div class="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
-					<div class="text-xs text-slate-500">Total</div>
-					<div class="text-xl font-semibold text-slate-800">{summaryStats?.total ?? 0}</div>
+				<div class="rounded-lg border border-base-400 bg-base-200 px-4 py-3">
+					<div class="text-xs text-content/70">Total</div>
+					<div class="text-xl font-semibold text-content">{summaryStats?.total ?? 0}</div>
 				</div>
 			</div>
-			<div class="mt-4 -mb-2 flex items-center justify-center gap-4 text-xs text-gray-600">
+
+			<div class="mt-4 -mb-2 flex items-center justify-center gap-4 text-xs text-content/80">
 				<div class="flex items-center gap-1">
-					<Activity size={14} class="text-slate-400" />
-					<span class="font-semibold text-slate-700">{globalStats?.media?.toFixed(1) ?? '0.0'}</span
+					<Activity size={14} class="text-content/50" />
+					<span class="font-semibold text-content/90"
+						>{globalStats?.media?.toFixed(1) ?? '0.0'}</span
 					>
-					<span class="text-[11px] text-slate-400">Media</span>
+					<span class="text-[11px] text-content/50">Media</span>
 				</div>
 				<div class="flex items-center gap-1">
-					<Activity size={14} class="text-slate-400" />
-					<span class="font-semibold text-slate-700"
+					<Activity size={14} class="text-content/50" />
+					<span class="font-semibold text-content/90"
 						>{globalStats?.desviacion?.toFixed(1) ?? '0.0'}</span
 					>
-					<span class="text-[11px] text-slate-400">Desviación</span>
+					<span class="text-[11px] text-content/50">Desviación</span>
 				</div>
 			</div>
 		{/if}

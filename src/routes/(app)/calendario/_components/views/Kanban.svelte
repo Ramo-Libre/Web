@@ -11,7 +11,6 @@
 		CheckCircle2,
 		Circle
 	} from '@lucide/svelte';
-	import * as AlertDialog from '$lib/components/ui/alert-dialog';
 
 	type StatusFilter = 'all' | 'upcoming' | 'overdue' | 'completed';
 
@@ -81,7 +80,6 @@
 	}
 
 	const todayKey = new Date().toISOString().slice(0, 10);
-
 	const ramosMap = $derived.by(() => new Map(db.ramos.list));
 
 	function getRamoName(ramoId?: string) {
@@ -109,11 +107,11 @@
 	function statusClasses(status: string) {
 		switch (status) {
 			case 'completed':
-				return 'bg-emerald-50 text-emerald-700 border border-emerald-200';
+				return 'bg-success-400 text-success-100 border border-success-300';
 			case 'overdue':
-				return 'bg-red-50 text-red-700 border border-red-200';
+				return 'bg-error-400 text-error-100 border border-error-300';
 			default:
-				return 'bg-slate-50 text-slate-600 border border-slate-200';
+				return 'bg-base-300 text-content/70 border border-base-400';
 		}
 	}
 
@@ -132,12 +130,12 @@
 	function priorityClasses(priority: string) {
 		switch (priority) {
 			case 'high':
-				return 'bg-red-50 text-red-700 border border-red-200';
+				return 'bg-error-400 text-error-100 border border-error-300';
 			case 'medium':
-				return 'bg-amber-50 text-amber-700 border border-amber-200';
+				return 'bg-warning-400 text-warning-100 border border-warning-300';
 			case 'low':
 			default:
-				return 'bg-emerald-50 text-emerald-700 border border-emerald-200';
+				return 'bg-success-400 text-success-100 border border-success-300';
 		}
 	}
 
@@ -174,199 +172,59 @@
 	});
 </script>
 
-<div class="space-y-4">
+<div class="space-y-4 relative">
 	<div class="flex gap-2 sm:hidden">
-		<button
-			class="cursor-pointer transition duration-100 flex-1 px-3 py-2 rounded-lg text-sm font-semibold border {selectedColumn ===
-			'upcoming'
-				? 'bg-blue-600 text-white border-blue-600'
-				: 'bg-slate-200 border-slate-200 text-slate-600 hover:bg-slate-50'}"
-			onclick={() => (selectedColumn = 'upcoming')}
-		>
-			Próximos
-		</button>
-		<button
-			class="cursor-pointer transition duration-100 flex-1 px-3 py-2 rounded-lg text-sm font-semibold border {selectedColumn ===
-			'overdue'
-				? 'bg-blue-600 text-white border-blue-600'
-				: 'bg-slate-200 border-slate-200 text-slate-600 hover:bg-slate-50'}"
-			onclick={() => (selectedColumn = 'overdue')}
-		>
-			Vencidos
-		</button>
-		<button
-			class="cursor-pointer transition duration-100 flex-1 px-3 py-2 rounded-lg text-sm font-semibold border {selectedColumn ===
-			'completed'
-				? 'bg-blue-600 text-white border-blue-600'
-				: 'bg-slate-200 border-slate-200 text-slate-600 hover:bg-slate-50'}"
-			onclick={() => (selectedColumn = 'completed')}
-		>
-			Completados
-		</button>
-	</div>
-
-	<div class="sm:hidden">
-		{#each columns as column (column.key)}
-			{#if column.key === selectedColumn}
-				<div class="rounded-xl border border-slate-200 bg-white shadow-sm">
-					<div class="px-4 py-3 border-b border-slate-100 text-sm font-semibold text-slate-700">
-						{column.title}
-					</div>
-					<div class="p-4 space-y-3">
-						{#if column.items.length === 0}
-							<div class="text-sm text-slate-500">Sin eventos</div>
-						{:else}
-							{#each column.items as ev (ev.id)}
-								<div
-									data-event-id={ev.id}
-									class={`kanban-event kanban-event--mobile rounded-xl border border-slate-200 bg-white p-3 shadow-sm ${
-										ev.id === focusEventId ? 'shine-effect' : ''
-									}`}
-								>
-									<div class="flex items-start justify-between gap-2">
-										<div class="min-w-0 flex-1">
-											<div class="font-semibold text-slate-800 truncate">{ev.title}</div>
-											{#if ev.description}
-												<div class="mt-1 flex items-center gap-2 text-xs text-slate-500">
-													<FileText class="w-3.5 h-3.5 text-slate-400 shrink-0" />
-													<span class="truncate min-w-0 flex-1">{ev.description}</span>
-												</div>
-											{/if}
-										</div>
-										<div class="flex items-center gap-2 shrink-0">
-											<button
-												class="cursor-pointer text-emerald-600 hover:text-emerald-700"
-												aria-label={ev.completed
-													? 'Marcar como pendiente'
-													: 'Marcar como completado'}
-												onclick={() => db.events.toggleCompleted(ev.id)}
-											>
-												{#if ev.completed}
-													<CheckCircle2 class="w-4 h-4" />
-												{:else}
-													<Circle class="w-4 h-4" />
-												{/if}
-											</button>
-											<button
-												class="cursor-pointer text-blue-600 hover:text-blue-700"
-												aria-label="Editar evento"
-												onclick={() => onEditEvent?.(ev)}
-											>
-												<Pencil class="w-4 h-4" />
-											</button>
-											<button
-												class="cursor-pointer text-rose-600 hover:text-rose-700"
-												aria-label="Borrar evento"
-												onclick={() => openDeleteConfirm(ev)}
-											>
-												<Trash2 class="w-4 h-4" />
-											</button>
-										</div>
-									</div>
-
-									<div class="mt-2 flex flex-wrap gap-2 text-xs">
-										<span
-											class={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${priorityClasses(
-												ev.priority
-											)}`}
-										>
-											{priorityLabel(ev.priority)}
-										</span>
-										<span
-											class={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${statusClasses(
-												getStatus(ev)
-											)}`}
-										>
-											{statusLabel(getStatus(ev))}
-										</span>
-										{#if ev.ramoId}
-											<span
-												class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold border border-slate-200 text-slate-600"
-											>
-												{getRamoName(ev.ramoId)}
-											</span>
-										{/if}
-									</div>
-
-									<div class="mt-2 flex items-center gap-2 text-xs text-slate-500">
-										<CalendarDays class="w-3.5 h-3.5 text-slate-400 shrink-0" />
-										<span>{new Date(ev.dueDate).toLocaleDateString('es-CL')}</span>
-									</div>
-									{#if ev.location}
-										<div class="mt-1 flex items-center gap-2 text-xs text-slate-500">
-											<MapPin class="w-3.5 h-3.5 text-slate-400 shrink-0" />
-											<span class="truncate min-w-0 flex-1">{ev.location}</span>
-										</div>
-									{/if}
-								</div>
-							{/each}
-						{/if}
-					</div>
-				</div>
-			{/if}
+		{#each columns as col (col.key)}
+			<button
+				class="cursor-pointer transition duration-100 flex-1 px-3 py-2 rounded-lg text-sm font-semibold border {selectedColumn ===
+				col.key
+					? 'bg-calendar-400 text-calendar-100 border-calendar-300'
+					: 'bg-base-200 border-base-400 text-content/60 hover:bg-base-300'}"
+				onclick={() => (selectedColumn = col.key)}
+			>
+				{col.title}
+			</button>
 		{/each}
 	</div>
 
-	<AlertDialog.Root
-		open={deleteConfirmEvent !== null}
-		onOpenChange={(open) => !open && cancelDelete()}
-	>
-		<AlertDialog.Content>
-			<AlertDialog.Header>
-				<AlertDialog.Title>¿Confirmar eliminación?</AlertDialog.Title>
-				<AlertDialog.Description>
-					{#if deleteConfirmEvent}
-						Esta acción eliminará permanentemente el evento
-						<strong class="inline-block max-w-[20ch] truncate align-bottom"
-							>"{deleteConfirmEvent.title}"</strong
-						>. Esta acción no se puede deshacer.
-					{/if}
-				</AlertDialog.Description>
-			</AlertDialog.Header>
-			<AlertDialog.Footer>
-				<AlertDialog.Cancel onclick={cancelDelete} class="cursor-pointer">
-					Cancelar
-				</AlertDialog.Cancel>
-				<AlertDialog.Action
-					onclick={confirmDelete}
-					class="bg-red-600 hover:bg-red-700 cursor-pointer"
-				>
-					Eliminar
-				</AlertDialog.Action>
-			</AlertDialog.Footer>
-		</AlertDialog.Content>
-	</AlertDialog.Root>
-
-	<div class="hidden sm:grid grid-cols-1 lg:grid-cols-3 gap-4">
+	<div class="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-3 gap-4">
 		{#each columns as column (column.key)}
-			<div class="rounded-xl border border-slate-200 bg-white shadow-sm">
-				<div class="px-4 py-3 border-b border-slate-100 text-sm font-semibold text-slate-700">
+			<div
+				class="rounded-xl border border-base-400 bg-base-100 shadow-sm {isDesktop
+					? 'block'
+					: column.key === selectedColumn
+						? 'block'
+						: 'hidden'}"
+			>
+				<div
+					class="px-4 py-3 border-b border-base-300 text-sm font-bold text-content/80 uppercase tracking-tight"
+				>
 					{column.title}
 				</div>
 				<div class="p-4 space-y-3">
 					{#if column.items.length === 0}
-						<div class="text-sm text-slate-500">Sin eventos</div>
+						<div class="text-sm text-content/40 text-center py-4 italic">Sin eventos</div>
 					{:else}
 						{#each column.items as ev (ev.id)}
 							<div
 								data-event-id={ev.id}
-								class={`kanban-event kanban-event--desktop rounded-xl border border-slate-200 bg-white p-3 shadow-sm ${
-									ev.id === focusEventId ? 'shine-effect' : ''
+								class={`kanban-event ${isDesktop ? 'kanban-event--desktop' : 'kanban-event--mobile'} rounded-xl border border-base-400 bg-base-100 p-3 shadow-sm transition-all ${
+									ev.id === focusEventId ? 'shine-effect ring-2 ring-calendar-100/50' : ''
 								}`}
 							>
 								<div class="flex items-start justify-between gap-2">
 									<div class="min-w-0 flex-1">
-										<div class="font-semibold text-slate-800 truncate">{ev.title}</div>
+										<div class="font-semibold text-content truncate">{ev.title}</div>
 										{#if ev.description}
-											<div class="mt-1 flex items-center gap-2 text-xs text-slate-500">
-												<FileText class="w-3.5 h-3.5 text-slate-400 shrink-0" />
+											<div class="mt-1 flex items-center gap-2 text-xs text-content/60">
+												<FileText class="w-3.5 h-3.5 text-content/40 shrink-0" />
 												<span class="truncate min-w-0 flex-1">{ev.description}</span>
 											</div>
 										{/if}
 									</div>
 									<div class="flex items-center gap-2 shrink-0">
 										<button
-											class="cursor-pointer text-emerald-600 hover:text-emerald-700"
+											class="cursor-pointer text-success-100 hover:opacity-80 transition-opacity"
 											aria-label={ev.completed ? 'Marcar como pendiente' : 'Marcar como completado'}
 											onclick={() => db.events.toggleCompleted(ev.id)}
 										>
@@ -377,14 +235,14 @@
 											{/if}
 										</button>
 										<button
-											class="cursor-pointer text-blue-600 hover:text-blue-700"
+											class="cursor-pointer text-calendar-100 hover:opacity-80 transition-opacity"
 											aria-label="Editar evento"
 											onclick={() => onEditEvent?.(ev)}
 										>
 											<Pencil class="w-4 h-4" />
 										</button>
 										<button
-											class="cursor-pointer text-rose-600 hover:text-rose-700"
+											class="cursor-pointer text-error-100 hover:opacity-80 transition-opacity"
 											aria-label="Borrar evento"
 											onclick={() => openDeleteConfirm(ev)}
 										>
@@ -395,35 +253,31 @@
 
 								<div class="mt-2 flex flex-wrap gap-2 text-xs">
 									<span
-										class={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${priorityClasses(
-											ev.priority
-										)}`}
+										class={`inline-flex items-center px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide ${priorityClasses(ev.priority)}`}
 									>
 										{priorityLabel(ev.priority)}
 									</span>
 									<span
-										class={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${statusClasses(
-											getStatus(ev)
-										)}`}
+										class={`inline-flex items-center px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide ${statusClasses(getStatus(ev))}`}
 									>
 										{statusLabel(getStatus(ev))}
 									</span>
 									{#if ev.ramoId}
 										<span
-											class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold border border-slate-200 text-slate-600"
+											class="inline-flex items-center px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide border border-base-400 bg-base-200 text-content/60"
 										>
 											{getRamoName(ev.ramoId)}
 										</span>
 									{/if}
 								</div>
 
-								<div class="mt-2 flex items-center gap-2 text-xs text-slate-500">
-									<CalendarDays class="w-3.5 h-3.5 text-slate-400 shrink-0" />
+								<div class="mt-3 flex items-center gap-2 text-xs text-content/50">
+									<CalendarDays class="w-3.5 h-3.5 text-content/40 shrink-0" />
 									<span>{new Date(ev.dueDate).toLocaleDateString('es-CL')}</span>
 								</div>
 								{#if ev.location}
-									<div class="mt-1 flex items-center gap-2 text-xs text-slate-500">
-										<MapPin class="w-3.5 h-3.5 text-slate-400 shrink-0" />
+									<div class="mt-1 flex items-center gap-2 text-xs text-content/50">
+										<MapPin class="w-3.5 h-3.5 text-content/40 shrink-0" />
 										<span class="truncate min-w-0 flex-1">{ev.location}</span>
 									</div>
 								{/if}
@@ -434,4 +288,39 @@
 			</div>
 		{/each}
 	</div>
+
+	{#if deleteConfirmEvent !== null}
+		<div class="fixed inset-0 z-50 flex items-center justify-center">
+			<button
+				class="absolute inset-0 bg-black/40 backdrop-blur-sm cursor-pointer transition-all"
+				aria-label="Cerrar"
+				onclick={cancelDelete}
+			></button>
+			<div
+				class="relative z-10 w-full max-w-md bg-base-100 rounded-2xl shadow-xl border border-base-400 p-6 m-4"
+			>
+				<h3 class="text-lg font-bold text-content mb-2">¿Confirmar eliminación?</h3>
+				<p class="text-sm text-content/70 mb-6">
+					Esta acción eliminará permanentemente el evento
+					<strong class="font-semibold text-content inline-block max-w-[20ch] truncate align-bottom"
+						>"{deleteConfirmEvent.title}"</strong
+					>. Esta acción no se puede deshacer.
+				</p>
+				<div class="flex justify-end gap-3">
+					<button
+						onclick={cancelDelete}
+						class="px-4 py-2 rounded-lg border border-base-400 text-content/70 text-sm font-semibold hover:bg-base-200 hover:text-content transition-colors cursor-pointer"
+					>
+						Cancelar
+					</button>
+					<button
+						onclick={confirmDelete}
+						class="px-4 py-2 rounded-lg bg-error-100 text-base-100 text-sm font-semibold hover:opacity-90 transition-opacity cursor-pointer"
+					>
+						Eliminar
+					</button>
+				</div>
+			</div>
+		</div>
+	{/if}
 </div>

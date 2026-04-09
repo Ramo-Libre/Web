@@ -92,7 +92,7 @@
 </script>
 
 <div
-	class="bg-white rounded-2xl border border-slate-200 shadow-inner flex flex-col overflow-hidden relative isolate"
+	class="bg-base-100 rounded-2xl border border-base-400 shadow-inner flex flex-col overflow-hidden relative isolate"
 >
 	<div
 		class="absolute inset-0 opacity-10 transition-colors duration-1000 -z-10"
@@ -109,7 +109,7 @@
 					stroke="currentColor"
 					stroke-width="6"
 					fill="none"
-					class="text-slate-200/50"
+					class="text-base-400 opacity-50"
 				/>
 				<circle
 					cx="128"
@@ -129,7 +129,7 @@
 			<div class="absolute inset-0 flex flex-col items-center justify-center text-center p-8">
 				{#if currentClass}
 					<span
-						class="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-slate-400 mb-2 flex items-center gap-1.5"
+						class="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-content/50 mb-2 flex items-center gap-1.5"
 					>
 						<div
 							class="w-2 h-2 rounded-full animate-pulse"
@@ -137,56 +137,59 @@
 						></div>
 						Termina en
 					</span>
-					<h2
-						class="text-4xl sm:text-5xl font-black text-slate-800 tabular-nums tracking-tight mb-2"
-					>
+					<h2 class="text-4xl sm:text-5xl font-black text-content tabular-nums tracking-tight mb-2">
 						{countdownStr}
 					</h2>
 					<p class="font-bold text-sm sm:text-base truncate w-full" style="color: {primaryColor}">
 						{currentClass.ramoNombre}
 					</p>
 					{#if currentClass.location}
-						<div class="flex items-center gap-1 text-xs text-slate-500 font-medium mt-1">
-							<MapPin class="w-3.5 h-3.5" />
+						<div
+							class="flex items-center justify-center gap-1 text-xs text-content/60 font-medium mt-1 w-full"
+						>
+							<MapPin class="w-3.5 h-3.5 shrink-0" />
 							<span class="truncate">{currentClass.location}</span>
 						</div>
 					{/if}
 				{:else if nextClass}
 					<span
-						class="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-slate-400 mb-2"
+						class="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-content/50 mb-2"
 					>
 						Próxima en
 					</span>
 					<h2
-						class="text-4xl sm:text-5xl font-black text-slate-800 tabular-nums tracking-tight mb-2 opacity-80"
+						class="text-4xl sm:text-5xl font-black text-content tabular-nums tracking-tight mb-2 opacity-80"
 					>
 						{countdownStr}
 					</h2>
-					<p class="font-bold text-sm sm:text-base text-slate-600 truncate w-full">
+					<p class="font-bold text-sm sm:text-base text-content/70 truncate w-full">
 						{nextClass.ramoNombre}
 					</p>
 					<div
-						class="flex items-center justify-center gap-3 text-xs text-slate-500 font-medium mt-1"
+						class="flex items-center justify-center gap-3 text-xs text-content/60 font-medium mt-1"
 					>
-						<span class="flex items-center gap-1"><Clock class="w-3 h-3" /> {nextClass.start}</span>
+						<span class="flex items-center gap-1"
+							><Clock class="w-3 h-3 shrink-0" /> {nextClass.start}</span
+						>
 						{#if nextClass.location}
 							<span class="flex items-center gap-1"
-								><MapPin class="w-3 h-3" /> {nextClass.location}</span
+								><MapPin class="w-3 h-3 shrink-0" />
+								<span class="truncate">{nextClass.location}</span></span
 							>
 						{/if}
 					</div>
 				{:else if isDayFinished}
-					<CheckCircle2 class="w-10 h-10 text-green-500 mb-3" />
-					<h2 class="text-3xl sm:text-4xl font-black text-slate-800 tracking-tight mb-1">
+					<CheckCircle2 class="w-10 h-10 text-success-100 mb-3" />
+					<h2 class="text-3xl sm:text-4xl font-black text-content tracking-tight mb-1">
 						{countdownStr}
 					</h2>
-					<p class="text-sm font-bold text-slate-500 uppercase tracking-wide">Día completado</p>
+					<p class="text-sm font-bold text-content/60 uppercase tracking-wide">Día completado</p>
 				{:else}
-					<Coffee class="w-10 h-10 text-slate-400 mb-3" />
-					<h2 class="text-3xl sm:text-4xl font-black text-slate-800 tracking-tight mb-1">
+					<Coffee class="w-10 h-10 text-content/30 mb-3" />
+					<h2 class="text-3xl sm:text-4xl font-black text-content tracking-tight mb-1">
 						{countdownStr}
 					</h2>
-					<p class="text-sm font-bold text-slate-500 uppercase tracking-wide">Día libre</p>
+					<p class="text-sm font-bold text-content/60 uppercase tracking-wide">Día libre</p>
 				{/if}
 			</div>
 		</div>
@@ -195,7 +198,7 @@
 			{#if currentClass}
 				<div class="text-center mb-4">
 					<span
-						class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-slate-200 text-xs font-bold text-slate-600 shadow-sm"
+						class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-base-200 border border-base-300 text-xs font-bold text-content/70 shadow-sm"
 					>
 						<BookOpen class="w-3.5 h-3.5" /> En clase ahora
 					</span>
@@ -206,10 +209,10 @@
 				<div class="space-y-2.5">
 					{#each nextClasses.slice(0, 3) as sch, i (i)}
 						<div
-							class="flex items-center gap-4 p-3 rounded-xl bg-white border border-slate-100 shadow-sm transition-transform hover:scale-[1.02]"
+							class="flex items-center gap-4 p-3 rounded-xl bg-base-200 border border-base-400 shadow-sm transition-transform hover:scale-[1.02]"
 						>
 							<div class="flex flex-col items-center justify-center w-12 shrink-0">
-								<span class="text-xs font-black text-slate-700">{sch.start}</span>
+								<span class="text-xs font-black text-content/90">{sch.start}</span>
 							</div>
 
 							<div
@@ -218,9 +221,9 @@
 							></div>
 
 							<div class="flex-1 min-w-0">
-								<h4 class="text-sm font-bold text-slate-800 truncate">{sch.ramoNombre}</h4>
+								<h4 class="text-sm font-bold text-content truncate">{sch.ramoNombre}</h4>
 								<div
-									class="flex items-center gap-2 text-[10px] text-slate-500 font-medium uppercase tracking-wider"
+									class="flex items-center gap-2 text-[10px] text-content/60 font-medium uppercase tracking-wider"
 								>
 									<span>{sch.end}</span>
 									{#if sch.location}
@@ -234,14 +237,14 @@
 
 					{#if nextClasses.length > 3}
 						<div class="text-center pt-2">
-							<span class="text-xs font-bold text-slate-400"
+							<span class="text-xs font-bold text-content/50"
 								>+{nextClasses.length - 3} clases más hoy</span
 							>
 						</div>
 					{/if}
 				</div>
 			{:else if currentClass}
-				<div class="text-center text-sm font-medium text-slate-400 mt-6">
+				<div class="text-center text-sm font-medium text-content/50 mt-6">
 					Esta es tu última clase del día 🎉
 				</div>
 			{/if}

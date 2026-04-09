@@ -68,25 +68,25 @@
 	function eventBadgeClasses(priority: CalendarEvent['priority']) {
 		switch (priority) {
 			case 'high':
-				return 'bg-red-50 text-red-700 border border-red-200';
+				return 'bg-error-400 text-error-100 border border-error-300';
 			case 'medium':
-				return 'bg-amber-50 text-amber-700 border border-amber-200';
+				return 'bg-warning-400 text-warning-100 border border-warning-300';
 			case 'low':
 			default:
-				return 'bg-emerald-50 text-emerald-700 border border-emerald-200';
+				return 'bg-success-400 text-success-100 border border-success-300';
 		}
 	}
 </script>
 
-<div class="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm flex flex-col min-w-0">
+<div class="bg-base-100 rounded-2xl p-5 border border-base-400 shadow-sm flex flex-col min-w-0">
 	<div class="flex items-center gap-2 mb-4">
-		<CalendarDays class="w-5 h-5 text-purple-500" />
-		<h3 class="text-sm font-bold text-gray-400 uppercase tracking-widest">Proximos hitos</h3>
+		<CalendarDays class="w-5 h-5 text-calendar-100" />
+		<h3 class="text-sm font-bold text-content/50 uppercase tracking-widest">Proximos hitos</h3>
 	</div>
 
 	{#if eventDates.length === 0}
-		<div class="flex-1 flex flex-col items-center justify-center text-slate-500 text-sm">
-			<CalendarDays class="w-8 h-8 text-slate-300 mb-2" />
+		<div class="flex-1 flex flex-col items-center justify-center text-content text-sm">
+			<CalendarDays class="w-8 h-8 text-content/40 mb-2" />
 			No hay eventos próximos
 		</div>
 	{:else}
@@ -98,19 +98,20 @@
 					{@const label = formatDayLabel(key)}
 					<button
 						class={`min-w-14 h-14 shrink-0 rounded-lg border text-center px-2 py-1 transition-colors cursor-pointer ${
-							isSelected ? 'border-blue-500 bg-blue-50' : 'border-slate-200 hover:bg-slate-50'
-						} ${isToday ? 'ring-1 ring-blue-200' : ''}`}
+							/* Reemplazo del azul por el token primary */
+							isSelected ? 'border-primary-100 bg-primary-400' : 'border-base-400 hover:bg-base-200'
+						} ${isToday ? 'ring-1 ring-primary-300' : ''}`}
 						onclick={() => (selectedKey = key)}
 						aria-label={`Eventos del ${formatFullDate(key)}`}
 					>
-						<div class="text-[10px] uppercase text-slate-500">{label.weekday}</div>
-						<div class="text-lg font-semibold text-slate-800 leading-tight">{label.day}</div>
+						<div class="text-[10px] uppercase text-content">{label.weekday}</div>
+						<div class="text-lg font-semibold text-content leading-tight">{label.day}</div>
 					</button>
 				{/each}
 			</div>
 		</div>
 
-		<div class="mt-3 text-xs font-semibold text-slate-600">
+		<div class="mt-3 text-xs font-semibold text-content/80">
 			{selectedKey ? `Eventos - ${formatFullDate(selectedKey)}` : ''}
 		</div>
 
@@ -119,20 +120,20 @@
 				<li>
 					<a
 						href={`${calendarPath}#${ev.id}`}
-						class="block rounded-lg border border-slate-200 bg-white p-2 cursor-pointer hover:bg-slate-50"
+						class="block rounded-lg border border-base-400 bg-base-100 p-2 cursor-pointer hover:bg-base-200"
 					>
 						<div class="flex items-start justify-between gap-2">
 							<div class="min-w-0 flex-1">
-								<div class="font-semibold text-slate-800 truncate">{ev.title}</div>
+								<div class="font-semibold text-content truncate">{ev.title}</div>
 								{#if ev.description}
-									<div class="text-xs text-slate-500 truncate">{ev.description}</div>
+									<div class="text-xs text-content truncate">{ev.description}</div>
 								{/if}
 							</div>
 							<div class="flex items-center gap-1">
 								{#if ev.completed}
-									<CheckCircle2 class="w-4 h-4 text-emerald-600" />
+									<CheckCircle2 class="w-4 h-4 text-success-100" />
 								{:else}
-									<Circle class="w-4 h-4 text-slate-400" />
+									<Circle class="w-4 h-4 text-content/40" />
 								{/if}
 							</div>
 						</div>
@@ -148,8 +149,8 @@
 							<span
 								class={`inline-flex items-center px-2 py-0.5 rounded-full font-semibold ${
 									ev.completed
-										? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-										: 'bg-slate-50 text-slate-600 border border-slate-200'
+										? 'bg-success-400 text-success-100 border border-success-300'
+										: 'bg-base-300 text-content/80 border border-base-400'
 								}`}
 							>
 								{ev.completed ? 'Completado' : 'Pendiente'}
@@ -157,8 +158,8 @@
 						</div>
 
 						{#if ev.location}
-							<div class="mt-2 flex items-center gap-2 text-xs text-slate-500">
-								<MapPin class="w-3.5 h-3.5 text-slate-400 shrink-0" />
+							<div class="mt-2 flex items-center gap-2 text-xs text-content">
+								<MapPin class="w-3.5 h-3.5 text-content/50 shrink-0" />
 								<span class="truncate min-w-0 flex-1">{ev.location}</span>
 							</div>
 						{/if}

@@ -93,56 +93,56 @@
 	{#each scheduleByDay as day (day.id)}
 		{#if day.schedules.length > 0}
 			<div
-				class="bg-white rounded-xl border overflow-hidden transition-all {day.isToday
-					? 'border-2 border-blue-300 shadow-md'
-					: 'border-slate-200 shadow-sm'}"
+				class="bg-base-100 rounded-xl border overflow-hidden transition-all {day.isToday
+					? 'border-2 border-schedule-300 shadow-md'
+					: 'border-base-400 shadow-sm'}"
 			>
 				<div
 					class="px-5 py-3 border-b flex items-center justify-between {day.isToday
-						? 'bg-blue-50/80 border-blue-100'
-						: 'bg-slate-50 border-slate-100'}"
+						? 'bg-schedule-400 border-schedule-300'
+						: 'bg-base-200 border-base-300'}"
 				>
 					<h3
 						class="text-base sm:text-lg font-bold {day.isToday
-							? 'text-blue-900'
-							: 'text-slate-800'}"
+							? 'text-schedule-100'
+							: 'text-content/90'}"
 					>
 						{day.name}
 						{#if day.isToday}
 							<span
-								class="ml-2 text-[10px] sm:text-xs bg-blue-600 text-white px-2 py-0.5 rounded-full uppercase font-bold tracking-wide"
+								class="ml-2 text-[10px] sm:text-xs bg-schedule-100 text-base-100 px-2 py-0.5 rounded-full uppercase font-bold tracking-wide"
 								>Hoy</span
 							>
 						{/if}
 					</h3>
 					{#if day.isToday}
-						<div class="text-xs sm:text-sm text-blue-700 font-semibold">
+						<div class="text-xs sm:text-sm text-schedule-100 font-semibold">
 							{now.toLocaleDateString('es-ES', { day: 'numeric', month: 'long' })}
 						</div>
 					{/if}
 				</div>
 
-				<div class="divide-y divide-slate-100">
+				<div class="divide-y divide-base-300">
 					{#each day.schedules as ev (ev.id)}
 						{@const Icon = typeIcons[ev.type as keyof typeof typeIcons]}
 						<div
 							class="p-4 transition-all duration-200 relative group
                                 {ev.inProgress
-								? 'bg-green-50 border-l-4 border-green-500'
+								? 'bg-success-400 border-l-4 border-success-100'
 								: ev.isPast
-									? 'bg-slate-50/50 opacity-60 grayscale-[0.2]'
+									? 'bg-base-200 opacity-60 grayscale-[0.2]'
 									: ev.isUpcoming
-										? 'bg-orange-50 border-l-4 border-orange-400'
-										: 'hover:bg-slate-50 border-l-4 border-transparent hover:border-slate-200'}"
+										? 'bg-warning-400 border-l-4 border-warning-100'
+										: 'hover:bg-base-200 border-l-4 border-transparent hover:border-base-400'}"
 						>
 							<div class="flex flex-col space-y-2 sm:hidden">
 								<div class="flex items-center justify-between">
 									<div
 										class="flex items-center space-x-1.5 font-bold {ev.inProgress
-											? 'text-green-800'
+											? 'text-success-100'
 											: ev.isPast
-												? 'text-slate-400'
-												: 'text-slate-800'}"
+												? 'text-content/40'
+												: 'text-content'}"
 									>
 										<span class="text-sm">{ev.start}</span>
 										<span class="text-xs opacity-60">- {ev.end}</span>
@@ -151,21 +151,23 @@
 									<div class="flex items-center gap-2">
 										{#if ev.inProgress}
 											<span
-												class="inline-flex items-center px-2 py-1 text-[10px] font-bold text-green-800 bg-green-200/60 rounded-full"
+												class="inline-flex items-center px-2 py-1 text-[10px] font-bold text-success-100 bg-success-300 rounded-full"
 											>
-												<div class="w-1.5 h-1.5 bg-green-500 rounded-full mr-1 animate-pulse"></div>
+												<div
+													class="w-1.5 h-1.5 bg-success-100 rounded-full mr-1 animate-pulse"
+												></div>
 												<span>En progreso</span>
 											</span>
 										{:else if ev.isUpcoming}
 											<span
-												class="inline-flex items-center px-2 py-1 text-[10px] font-bold text-orange-800 bg-orange-100 rounded-full"
+												class="inline-flex items-center px-2 py-1 text-[10px] font-bold text-warning-100 bg-warning-300 rounded-full"
 											>
-												<div class="w-1.5 h-1.5 bg-orange-500 rounded-full mr-1"></div>
+												<div class="w-1.5 h-1.5 bg-warning-100 rounded-full mr-1"></div>
 												<span>Próxima</span>
 											</span>
 										{:else if ev.isPast}
 											<span
-												class="inline-flex items-center px-2 py-1 text-[10px] font-bold text-slate-500 bg-slate-200/60 rounded-full"
+												class="inline-flex items-center px-2 py-1 text-[10px] font-bold text-content/60 bg-base-300 border border-base-400 rounded-full"
 											>
 												✓ Finalizada
 											</span>
@@ -173,10 +175,10 @@
 
 										<div
 											class="text-xs font-medium {ev.inProgress
-												? 'text-green-600'
+												? 'text-success-100/80'
 												: ev.isPast
-													? 'text-slate-400'
-													: 'text-slate-500'}"
+													? 'text-content/40'
+													: 'text-content/60'}"
 										>
 											{ev.duration}h
 										</div>
@@ -190,10 +192,10 @@
 									></div>
 									<h4
 										class="font-bold text-sm truncate {ev.inProgress
-											? 'text-green-900'
+											? 'text-success-100'
 											: ev.isPast
-												? 'text-slate-500'
-												: 'text-slate-800'}"
+												? 'text-content/50'
+												: 'text-content'}"
 									>
 										{ev.ramoNombre}
 									</h4>
@@ -201,10 +203,10 @@
 
 								<div
 									class="flex flex-wrap items-center gap-2 text-xs {ev.inProgress
-										? 'text-green-700'
+										? 'text-success-100/80'
 										: ev.isPast
-											? 'text-slate-400'
-											: 'text-slate-600'}"
+											? 'text-content/40'
+											: 'text-content/60'}"
 								>
 									<span class="flex items-center space-x-1 font-medium">
 										<Icon class="w-3.5 h-3.5" />
@@ -214,10 +216,10 @@
 
 								<div
 									class="flex flex-wrap items-center gap-3 text-xs mt-1 {ev.inProgress
-										? 'text-green-700'
+										? 'text-success-100/80'
 										: ev.isPast
-											? 'text-slate-400'
-											: 'text-slate-500'}"
+											? 'text-content/40'
+											: 'text-content/60'}"
 								>
 									{#if ev.location}
 										<span class="flex items-center space-x-1">
@@ -232,19 +234,19 @@
 								<div class="text-center min-w-[85px] pt-1">
 									<div
 										class="text-sm font-black {ev.inProgress
-											? 'text-green-800'
+											? 'text-success-100'
 											: ev.isPast
-												? 'text-slate-400'
-												: 'text-slate-800'}"
+												? 'text-content/40'
+												: 'text-content/90'}"
 									>
 										{ev.start}
 									</div>
 									<div
 										class="text-xs font-semibold {ev.inProgress
-											? 'text-green-600'
+											? 'text-success-100/80'
 											: ev.isPast
-												? 'text-slate-300'
-												: 'text-slate-400'}"
+												? 'text-content/30'
+												: 'text-content/50'}"
 									>
 										{ev.end}
 									</div>
@@ -258,10 +260,10 @@
 										></div>
 										<h4
 											class="font-bold text-sm truncate {ev.inProgress
-												? 'text-green-900'
+												? 'text-success-100'
 												: ev.isPast
-													? 'text-slate-500'
-													: 'text-slate-900'}"
+													? 'text-content/50'
+													: 'text-content'}"
 										>
 											{ev.ramoNombre}
 										</h4>
@@ -269,10 +271,10 @@
 
 									<div
 										class="flex items-center space-x-4 text-[11px] font-medium {ev.inProgress
-											? 'text-green-700'
+											? 'text-success-100/80'
 											: ev.isPast
-												? 'text-slate-400'
-												: 'text-slate-500'}"
+												? 'text-content/40'
+												: 'text-content/60'}"
 									>
 										<span class="flex items-center space-x-1 uppercase tracking-wide">
 											<Icon class="w-3.5 h-3.5" />
@@ -290,21 +292,23 @@
 								<div class="flex items-center gap-3 pr-2">
 									{#if ev.inProgress}
 										<span
-											class="inline-flex items-center px-2 py-1 text-xs font-bold text-green-800 bg-green-200/60 rounded-full"
+											class="inline-flex items-center px-2 py-1 text-xs font-bold text-success-100 bg-success-300 rounded-full"
 										>
-											<div class="w-1.5 h-1.5 bg-green-500 rounded-full mr-1.5 animate-pulse"></div>
+											<div
+												class="w-1.5 h-1.5 bg-success-100 rounded-full mr-1.5 animate-pulse"
+											></div>
 											<span>En progreso</span>
 										</span>
 									{:else if ev.isUpcoming}
 										<span
-											class="inline-flex items-center px-2 py-1 text-xs font-bold text-orange-800 bg-orange-100 rounded-full"
+											class="inline-flex items-center px-2 py-1 text-xs font-bold text-warning-100 bg-warning-300 rounded-full"
 										>
-											<div class="w-1.5 h-1.5 bg-orange-500 rounded-full mr-1.5"></div>
+											<div class="w-1.5 h-1.5 bg-warning-100 rounded-full mr-1.5"></div>
 											<span>Próxima</span>
 										</span>
 									{:else if ev.isPast}
 										<span
-											class="inline-flex items-center px-2 py-1 text-xs font-bold text-slate-500 bg-slate-200/60 rounded-full"
+											class="inline-flex items-center px-2 py-1 text-xs font-bold text-content/60 bg-base-300 border border-base-400 rounded-full"
 										>
 											✓ Finalizada
 										</span>
@@ -312,10 +316,10 @@
 
 									<div
 										class="text-right text-xs font-bold {ev.inProgress
-											? 'text-green-600'
+											? 'text-success-100/80'
 											: ev.isPast
-												? 'text-slate-300'
-												: 'text-slate-400'}"
+												? 'text-content/30'
+												: 'text-content/50'}"
 									>
 										{ev.duration}h
 									</div>
@@ -328,7 +332,7 @@
 		{/if}
 	{/each}
 	{#if db.horarios.list.length === 0}
-		<div class="text-center py-20 text-slate-400">
+		<div class="text-center py-20 text-content/50">
 			<CalendarX2 class="w-12 h-12 mx-auto mb-3 opacity-20" />
 			<p>No hay horarios agregados todavía.</p>
 		</div>

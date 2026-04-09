@@ -27,20 +27,19 @@
 	function getEvaluationColor(evaluacion: Evaluacion): string {
 		if (evaluacion.tags.length === 0) return '#64748b';
 		const firstTag = tagsMap.get(evaluacion.tags[0]);
+		// Nota: ColorUtils.tailwindToHex debería manejar la lógica de fallback
 		return firstTag ? ColorUtils.tailwindToHex(firstTag.color) : '#64748b';
 	}
 </script>
 
 <div class="flex justify-center">
-	<div class="bg-grid-pattern rounded-xl p-8 border border-slate-200 bg-slate-50 w-full relative">
+	<div class="bg-grid-pattern rounded-xl p-8 border border-base-400 bg-base-200 w-full relative">
 		{#if evaluaciones.length > 0}
-			<!-- Header con ícono -->
-			<div class="absolute top-4 left-4 flex items-center gap-2 text-slate-500">
+			<div class="absolute top-4 left-4 flex items-center gap-2 text-content/50">
 				<Sigma class="w-5 h-5" />
-				<span class="font-medium">Ecuación de Nota</span>
+				<span class="font-medium text-xs uppercase tracking-widest">Ecuación de Nota</span>
 			</div>
 
-			<!-- Fórmula central -->
 			<div class="text-center space-y-4">
 				<div class="flex items-center justify-center gap-2 font-mono text-sm flex-wrap p-8 mt-4">
 					{#each evaluaciones as [, evaluacion], index (evaluacion.id)}
@@ -49,23 +48,22 @@
 							<span class="font-bold" style="color: {evalColor}">
 								{evaluacion.id}
 							</span>
-							<span class="text-slate-400">×</span>
-							<span class="text-orange-500 font-medium">
+							<span class="text-content/30">×</span>
+							<span class="text-classes-100 font-black">
 								{evaluacion.peso.toFixed(0)}%
 							</span>
 							{#if index < evaluaciones.length - 1}
-								<span class="text-slate-400">+</span>
+								<span class="text-content/30">+</span>
 							{/if}
 						</div>
 					{/each}
 				</div>
 			</div>
 		{:else}
-			<!-- Estado vacío -->
-			<div class="h-32 flex items-center justify-center text-slate-400">
-				<div class="absolute top-4 left-4 flex items-center gap-2 text-slate-500">
+			<div class="h-32 flex items-center justify-center text-content/40">
+				<div class="absolute top-4 left-4 flex items-center gap-2 text-content/50">
 					<Sigma class="w-5 h-5" />
-					<span class="font-medium">Ecuación de Nota</span>
+					<span class="font-medium text-xs uppercase tracking-widest">Ecuación de Nota</span>
 				</div>
 
 				<div class="text-center">
@@ -78,10 +76,9 @@
 
 <style>
 	.bg-grid-pattern {
-		background-image: radial-gradient(circle, #e2e8f0 1px, transparent 1px);
-		background-size: 20px 20px;
-		background-position:
-			0 0,
-			10px 10px;
+		/* Usamos una variable CSS para el punto que Tailwind v4 inyectará automáticamente */
+		/* En modo claro será un gris suave, en oscuro será un blanco muy sutil */
+		background-image: radial-gradient(circle, var(--color-base-400) 1.5px, transparent 1.5px);
+		background-size: 24px 24px;
 	}
 </style>

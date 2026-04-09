@@ -10,7 +10,7 @@
 		MapPin,
 		FileText
 	} from '@lucide/svelte';
-	import * as AlertDialog from '$lib/components/ui/alert-dialog';
+	// Eliminado AlertDialog de Shadcn
 	import type { Event as CalendarEvent } from '$lib/state/events.svelte';
 
 	type StatusFilter = 'all' | 'upcoming' | 'overdue' | 'completed';
@@ -72,18 +72,10 @@
 		const list = db.events.list
 			.map(([, event]) => event)
 			.filter((event) => {
-				if (selectedRamo !== 'all' && event.ramoId !== selectedRamo) {
-					return false;
-				}
-				if (selectedStatus === 'completed') {
-					return event.completed;
-				}
-				if (selectedStatus === 'overdue') {
-					return !event.completed && event.dueDate < today;
-				}
-				if (selectedStatus === 'upcoming') {
-					return !event.completed && event.dueDate >= today;
-				}
+				if (selectedRamo !== 'all' && event.ramoId !== selectedRamo) return false;
+				if (selectedStatus === 'completed') return event.completed;
+				if (selectedStatus === 'overdue') return !event.completed && event.dueDate < today;
+				if (selectedStatus === 'upcoming') return !event.completed && event.dueDate >= today;
 				return true;
 			});
 
@@ -104,7 +96,6 @@
 				return 'Alta';
 			case 'medium':
 				return 'Media';
-			case 'low':
 			default:
 				return 'Baja';
 		}
@@ -113,44 +104,42 @@
 	function priorityClasses(priority: string) {
 		switch (priority) {
 			case 'high':
-				return 'bg-red-50 text-red-700 border border-red-200';
+				return 'bg-error-400 text-error-100 border border-error-300';
 			case 'medium':
-				return 'bg-amber-50 text-amber-700 border border-amber-200';
-			case 'low':
+				return 'bg-warning-400 text-warning-100 border border-warning-300';
 			default:
-				return 'bg-emerald-50 text-emerald-700 border border-emerald-200';
+				return 'bg-success-400 text-success-100 border border-success-300';
 		}
 	}
 </script>
 
-<div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-	<div class="px-4 py-3 border-b border-gray-100 text-sm font-semibold text-slate-700">Eventos</div>
+<div class="bg-base-100 rounded-2xl border border-base-400 shadow-sm overflow-hidden relative">
+	<div class="px-4 py-3 border-b border-base-300 text-sm font-semibold text-content/80 bg-base-200">
+		Eventos
+	</div>
 
 	{#if events.length === 0}
-		<div class="p-6 text-sm text-slate-500">No hay eventos registrados.</div>
+		<div class="p-6 text-sm text-content/50">No hay eventos registrados.</div>
 	{:else}
 		<div class="lg:hidden space-y-3 p-4">
 			{#each events as event (event.id)}
 				<div
 					data-event-id={event.id}
-					class={`event-card rounded-xl border border-slate-200 bg-white p-4 shadow-sm ${event.id === focusEventId ? 'shine-effect' : ''}`}
+					class={`event-card rounded-xl border border-base-300 bg-base-100 p-4 shadow-sm transition-all ${event.id === focusEventId ? 'shine-effect ring-2 ring-calendar-100/50' : ''}`}
 				>
 					<div class="flex items-start justify-between gap-3">
 						<div class="min-w-0 flex-1">
-							<div class="font-semibold text-slate-800 truncate" title={event.title}>
+							<div class="font-semibold text-content truncate" title={event.title}>
 								{event.title}
 							</div>
-							<div class="mt-1 flex items-center gap-2 text-xs text-slate-500">
-								<FileText class="w-3.5 h-3.5 text-slate-400 shrink-0" />
-								<span class="truncate min-w-0 flex-1" title={event.description ?? '—'}
-									>{event.description ?? '—'}</span
-								>
+							<div class="mt-1 flex items-center gap-2 text-xs text-content/60">
+								<FileText class="w-3.5 h-3.5 text-content/40 shrink-0" />
+								<span class="truncate min-w-0 flex-1">{event.description ?? '—'}</span>
 							</div>
 						</div>
 						<div class="flex items-center gap-2 shrink-0">
 							<button
-								class="cursor-pointer text-emerald-600 hover:text-emerald-700"
-								aria-label={event.completed ? 'Marcar como pendiente' : 'Marcar como completado'}
+								class="cursor-pointer text-success-100 hover:opacity-80 transition-opacity"
 								onclick={() => db.events.toggleCompleted(event.id)}
 							>
 								{#if event.completed}
@@ -160,15 +149,13 @@
 								{/if}
 							</button>
 							<button
-								class="cursor-pointer text-blue-600 hover:text-blue-700"
-								aria-label="Editar evento"
+								class="cursor-pointer text-calendar-100 hover:opacity-80 transition-opacity"
 								onclick={() => onEditEvent?.(event)}
 							>
 								<Pencil class="w-4 h-4" />
 							</button>
 							<button
-								class="cursor-pointer text-rose-600 hover:text-rose-700"
-								aria-label="Borrar evento"
+								class="cursor-pointer text-error-100 hover:opacity-80 transition-opacity"
 								onclick={() => openDeleteConfirm(event)}
 							>
 								<Trash2 class="w-4 h-4" />
@@ -178,19 +165,17 @@
 
 					<div class="mt-3 flex flex-wrap gap-2 text-xs">
 						<span
-							class={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${priorityClasses(
-								event.priority
-							)}`}
+							class={`inline-flex items-center px-2 py-1 rounded-full font-semibold ${priorityClasses(event.priority)}`}
 						>
 							{priorityLabel(event.priority)}
 						</span>
 						<span
-							class={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${
+							class={`inline-flex items-center px-2 py-1 rounded-full font-semibold ${
 								event.completed
-									? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+									? 'bg-success-400 text-success-100 border border-success-300'
 									: event.dueDate < new Date().toISOString().slice(0, 10)
-										? 'bg-red-50 text-red-700 border border-red-200'
-										: 'bg-slate-50 text-slate-600 border border-slate-200'
+										? 'bg-error-400 text-error-100 border border-error-300'
+										: 'bg-base-300 text-content/70 border border-base-400'
 							}`}
 						>
 							{event.completed
@@ -200,22 +185,20 @@
 									: 'Pendiente'}
 						</span>
 						<span
-							class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold border border-slate-200 text-slate-600"
+							class="inline-flex items-center px-2 py-1 rounded-full font-semibold border border-base-400 bg-base-200 text-content/70"
 						>
 							{getRamoName(event.ramoId)}
 						</span>
 					</div>
 
-					<div class="mt-3 text-xs text-slate-600 space-y-1">
+					<div class="mt-3 text-xs text-content/60 space-y-1">
 						<div class="flex items-center gap-2">
-							<CalendarDays class="w-3.5 h-3.5 text-slate-400 shrink-0" />
+							<CalendarDays class="w-3.5 h-3.5 text-content/40 shrink-0" />
 							<span>{new Date(event.dueDate).toLocaleDateString('es-CL')}</span>
 						</div>
 						<div class="flex items-center gap-2">
-							<MapPin class="w-3.5 h-3.5 text-slate-400 shrink-0" />
-							<span class="truncate min-w-0 flex-1" title={event.location ?? '—'}
-								>{event.location ?? '—'}</span
-							>
+							<MapPin class="w-3.5 h-3.5 text-content/40 shrink-0" />
+							<span class="truncate min-w-0 flex-1">{event.location ?? '—'}</span>
 						</div>
 					</div>
 				</div>
@@ -223,61 +206,57 @@
 		</div>
 
 		<div class="hidden lg:block overflow-x-auto">
-			<table class="min-w-full text-sm table-fixed">
-				<thead class="bg-slate-50 text-xs uppercase tracking-wider text-slate-500">
+			<table class="min-w-full text-sm table-fixed border-collapse">
+				<thead
+					class="bg-base-200 text-xs uppercase tracking-wider text-content/50 border-b border-base-300"
+				>
 					<tr>
-						<th class="px-4 py-3 text-left w-48">Título</th>
-						<th class="px-4 py-3 text-left w-64">Descripción</th>
-						<th class="px-4 py-3 text-left">Fecha</th>
-						<th class="px-4 py-3 text-left">Lugar</th>
-						<th class="px-4 py-3 text-left">Prioridad</th>
-						<th class="px-4 py-3 text-left">Ramo</th>
-						<th class="px-4 py-3 text-left">Estado</th>
-						<th class="px-4 py-3 text-left">Acciones</th>
+						<th class="px-4 py-3 text-left w-48 font-bold">Título</th>
+						<th class="px-4 py-3 text-left w-64 font-bold">Descripción</th>
+						<th class="px-4 py-3 text-left font-bold">Fecha</th>
+						<th class="px-4 py-3 text-left font-bold">Lugar</th>
+						<th class="px-4 py-3 text-left font-bold">Prioridad</th>
+						<th class="px-4 py-3 text-left font-bold">Ramo</th>
+						<th class="px-4 py-3 text-left font-bold">Estado</th>
+						<th class="px-4 py-3 text-left font-bold">Acciones</th>
 					</tr>
 				</thead>
-				<tbody class="divide-y divide-slate-100">
+				<tbody class="divide-y divide-base-300 bg-base-100">
 					{#each events as event (event.id)}
 						{@const isFocused = event.id === focusEventId}
-						<tr class="event-row hover:bg-slate-50" data-event-id={event.id}>
-							<td class={`px-4 py-3 font-medium text-slate-800 ${isFocused ? 'shine-effect' : ''}`}>
+						<tr class="event-row hover:bg-base-200 transition-colors" data-event-id={event.id}>
+							<td class={`px-4 py-3 font-medium text-content ${isFocused ? 'shine-effect' : ''}`}>
 								<div class="max-w-[20ch] truncate" title={event.title}>{event.title}</div>
 							</td>
-							<td class={`px-4 py-3 text-slate-600 ${isFocused ? 'shine-effect' : ''}`}>
+							<td class={`px-4 py-3 text-content/70 ${isFocused ? 'shine-effect' : ''}`}>
 								<div class="max-w-[20ch] truncate" title={event.description ?? '—'}>
 									{event.description ?? '—'}
 								</div>
 							</td>
-							<td class={`px-4 py-3 text-slate-600 ${isFocused ? 'shine-effect' : ''}`}>
+							<td class={`px-4 py-3 text-content/70 ${isFocused ? 'shine-effect' : ''}`}>
 								{new Date(event.dueDate).toLocaleDateString('es-CL')}
 							</td>
-							<td
-								class={`px-4 py-3 text-slate-600 max-w-[20ch] truncate ${isFocused ? 'shine-effect' : ''}`}
-							>
+							<td class={`px-4 py-3 text-content/70 truncate ${isFocused ? 'shine-effect' : ''}`}>
 								{event.location ?? '—'}
 							</td>
 							<td class={`px-4 py-3 ${isFocused ? 'shine-effect' : ''}`}>
 								<span
-									class={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${priorityClasses(
-										event.priority
-									)}`}
+									class={`inline-flex items-center px-2 py-1 rounded-full text-[10px] font-bold ${priorityClasses(event.priority)}`}
 								>
 									{priorityLabel(event.priority)}
 								</span>
 							</td>
-							<td
-								class={`px-4 py-3 text-slate-600 max-w-[20ch] truncate ${isFocused ? 'shine-effect' : ''}`}
-							>
+							<td class={`px-4 py-3 text-content/70 truncate ${isFocused ? 'shine-effect' : ''}`}>
 								{getRamoName(event.ramoId)}
 							</td>
 							<td class={`px-4 py-3 ${isFocused ? 'shine-effect' : ''}`}>
 								<span
-									class={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${
+									class={`inline-flex items-center px-2 py-1 rounded-full text-[10px] font-bold ${
 										event.completed
-											? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+											? 'bg-success-400 text-success-100 border border-success-300'
 											: event.dueDate < new Date().toISOString().slice(0, 10)
-												? 'bg-red-50 text-red-700 border border-red-200'
-												: 'bg-slate-50 text-slate-600 border border-slate-200'
+												? 'bg-error-400 text-error-100 border border-error-300'
+												: 'bg-base-300 text-content/70 border border-base-400'
 									}`}
 								>
 									{event.completed
@@ -290,10 +269,7 @@
 							<td class={`px-4 py-3 ${isFocused ? 'shine-effect' : ''}`}>
 								<div class="flex items-center gap-2">
 									<button
-										class="cursor-pointer text-emerald-600 hover:text-emerald-700"
-										aria-label={event.completed
-											? 'Marcar como pendiente'
-											: 'Marcar como completado'}
+										class="cursor-pointer text-success-100 hover:opacity-70 transition-opacity"
 										onclick={() => db.events.toggleCompleted(event.id)}
 									>
 										{#if event.completed}
@@ -303,15 +279,13 @@
 										{/if}
 									</button>
 									<button
-										class="cursor-pointer text-blue-600 hover:text-blue-700"
-										aria-label="Editar evento"
+										class="cursor-pointer text-calendar-100 hover:opacity-70 transition-opacity"
 										onclick={() => onEditEvent?.(event)}
 									>
 										<Pencil class="w-4 h-4" />
 									</button>
 									<button
-										class="cursor-pointer text-rose-600 hover:text-rose-700"
-										aria-label="Borrar evento"
+										class="cursor-pointer text-error-100 hover:opacity-70 transition-opacity"
 										onclick={() => openDeleteConfirm(event)}
 									>
 										<Trash2 class="w-4 h-4" />
@@ -325,33 +299,37 @@
 		</div>
 	{/if}
 
-	<AlertDialog.Root
-		open={deleteConfirmEvent !== null}
-		onOpenChange={(open) => !open && cancelDelete()}
-	>
-		<AlertDialog.Content>
-			<AlertDialog.Header>
-				<AlertDialog.Title>¿Confirmar eliminación?</AlertDialog.Title>
-				<AlertDialog.Description>
-					{#if deleteConfirmEvent}
-						Esta acción eliminará permanentemente el evento
-						<strong class="inline-block max-w-[20ch] truncate align-bottom"
-							>"{deleteConfirmEvent.title}"</strong
-						>. Esta acción no se puede deshacer.
-					{/if}
-				</AlertDialog.Description>
-			</AlertDialog.Header>
-			<AlertDialog.Footer>
-				<AlertDialog.Cancel onclick={cancelDelete} class="cursor-pointer">
-					Cancelar
-				</AlertDialog.Cancel>
-				<AlertDialog.Action
-					onclick={confirmDelete}
-					class="bg-red-600 hover:bg-red-700 cursor-pointer"
-				>
-					Eliminar
-				</AlertDialog.Action>
-			</AlertDialog.Footer>
-		</AlertDialog.Content>
-	</AlertDialog.Root>
+	{#if deleteConfirmEvent !== null}
+		<div class="fixed inset-0 z-50 flex items-center justify-center">
+			<button
+				class="absolute inset-0 bg-black/40 z-0 backdrop-blur-sm cursor-pointer"
+				aria-label="Cancelar eliminación de evento"
+				onclick={cancelDelete}
+			></button>
+			<div
+				class="relative z-10 w-full max-w-md bg-base-100 rounded-2xl shadow-xl border border-base-400 p-6 m-4"
+			>
+				<h3 class="text-lg font-bold text-content mb-2">¿Confirmar eliminación?</h3>
+				<p class="text-sm text-content/70 mb-6">
+					Esta acción eliminará permanentemente el evento
+					<strong class="text-content font-semibold">"{deleteConfirmEvent.title}"</strong>. Esta
+					acción no se puede deshacer.
+				</p>
+				<div class="flex justify-end gap-3">
+					<button
+						onclick={cancelDelete}
+						class="px-4 py-2 rounded-lg border border-base-400 text-content/70 text-sm font-semibold hover:bg-base-200 transition-colors cursor-pointer"
+					>
+						Cancelar
+					</button>
+					<button
+						onclick={confirmDelete}
+						class="px-4 py-2 rounded-lg bg-error-100 text-base-100 text-sm font-semibold hover:opacity-90 transition-opacity cursor-pointer"
+					>
+						Eliminar
+					</button>
+				</div>
+			</div>
+		</div>
+	{/if}
 </div>

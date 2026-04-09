@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { db } from '$lib/state/index.svelte';
 	import { Trash2, Plus, Calendar, CircleCheck, History } from '@lucide/svelte';
-	import * as AlertDialog from '$lib/components/ui/alert-dialog';
+	// Eliminado el import de AlertDialog
 
 	let newSemesterName = $state('');
 	let deleteConfirmData = $state<{ type: 'index' | 'active'; index?: number; name: string } | null>(
@@ -49,20 +49,24 @@
 </script>
 
 <div class="w-full mx-auto animate-in fade-in zoom-in-95 duration-300">
-	<div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col">
+	<div
+		class="bg-base-100 border border-base-400 rounded-xl shadow-sm overflow-hidden flex flex-col"
+	>
 		<div
-			class="relative bg-linear-to-r from-indigo-600 to-indigo-700 p-6 sm:p-8 text-white transition-all group/hero"
+			class="relative bg-linear-to-r from-primary-100 to-primary-100/90 p-6 sm:p-8 text-base-100 transition-all group/hero"
 		>
 			<div class="flex items-center justify-between mb-2">
 				<div class="flex items-center gap-2 opacity-80">
-					<CircleCheck size={16} class="text-green-400" />
-					<span class="text-xs font-bold uppercase tracking-widest">Periodo Actual</span>
+					<CircleCheck size={16} class="text-success-100" />
+					<span class="text-xs font-bold uppercase tracking-widest text-base-100"
+						>Periodo Actual</span
+					>
 				</div>
 
 				{#if db.semestres.active !== null}
 					<button
 						onclick={openDeleteActiveConfirm}
-						class="p-2 rounded-lg bg-white/10 text-white/60 hover:bg-red-500 hover:text-white transition-all backdrop-blur-sm z-20 cursor-pointer"
+						class="p-2 rounded-lg bg-base-100/10 text-base-100/60 hover:bg-error-100 hover:text-base-100 transition-all backdrop-blur-sm z-20 cursor-pointer"
 						title="Eliminar semestre actual"
 					>
 						<Trash2 size={18} />
@@ -76,25 +80,25 @@
 					value={db.semestres.list[db.semestres.active]}
 					oninput={(e) => db.semestres.update(db.semestres.active!, e.currentTarget.value)}
 					onkeydown={handleEditKey}
-					class="block w-full bg-transparent border-none outline-none text-4xl sm:text-5xl font-bold text-white placeholder-white/40 focus:ring-0 p-0 leading-tight relative z-10"
+					class="block w-full bg-transparent border-none outline-none text-4xl sm:text-5xl font-bold text-base-100 placeholder-base-100/40 focus:ring-0 p-0 leading-tight relative z-10"
 				/>
 			{:else}
-				<div class="text-white/50 text-3xl font-bold italic relative z-10">Sin selección</div>
-				<p class="text-sm text-indigo-100 mt-2 relative z-10">
+				<div class="text-base-100/50 text-3xl font-bold italic relative z-10">Sin selección</div>
+				<p class="text-sm text-base-100/80 mt-2 relative z-10">
 					Selecciona un semestre abajo para activarlo.
 				</p>
 			{/if}
 
 			<Calendar
-				class="absolute -right-5 -bottom-5 text-white/10 rotate-12 pointer-events-none"
+				class="absolute -right-5 -bottom-5 text-base-100/10 rotate-12 pointer-events-none"
 				size={160}
 			/>
 		</div>
 
-		<div class="bg-gray-50/50 flex flex-col divide-y divide-gray-100">
+		<div class="bg-base-200 flex flex-col divide-y divide-base-300">
 			{#if db.semestres.list.length > 0}
 				<div
-					class="px-6 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2"
+					class="px-6 py-3 text-xs font-bold text-content/50 uppercase tracking-wider flex items-center gap-2"
 				>
 					<History size={12} />
 					Biblioteca ({db.semestres.list.length - 1}) + 1 actual
@@ -104,7 +108,7 @@
 				{#each db.semestres.list as semestre, index (index)}
 					{#if index !== db.semestres.active}
 						<div
-							class="group flex items-center justify-between px-6 py-3 hover:bg-white transition-colors cursor-pointer"
+							class="group flex items-center justify-between px-6 py-3 hover:bg-base-100 transition-colors cursor-pointer"
 							onclick={() => db.semestres.setActive(index)}
 							onkeydown={(e) => {
 								if (e.key === 'Enter' || e.key === ' ') db.semestres.setActive(index);
@@ -114,14 +118,14 @@
 						>
 							<div class="flex items-center gap-4 flex-1">
 								<div
-									class="w-5 h-5 rounded-full border-2 border-gray-300 group-hover:border-indigo-400 group-hover:scale-110 transition-all shrink-0"
+									class="w-5 h-5 rounded-full border-2 border-base-400 group-hover:border-primary-100 group-hover:scale-110 transition-all shrink-0"
 								></div>
 								<input
 									type="text"
 									value={semestre}
 									onclick={(e) => e.stopPropagation()}
 									oninput={(e) => db.semestres.update(index, e.currentTarget.value)}
-									class="bg-transparent border-none outline-none text-gray-600 font-medium group-hover:text-indigo-900 focus:ring-0 p-0 flex-1 cursor-text"
+									class="bg-transparent border-none outline-none text-content/80 font-medium group-hover:text-primary-100 focus:ring-0 p-0 flex-1 cursor-text"
 								/>
 							</div>
 
@@ -130,7 +134,7 @@
 									e.stopPropagation();
 									openDeleteConfirm(index);
 								}}
-								class="opacity-0 group-hover:opacity-100 p-2 text-gray-300 hover:text-red-500 transition-opacity cursor-pointer"
+								class="opacity-0 group-hover:opacity-100 p-2 text-content/30 hover:text-error-100 transition-opacity cursor-pointer"
 							>
 								<Trash2 size={16} />
 							</button>
@@ -139,9 +143,9 @@
 				{/each}
 			</div>
 
-			<div class="px-6 py-4 bg-white border-t border-gray-100">
+			<div class="px-6 py-4 bg-base-100 border-t border-base-300">
 				<div
-					class="flex items-center gap-3 text-gray-400 focus-within:text-indigo-500 transition-colors"
+					class="flex items-center gap-3 text-content/50 focus-within:text-primary-100 transition-colors"
 				>
 					<Plus size={20} />
 					<input
@@ -149,39 +153,46 @@
 						bind:value={newSemesterName}
 						onkeydown={handleAddKey}
 						placeholder="Crear nuevo semestre..."
-						class="flex-1 bg-transparent border-none outline-none text-base text-gray-800 placeholder-gray-400 focus:ring-0 p-0"
+						class="flex-1 bg-transparent border-none outline-none text-base text-content placeholder-content/40 focus:ring-0 p-0"
 					/>
 				</div>
 			</div>
 		</div>
-
-		<AlertDialog.Root
-			open={deleteConfirmData !== null}
-			onOpenChange={(open) => !open && cancelDelete()}
-		>
-			<AlertDialog.Content>
-				<AlertDialog.Header>
-					<AlertDialog.Title>¿Confirmar eliminación?</AlertDialog.Title>
-					<AlertDialog.Description>
-						{#if deleteConfirmData}
-							Esta acción eliminará permanentemente el semestre <strong
-								>"{deleteConfirmData.name}"</strong
-							> y todos los datos asociados a él. Esta acción no se puede deshacer.
-						{/if}
-					</AlertDialog.Description>
-				</AlertDialog.Header>
-				<AlertDialog.Footer>
-					<AlertDialog.Cancel onclick={cancelDelete} class="cursor-pointer"
-						>Cancelar</AlertDialog.Cancel
-					>
-					<AlertDialog.Action
-						onclick={confirmDelete}
-						class="bg-red-600 hover:bg-red-700 cursor-pointer"
-					>
-						Eliminar
-					</AlertDialog.Action>
-				</AlertDialog.Footer>
-			</AlertDialog.Content>
-		</AlertDialog.Root>
 	</div>
 </div>
+
+{#if deleteConfirmData !== null}
+	<div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+		<button
+			class="absolute inset-0 bg-black/40 backdrop-blur-sm cursor-pointer"
+			onclick={cancelDelete}
+			aria-label="Cerrar modal"
+		></button>
+
+		<div
+			class="relative z-10 w-full max-w-md bg-base-100 rounded-2xl shadow-xl border border-base-400 p-6 animate-in fade-in zoom-in-95 duration-200"
+		>
+			<h3 class="text-lg font-bold text-content mb-2">¿Confirmar eliminación?</h3>
+			<p class="text-sm text-content/70 mb-6">
+				Esta acción eliminará permanentemente el semestre
+				<strong class="text-content font-semibold">"{deleteConfirmData.name}"</strong>
+				y todos los datos asociados a él. Esta acción no se puede deshacer.
+			</p>
+
+			<div class="flex justify-end gap-3">
+				<button
+					onclick={cancelDelete}
+					class="px-4 py-2 rounded-lg border border-base-400 text-content/70 text-sm font-semibold hover:bg-base-200 hover:text-content transition-colors cursor-pointer"
+				>
+					Cancelar
+				</button>
+				<button
+					onclick={confirmDelete}
+					class="px-4 py-2 rounded-lg bg-error-100 text-base-100 text-sm font-semibold hover:opacity-90 transition-opacity cursor-pointer shadow-sm"
+				>
+					Eliminar Semestre
+				</button>
+			</div>
+		</div>
+	</div>
+{/if}

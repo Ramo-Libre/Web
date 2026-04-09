@@ -75,7 +75,7 @@
 		}
 		return slots;
 	});
-	// Define este tipo cerca de tus imports o arriba de tu componente
+
 	interface LaidHorario extends Horario {
 		startMin: number;
 		endMin: number;
@@ -86,7 +86,6 @@
 	}
 
 	const laidByDay = $derived.by(() => {
-		// Aplicamos el tipo LaidHorario al Record de salida
 		const out: Record<string, LaidHorario[]> = {};
 		const allHorarios = db.horarios.list.map(([, h]) => h);
 		const ramosMap = db.ramos.map;
@@ -103,7 +102,6 @@
 				}))
 				.sort((a, b) => a.startMin - b.startMin);
 
-			// Algoritmo de agrupamiento para solapamientos tipado
 			const result: LaidHorario[] = [];
 			const active = new SvelteMap<number, LaidHorario>();
 			let group: LaidHorario[] = [];
@@ -116,19 +114,15 @@
 			};
 
 			for (const ev of dayEvents) {
-				// Retirar eventos que ya terminaron
 				for (const [lane, act] of active.entries()) {
 					if (act.endMin <= ev.startMin) active.delete(lane);
 				}
 
-				// Si ya no hay eventos activos, cerramos el grupo anterior
 				if (active.size === 0 && group.length > 0) flushGroup();
 
-				// Buscar carril libre
 				let lane = 0;
 				while (active.has(lane)) lane++;
 
-				// Tipamos el objeto final antes de pushearlo
 				const laidEv: LaidHorario = { ...ev, lane, maxLanes: 1 };
 
 				active.set(lane, laidEv);
@@ -145,12 +139,10 @@
 
 	const currentTimeY = $derived((toMinutes(nowStr) - rangeHours[0] * 60) * PX_PER_MINUTE);
 
-	// Tipamos el parámetro ev
 	function getEventStyle(ev: LaidHorario) {
 		const top = (ev.startMin - rangeHours[0] * 60) * PX_PER_MINUTE;
 		const height = (ev.endMin - ev.startMin) * PX_PER_MINUTE;
 
-		// Se calcula el ancho en base a la cantidad real de solapamientos del grupo actual
 		const width = 100 / ev.maxLanes;
 		const left = ev.lane * width;
 
@@ -158,47 +150,47 @@
 	}
 </script>
 
-<div class="flex flex-col bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-	<div
-		class="lg:hidden flex items-center justify-between p-4 border-b border-slate-100 bg-slate-50/50"
-	>
+<div class="flex flex-col bg-base-100 rounded-2xl border border-base-400 shadow-sm overflow-hidden">
+	<div class="lg:hidden flex items-center justify-between p-4 border-b border-base-300 bg-base-200">
 		<button
-			class="p-2 hover:bg-slate-200 rounded-full transition-colors"
+			class="p-2 hover:bg-base-300 rounded-full transition-colors cursor-pointer"
 			onclick={() => (selectedDayIdx = (selectedDayIdx - 1 + 6) % 6)}
 		>
-			<ChevronLeft class="w-5 h-5 text-slate-600" />
+			<ChevronLeft class="w-5 h-5 text-content/70" />
 		</button>
 
 		<div class="text-center">
-			<span class="block font-bold text-slate-800">{selectedDay.name}</span>
+			<span class="block font-bold text-content">{selectedDay.name}</span>
 			<div class="flex gap-1.5 mt-1.5 justify-center">
 				{#each weekDays as day, i (day.id)}
 					<div
-						class="w-1.5 h-1.5 rounded-full {i === selectedDayIdx ? 'bg-blue-600' : 'bg-slate-300'}"
+						class="w-1.5 h-1.5 rounded-full {i === selectedDayIdx
+							? 'bg-schedule-100'
+							: 'bg-base-400'}"
 					></div>
 				{/each}
 			</div>
 		</div>
 
 		<button
-			class="p-2 hover:bg-slate-200 rounded-full transition-colors"
+			class="p-2 hover:bg-base-300 rounded-full transition-colors cursor-pointer"
 			onclick={() => (selectedDayIdx = (selectedDayIdx + 1) % 6)}
 		>
-			<ChevronRight class="w-5 h-5 text-slate-600" />
+			<ChevronRight class="w-5 h-5 text-content/70" />
 		</button>
 	</div>
 
 	<div
-		class="hidden lg:grid border-b border-slate-100 bg-slate-50/80"
+		class="hidden lg:grid border-b border-base-300 bg-base-200"
 		style="grid-template-columns: {TIME_GUTTER_PX}px 1fr;"
 	>
-		<div class="border-r border-slate-100"></div>
+		<div class="border-r border-base-300"></div>
 		<div class="grid grid-cols-6">
 			{#each weekDays as day, i (i)}
 				<div
-					class="h-10 flex items-center justify-center text-[10px] font-black text-slate-400 uppercase tracking-widest border-r border-slate-100 last:border-r-0 {day.dow ===
+					class="h-10 flex items-center justify-center text-[10px] font-black text-content/50 uppercase tracking-widest border-r border-base-300 last:border-r-0 {day.dow ===
 					currentDowNum
-						? 'bg-blue-50/30'
+						? 'bg-schedule-400' /* Resalte de día actual usando schedule */
 						: ''}"
 				>
 					{day.name}
@@ -209,15 +201,12 @@
 
 	<div class="flex-1 relative">
 		<div class="grid" style="grid-template-columns: {TIME_GUTTER_PX}px 1fr;">
-			<div
-				class="relative border-r border-slate-100 bg-slate-50/30"
-				style="height: {boardHeight}px;"
-			>
+			<div class="relative border-r border-base-300 bg-base-100" style="height: {boardHeight}px;">
 				{#each timeSlots as slot (slot.label)}
 					<div
 						class="absolute right-2 -translate-y-1/2 text-[10px] font-bold {slot.m === 0
-							? 'text-slate-500'
-							: 'text-slate-300'}"
+							? 'text-content/60'
+							: 'text-content/30'}"
 						style="top: {slot.top}px;"
 					>
 						{slot.label}
@@ -229,33 +218,33 @@
 				{#each timeSlots as slot (slot.label)}
 					<div
 						class="absolute w-full border-t {slot.m === 0
-							? 'border-slate-100'
-							: 'border-slate-50 border-dashed'}"
+							? 'border-base-300'
+							: 'border-base-200 border-dashed'}"
 						style="top: {slot.top}px;"
 					></div>
 				{/each}
 
 				{#if isWorkDay && currentTimeY > 0 && currentTimeY < boardHeight}
 					<div
-						class="absolute w-full border-t-2 border-red-500/50 z-20 pointer-events-none flex items-center"
+						class="absolute w-full border-t-2 border-error-300 z-20 pointer-events-none flex items-center"
 						style="top: {currentTimeY}px;"
 					>
-						<div class="w-2 h-2 bg-red-500 rounded-full -ml-1 -translate-y-1/2 shadow-sm"></div>
+						<div class="w-2 h-2 bg-error-100 rounded-full -ml-1 -translate-y-1/2 shadow-sm"></div>
 					</div>
 				{/if}
 
 				<div class="grid h-full grid-cols-1 lg:grid-cols-6">
 					{#each weekDays as day, i (i)}
 						<div
-							class="relative border-r border-slate-100 h-full transition-colors {i !==
+							class="relative border-r border-base-300 h-full transition-colors {i !==
 							selectedDayIdx
 								? 'hidden lg:block'
-								: 'block'} {day.dow === currentDowNum ? 'bg-blue-50/30' : ''}"
+								: 'block'} {day.dow === currentDowNum ? 'bg-schedule-400' : ''}"
 						>
 							{#each laidByDay[day.id] as ev (ev.id)}
 								{@const Icon = typeIcons[ev.type as keyof typeof typeIcons]}
 								<div
-									class="absolute p-2 rounded-lg border-l-4 shadow-sm overflow-hidden group transition-all hover:z-30 hover:shadow-md"
+									class="absolute p-2 rounded-lg border-l-4 shadow-sm overflow-hidden group transition-all hover:z-30 hover:shadow-md cursor-pointer"
 									style="{getEventStyle(
 										ev
 									)} background-color: {ev.color}15; border-color: {ev.color};"
@@ -263,18 +252,18 @@
 									<div class="flex flex-col h-full">
 										<div class="flex items-center gap-1.5 mb-1 min-w-0">
 											<Icon class="w-3.5 h-3.5 shrink-0" style="color: {ev.color}" />
-											<span class="text-[10px] font-black uppercase truncate text-slate-700">
+											<span class="text-[10px] font-black uppercase truncate text-content">
 												{ev.ramoName}
 											</span>
 										</div>
 
 										{#if ev.location}
-											<span class="text-[11px] font-medium text-slate-600 truncate">
+											<span class="text-[11px] font-medium text-content/80 truncate">
 												{ev.location}
 											</span>
 										{/if}
 
-										<div class="mt-auto flex items-center gap-1 text-slate-400">
+										<div class="mt-auto flex items-center gap-1 text-content/50">
 											<Clock class="w-3 h-3" />
 											<span class="text-[9px] font-bold tracking-tighter">
 												{ev.start} - {ev.end}

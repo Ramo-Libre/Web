@@ -34,7 +34,7 @@
 				return {
 					...h,
 					ramoNombre: ramo?.nombre ?? 'Sin Ramo',
-					color: ramo?.color ?? '#cbd5e1',
+					color: ramo?.color ?? '#cbd5e1', // Nota: Si este color viene duro de DB, mantén la variable de estilo en el HTML
 					startMin: toMinutes(h.start),
 					endMin: toMinutes(h.end)
 				};
@@ -88,16 +88,16 @@
 </script>
 
 <div
-	class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm relative overflow-hidden flex flex-col group"
+	class="bg-base-100 rounded-2xl p-5 border border-base-400 shadow-sm relative overflow-hidden flex flex-col group"
 >
 	<div class="flex items-center justify-between mb-auto z-10">
 		<div class="flex items-center gap-2">
-			<Clock class="w-5 h-5 text-blue-500" />
-			<h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest">
+			<Clock class="w-5 h-5 text-schedule-100" />
+			<h3 class="text-sm font-bold text-content/50 uppercase tracking-widest">
 				{currentClass ? 'Ahora Mismo' : nextClass ? 'Próxima Clase' : 'Estado'}
 			</h3>
 		</div>
-		<div class="text-xs font-bold text-slate-400 bg-slate-100 px-2.5 py-1 rounded-lg">
+		<div class="text-xs font-bold text-content/60 bg-base-300 px-2.5 py-1 rounded-lg">
 			{now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
 		</div>
 	</div>
@@ -111,13 +111,13 @@
 				></div>
 
 				<div class="flex-1 min-w-0 flex flex-col justify-center">
-					<h2 class="text-2xl font-black text-slate-800 leading-tight mb-1 truncate">
+					<h2 class="text-2xl font-black text-content leading-tight mb-1 truncate">
 						{currentClass.ramoNombre}
 					</h2>
 
-					<div class="flex items-center gap-3 text-sm text-slate-500 font-medium mb-3">
+					<div class="flex items-center gap-3 text-sm text-content/70 font-medium mb-3">
 						<span
-							class="flex items-center gap-1 bg-slate-50 border border-slate-100 px-2 py-0.5 rounded-md"
+							class="flex items-center gap-1 bg-base-200 border border-base-300 px-2 py-0.5 rounded-md"
 						>
 							<Clock class="w-3.5 h-3.5" />
 							{currentClass.start} - {currentClass.end}
@@ -132,12 +132,12 @@
 
 					<div class="flex items-center gap-2">
 						<span
-							class="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-bold text-green-700 bg-green-100 rounded-lg uppercase tracking-wide"
+							class="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-bold text-success-100 bg-success-400 border border-success-300 rounded-lg uppercase tracking-wide"
 						>
-							<div class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+							<div class="w-1.5 h-1.5 bg-success-100 rounded-full animate-pulse"></div>
 							En curso
 						</span>
-						<span class="text-xs font-bold text-slate-400">
+						<span class="text-xs font-bold text-content/60">
 							Quedan {countdownStr}
 						</span>
 					</div>
@@ -148,13 +148,13 @@
 				<div class="w-1.5 rounded-full shrink-0" style="background-color: {nextClass.color}"></div>
 
 				<div class="flex-1 min-w-0 flex flex-col justify-center">
-					<h2 class="text-2xl font-black text-slate-800 leading-tight mb-1 truncate">
+					<h2 class="text-2xl font-black text-content leading-tight mb-1 truncate">
 						{nextClass.ramoNombre}
 					</h2>
 
-					<div class="flex items-center gap-3 text-sm text-slate-500 font-medium mb-3">
+					<div class="flex items-center gap-3 text-sm text-content/70 font-medium mb-3">
 						<span
-							class="flex items-center gap-1 bg-slate-50 border border-slate-100 px-2 py-0.5 rounded-md"
+							class="flex items-center gap-1 bg-base-200 border border-base-300 px-2 py-0.5 rounded-md"
 						>
 							<Clock class="w-3.5 h-3.5" />
 							Empieza a las {nextClass.start}
@@ -169,7 +169,7 @@
 
 					<div class="flex items-center gap-2">
 						<span
-							class="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-bold text-blue-700 bg-blue-50 border border-blue-100 rounded-lg uppercase tracking-wide"
+							class="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-bold text-primary-100 bg-primary-400 border border-primary-300 rounded-lg uppercase tracking-wide"
 						>
 							Empieza en {countdownStr}
 						</span>
@@ -177,22 +177,22 @@
 				</div>
 			</div>
 		{:else if isDayFinished}
-			<div class="flex flex-col items-center justify-center text-center text-slate-400">
-				<CheckCircle2 class="w-12 h-12 text-green-400 mb-3" />
-				<h3 class="text-lg font-bold text-slate-700">¡Día completado!</h3>
+			<div class="flex flex-col items-center justify-center text-center text-content/60">
+				<CheckCircle2 class="w-12 h-12 text-success-100 mb-3" />
+				<h3 class="text-lg font-bold text-content">¡Día completado!</h3>
 				<p class="text-sm">No tienes más clases por hoy.</p>
 			</div>
 		{:else}
-			<div class="flex flex-col items-center justify-center text-center text-slate-400">
-				<Coffee class="w-12 h-12 text-slate-300 mb-3" />
-				<h3 class="text-lg font-bold text-slate-700">Día libre</h3>
+			<div class="flex flex-col items-center justify-center text-center text-content/60">
+				<Coffee class="w-12 h-12 text-content/30 mb-3" />
+				<h3 class="text-lg font-bold text-content">Día libre</h3>
 				<p class="text-sm">No hay clases programadas para hoy.</p>
 			</div>
 		{/if}
 	</div>
 
 	{#if currentClass}
-		<div class="absolute bottom-0 left-0 right-0 h-1.5 bg-slate-100">
+		<div class="absolute bottom-0 left-0 right-0 h-1.5 bg-base-300">
 			<div
 				class="h-full transition-all duration-1000 ease-linear"
 				style="width: {progressPct}%; background-color: {currentClass.color};"
