@@ -1,7 +1,7 @@
 <script lang="ts">
     import { db } from '$lib/state/index.svelte';
     import { Trash2, Plus, Calendar, CircleCheck, History } from '@lucide/svelte';
-    import * as AlertDialog from '$lib/components/ui/alert-dialog';
+    // Eliminado el import de AlertDialog
 
     let newSemesterName = $state('');
     let deleteConfirmData = $state<{ type: 'index' | 'active'; index?: number; name: string } | null>(
@@ -154,34 +154,41 @@
                 </div>
             </div>
         </div>
-
-        <AlertDialog.Root
-            open={deleteConfirmData !== null}
-            onOpenChange={(open) => !open && cancelDelete()}
-        >
-            <AlertDialog.Content>
-                <AlertDialog.Header>
-                    <AlertDialog.Title>¿Confirmar eliminación?</AlertDialog.Title>
-                    <AlertDialog.Description>
-                        {#if deleteConfirmData}
-                            Esta acción eliminará permanentemente el semestre <strong
-                                >"{deleteConfirmData.name}"</strong
-                            > y todos los datos asociados a él. Esta acción no se puede deshacer.
-                        {/if}
-                    </AlertDialog.Description>
-                </AlertDialog.Header>
-                <AlertDialog.Footer>
-                    <AlertDialog.Cancel onclick={cancelDelete} class="cursor-pointer"
-                        >Cancelar</AlertDialog.Cancel
-                    >
-                    <AlertDialog.Action
-                        onclick={confirmDelete}
-                        class="bg-error-100 text-base-100 hover:opacity-90 cursor-pointer"
-                    >
-                        Eliminar
-                    </AlertDialog.Action>
-                </AlertDialog.Footer>
-            </AlertDialog.Content>
-        </AlertDialog.Root>
     </div>
 </div>
+
+{#if deleteConfirmData !== null}
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <button
+            class="absolute inset-0 bg-black/40 backdrop-blur-sm cursor-pointer"
+            onclick={cancelDelete}
+            aria-label="Cerrar modal"
+        ></button>
+
+        <div class="relative z-10 w-full max-w-md bg-base-100 rounded-2xl shadow-xl border border-base-400 p-6 animate-in fade-in zoom-in-95 duration-200">
+            <h3 class="text-lg font-bold text-content mb-2">
+                ¿Confirmar eliminación?
+            </h3>
+            <p class="text-sm text-content/70 mb-6">
+                Esta acción eliminará permanentemente el semestre
+                <strong class="text-content font-semibold">"{deleteConfirmData.name}"</strong>
+                y todos los datos asociados a él. Esta acción no se puede deshacer.
+            </p>
+
+            <div class="flex justify-end gap-3">
+                <button
+                    onclick={cancelDelete}
+                    class="px-4 py-2 rounded-lg border border-base-400 text-content/70 text-sm font-semibold hover:bg-base-200 hover:text-content transition-colors cursor-pointer"
+                >
+                    Cancelar
+                </button>
+                <button
+                    onclick={confirmDelete}
+                    class="px-4 py-2 rounded-lg bg-error-100 text-base-100 text-sm font-semibold hover:opacity-90 transition-opacity cursor-pointer shadow-sm"
+                >
+                    Eliminar Semestre
+                </button>
+            </div>
+        </div>
+    </div>
+{/if}
