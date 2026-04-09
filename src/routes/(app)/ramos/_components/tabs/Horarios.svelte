@@ -210,7 +210,7 @@
 								}`}
 								onclick={() => (selectedIcon = option.id)}
 							>
-								<svelte:component this={option.Icon} class="w-4 h-4" />
+								<option.Icon class="w-4 h-4" />
 								<span>{option.label}</span>
 							</button>
 						{/each}
@@ -219,8 +219,9 @@
 
 				<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 					<div>
-						<label class="text-sm font-medium text-slate-600">Día</label>
+						<label class="text-sm font-medium text-slate-600" for="horario-day">Día</label>
 						<select
+							id="horario-day"
 							class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700"
 							bind:value={formDay}
 						>
@@ -233,8 +234,9 @@
 						</select>
 					</div>
 					<div>
-						<label class="text-sm font-medium text-slate-600">Lugar</label>
+						<label class="text-sm font-medium text-slate-600" for="horario-location">Lugar</label>
 						<input
+							id="horario-location"
 							type="text"
 							placeholder="Ej: Sala 204"
 							bind:value={formLocation}
@@ -245,16 +247,18 @@
 
 				<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 					<div>
-						<label class="text-sm font-medium text-slate-600">Inicio</label>
+						<label class="text-sm font-medium text-slate-600" for="horario-start">Inicio</label>
 						<input
+							id="horario-start"
 							type="time"
 							bind:value={formStart}
 							class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700"
 						/>
 					</div>
 					<div>
-						<label class="text-sm font-medium text-slate-600">Fin</label>
+						<label class="text-sm font-medium text-slate-600" for="horario-end">Fin</label>
 						<input
+							id="horario-end"
 							type="time"
 							bind:value={formEnd}
 							class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700"
