@@ -3,6 +3,7 @@ import type { Serializable } from '$lib/types/state';
 export type CalendarView = 'calendar' | 'list' | 'kanban' | 'timeline';
 export type CalendarStatusFilter = 'all' | 'upcoming' | 'overdue' | 'completed';
 export type ScheduleView = 'table' | 'list' | 'clock' | 'gallery';
+export type Theme = 'light' | 'dark' | 'nord' | 'latte';
 
 export interface Preferences {
 	calendar: {
@@ -12,7 +13,10 @@ export interface Preferences {
 	};
 	schedule: {
 		view: ScheduleView;
-	};
+    };
+    general: {
+        theme: Theme;
+    };
 }
 
 type PreferencesSerial = Preferences;
@@ -25,6 +29,9 @@ const DEFAULT_PREFERENCES: Preferences = {
 	},
 	schedule: {
 		view: 'table'
+	},
+	general: {
+		theme: 'light'
 	}
 };
 
@@ -42,6 +49,10 @@ export class PreferencesManager implements Serializable<PreferencesSerial> {
 			schedule: {
 				...DEFAULT_PREFERENCES.schedule,
 				...(serial?.schedule ?? {})
+			},
+			general: {
+				...DEFAULT_PREFERENCES.general,
+				...(serial?.general ?? {})
 			}
 		};
 	}
@@ -59,7 +70,8 @@ export class PreferencesManager implements Serializable<PreferencesSerial> {
 			this._prefs.calendar.view === DEFAULT_PREFERENCES.calendar.view &&
 			this._prefs.calendar.status === DEFAULT_PREFERENCES.calendar.status &&
 			this._prefs.calendar.ramo === DEFAULT_PREFERENCES.calendar.ramo &&
-			this._prefs.schedule.view === DEFAULT_PREFERENCES.schedule.view
+			this._prefs.schedule.view === DEFAULT_PREFERENCES.schedule.view &&
+			this._prefs.general.theme === DEFAULT_PREFERENCES.general.theme
 		);
 	}
 
@@ -77,6 +89,10 @@ export class PreferencesManager implements Serializable<PreferencesSerial> {
 
 	get scheduleView() {
 		return this._prefs.schedule.view;
+	}
+
+	get theme() {
+		return this._prefs.general.theme;
 	}
 
 	setCalendarView(view: CalendarView) {
@@ -107,6 +123,20 @@ export class PreferencesManager implements Serializable<PreferencesSerial> {
 				ramo
 			}
 		};
+	}
+
+	setTheme(theme: Theme) {
+		this._prefs = {
+			...this._prefs,
+			general: {
+				...this._prefs.general,
+				theme
+			}
+        };
+
+		const root = document.documentElement;
+		root.classList.remove('light', 'dark', 'nord', 'latte');
+		root.classList.add(theme);
 	}
 
 	setScheduleView(view: ScheduleView) {
