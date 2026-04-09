@@ -19,7 +19,7 @@
                 onclick={() => onSelectView('table')}
                 class={`cursor-pointer inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium border transition-colors w-full sm:w-auto ${
                     selectedView === 'table'
-                        ? 'bg-primary-100 text-base-100 border-primary-100'
+                        ? 'bg-schedule-100 text-base-100 border-schedule-100'
                         : 'border-base-400 text-content/70 hover:bg-base-200 hover:text-content'
                 }`}
             >
@@ -30,7 +30,7 @@
                 onclick={() => onSelectView('list')}
                 class={`cursor-pointer inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium border transition-colors w-full sm:w-auto ${
                     selectedView === 'list'
-                        ? 'bg-primary-100 text-base-100 border-primary-100'
+                        ? 'bg-schedule-100 text-base-100 border-schedule-100'
                         : 'border-base-400 text-content/70 hover:bg-base-200 hover:text-content'
                 }`}
             >
@@ -41,7 +41,7 @@
                 onclick={() => onSelectView('clock')}
                 class={`cursor-pointer inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium border transition-colors w-full sm:w-auto ${
                     selectedView === 'clock'
-                        ? 'bg-primary-100 text-base-100 border-primary-100'
+                        ? 'bg-schedule-100 text-base-100 border-schedule-100'
                         : 'border-base-400 text-content/70 hover:bg-base-200 hover:text-content'
                 }`}
             >
@@ -52,7 +52,7 @@
                 onclick={() => onSelectView('gallery')}
                 class={`cursor-pointer inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium border transition-colors w-full sm:w-auto ${
                     selectedView === 'gallery'
-                        ? 'bg-primary-100 text-base-100 border-primary-100'
+                        ? 'bg-schedule-100 text-base-100 border-schedule-100'
                         : 'border-base-400 text-content/70 hover:bg-base-200 hover:text-content'
                 }`}
             >
