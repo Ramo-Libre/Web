@@ -1,7 +1,7 @@
 .bg-grid-pattern,
 body {
-	background-color: #fafafa; /* zinc-50 */
-	background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+	background-color: var(--color-base-200);
+	background-image: radial-gradient(var(--color-base-400) 1px, transparent 1px);
 	background-size: 24px 24px;
 }
 
