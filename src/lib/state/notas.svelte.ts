@@ -147,7 +147,6 @@ export class NotasManager implements Serializable<NotasSerial> {
 		return ramoData.contexto;
 	}
 
-
 	// Guardar contexto de un ramo y actualizar recomendación global
 	setContexto(ramoId: RamoKey, contexto: Contexto): void {
 		const ramoData = this.ensureRamoData(ramoId);
