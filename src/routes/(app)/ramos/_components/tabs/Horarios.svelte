@@ -218,7 +218,6 @@
 							<option value="J">Jueves</option>
 							<option value="V">Viernes</option>
 							<option value="S">Sábado</option>
-							<option value="D">Domingo</option>
 						</select>
 					</div>
 					<div>

@@ -15,7 +15,7 @@
 	let { selectedView = 'table', selectedLayer = false }: Props = $props();
 </script>
 
-<div class="bg-white rounded-2xl border border-gray-200 shadow-sm h-[700px]">
+<div class="bg-white rounded-2xl border border-gray-200 shadow-sm">
 	{#if selectedView === 'table'}
 		<Table selectedLayer={selectedLayer} />
 	{:else if selectedView === 'list'}

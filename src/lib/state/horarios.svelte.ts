@@ -1,7 +1,7 @@
 import type { Serializable } from '$lib/types/state';
 import { SvelteMap } from 'svelte/reactivity';
 
-export type HorarioDay = 'L' | 'M' | 'X' | 'J' | 'V' | 'S' | 'D';
+export type HorarioDay = 'L' | 'M' | 'X' | 'J' | 'V' | 'S';
 export type HorarioType = 'book' | 'lab' | 'assist' | 'taller';
 
 export interface Horario {
