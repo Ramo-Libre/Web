@@ -12,13 +12,6 @@
 	} from '@lucide/svelte';
 	import { SvelteMap } from 'svelte/reactivity';
 
-	interface Props {
-		selectedLayer?: boolean;
-	}
-
-	let { selectedLayer = false }: Props = $props();
-	console.log(selectedLayer);
-
 	// --- CONFIGURACIÓN ---
 	const weekDays: { id: HorarioDay; name: string; short: string; dow: number }[] = [
 		{ id: 'L', name: 'Lunes', short: 'Lun', dow: 1 },

@@ -5,24 +5,22 @@
 	import Gallery from './views/Gallery.svelte';
 
 	type ViewMode = 'table' | 'list' | 'clock' | 'gallery';
-	type LayerMode = boolean;
 
 	interface Props {
 		selectedView: ViewMode;
-		selectedLayer: LayerMode;
 	}
 
-	let { selectedView = 'table', selectedLayer = false }: Props = $props();
+	let { selectedView = 'table' }: Props = $props();
 </script>
 
 <div class="">
 	{#if selectedView === 'table'}
-		<Table selectedLayer={selectedLayer} />
+		<Table />
 	{:else if selectedView === 'list'}
-		<List selectedLayer={selectedLayer} />
+		<List />
 	{:else if selectedView === 'clock'}
-		<Clock selectedLayer={selectedLayer} />
+		<Clock />
 	{:else if selectedView === 'gallery'}
-		<Gallery selectedLayer={selectedLayer} />
+		<Gallery />
 	{/if}
 </div>

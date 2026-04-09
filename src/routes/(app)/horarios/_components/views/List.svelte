@@ -3,14 +3,6 @@
 	import type { HorarioDay, HorarioType } from '$lib/state/horarios.svelte';
 	import { BookOpen, FlaskConical, Users, Hammer, MapPin } from '@lucide/svelte';
 
-	type LayerMode = boolean;
-	interface Props {
-		selectedLayer?: LayerMode;
-	}
-
-	let { selectedLayer = false }: Props = $props();
-	console.log(selectedLayer);
-
 	// --- MAPAS Y CONSTANTES ---
 	const dayMap: Record<number, HorarioDay> = { 1: 'L', 2: 'M', 3: 'X', 4: 'J', 5: 'V', 6: 'S' };
 	const dayNames: Record<HorarioDay, string> = {

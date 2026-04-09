@@ -1,20 +1,15 @@
 <script lang="ts">
 	import { Table2, List, ClockFading, GalleryHorizontalEnd, Layers2 } from '@lucide/svelte';
 	type ViewMode = 'table' | 'list' | 'clock' | 'gallery';
-	type LayerMode = boolean;
 
 	interface Props {
 		selectedView: ViewMode;
-		selectedLayer: LayerMode;
 		onSelectView: (view: ViewMode) => void;
-		onSelectLayer: (layer: LayerMode) => void;
 	}
 
 	let {
 		selectedView = 'table',
-		selectedLayer = false,
 		onSelectView = () => {},
-		onSelectLayer = () => {}
 	}: Props = $props();
 </script>
 
@@ -68,7 +63,8 @@
 				Galería
 			</button>
 		</div>
-		<div class="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:items-center sm:gap-3">
+		<!-- Boton para mostrar/ocultar eventos -->
+		<!-- <div class="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:items-center sm:gap-3">
 			<button
 				onclick={() => onSelectLayer(!selectedLayer)}
 				class={`cursor-pointer inline-flex items-center justify-center max-sm:mt-2 gap-2 px-4 py-2 rounded-lg border text-sm font-semibold transition-colors w-full sm:w-auto ${
@@ -80,6 +76,6 @@
 				<Layers2 class="w-4 h-4" />
 				Eventos
 			</button>
-		</div>
+		</div> -->
 	</div>
 </div>
