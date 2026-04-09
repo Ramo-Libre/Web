@@ -7,10 +7,7 @@
 		onSelectView: (view: ViewMode) => void;
 	}
 
-	let {
-		selectedView = 'table',
-		onSelectView = () => {},
-	}: Props = $props();
+	let { selectedView = 'table', onSelectView = () => {} }: Props = $props();
 </script>
 
 <div class="space-y-4">

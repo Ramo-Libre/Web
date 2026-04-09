@@ -1,5 +1,15 @@
 <script lang="ts">
-	import { Plus, Pencil, Trash2, BookOpen, FlaskConical, Users, Hammer, X, CalendarX2 } from '@lucide/svelte';
+	import {
+		Plus,
+		Pencil,
+		Trash2,
+		BookOpen,
+		FlaskConical,
+		Users,
+		Hammer,
+		X,
+		CalendarX2
+	} from '@lucide/svelte';
 	import { db } from '$lib/state/index.svelte';
 	import type { Horario, HorarioDay, HorarioType } from '$lib/state/horarios.svelte';
 
@@ -25,7 +35,7 @@
 		{ id: 'taller', label: 'Taller', Icon: Hammer }
 	] as const;
 
-	const dayOrder: HorarioDay[] = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
+	const dayOrder: HorarioDay[] = ['L', 'M', 'X', 'J', 'V', 'S'];
 
 	const horarios = $derived.by(() => {
 		const list = db.horarios.list.map(([, horario]) => horario);
@@ -123,51 +133,53 @@
 	</div>
 
 	<div class="space-y-2">
-	    {#if sortedHorarios.length === 0}
+		{#if sortedHorarios.length === 0}
 			<div class="text-sm text-slate-500 flex justify-center items-center gap-1 mt-20">
-			    <CalendarX2 class="w-4 h-4" />
-			    No hay horarios agregados.
+				<CalendarX2 class="w-4 h-4" />
+				No hay horarios agregados.
 			</div>
 		{:else}
-		{#each sortedHorarios as horario (horario.id)}
-			{@const TypeIcon = iconFor(horario.type)}
-			<div
-				class="flex items-center justify-between rounded-lg border border-slate-200 bg-white px-4 py-3"
-			>
-				<div class="flex items-center gap-3">
-					<div
-						class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 text-slate-700 font-semibold"
-					>
-						{horario.day}
-					</div>
-					<div class="flex max-sm:flex-col sm:items-center max-sm:justify-center gap-1 sm:gap-4">
-						<div class="text-sm font-semibold text-slate-800">{horario.start} - {horario.end}</div>
-						<div class="inline-flex items-center gap-1 text-xs text-slate-500">
-							<TypeIcon class="w-4 h-4" />
-							{#if horario.location}
-								<div class="text-xs text-slate-500">{horario.location}</div>
-							{/if}
+			{#each sortedHorarios as horario (horario.id)}
+				{@const TypeIcon = iconFor(horario.type)}
+				<div
+					class="flex items-center justify-between rounded-lg border border-slate-200 bg-white px-4 py-3"
+				>
+					<div class="flex items-center gap-3">
+						<div
+							class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 text-slate-700 font-semibold"
+						>
+							{horario.day}
+						</div>
+						<div class="flex max-sm:flex-col sm:items-center max-sm:justify-center gap-1 sm:gap-4">
+							<div class="text-sm font-semibold text-slate-800">
+								{horario.start} - {horario.end}
+							</div>
+							<div class="inline-flex items-center gap-1 text-xs text-slate-500">
+								<TypeIcon class="w-4 h-4" />
+								{#if horario.location}
+									<div class="text-xs text-slate-500">{horario.location}</div>
+								{/if}
+							</div>
 						</div>
 					</div>
+					<div class="flex items-center gap-2 text-slate-500">
+						<button
+							class="p-2 rounded-lg hover:bg-slate-50 cursor-pointer"
+							aria-label="Editar"
+							onclick={() => openEdit(horario)}
+						>
+							<Pencil class="w-4 h-4" />
+						</button>
+						<button
+							class="text-slate-500 hover:text-red-500 p-2 rounded-lg hover:bg-red-50 cursor-pointer"
+							aria-label="Eliminar"
+							onclick={() => removeHorario(horario.id)}
+						>
+							<Trash2 class="w-4 h-4" />
+						</button>
+					</div>
 				</div>
-				<div class="flex items-center gap-2 text-slate-500">
-					<button
-						class="p-2 rounded-lg hover:bg-slate-50 cursor-pointer"
-						aria-label="Editar"
-						onclick={() => openEdit(horario)}
-					>
-						<Pencil class="w-4 h-4" />
-					</button>
-					<button
-						class="text-slate-500 hover:text-red-500 p-2 rounded-lg hover:bg-red-50 cursor-pointer"
-						aria-label="Eliminar"
-						onclick={() => removeHorario(horario.id)}
-					>
-						<Trash2 class="w-4 h-4" />
-					</button>
-				</div>
-			</div>
-		{/each}
+			{/each}
 		{/if}
 	</div>
 </div>
