@@ -13,10 +13,10 @@ export interface Preferences {
 	};
 	schedule: {
 		view: ScheduleView;
-    };
-    general: {
-        theme: Theme;
-    };
+	};
+	general: {
+		theme: Theme;
+	};
 }
 
 type PreferencesSerial = Preferences;
@@ -132,13 +132,13 @@ export class PreferencesManager implements Serializable<PreferencesSerial> {
 				...this._prefs.general,
 				theme
 			}
-        };
-    }
+		};
+	}
 
-    applyTheme() {
+	applyTheme() {
 		const root = document.documentElement;
-        const cls = themes.map((t) => t.class).filter((c) => !!c);
-        root.classList.remove(...cls);
+		const cls = themes.map((t) => t.class).filter((c) => !!c);
+		root.classList.remove(...cls);
 		root.classList.add(this._prefs.general.theme);
 	}
 

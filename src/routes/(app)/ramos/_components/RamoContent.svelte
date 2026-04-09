@@ -75,7 +75,9 @@
 		</div>
 	</div>
 {:else}
-	<div class="bg-base-200 border border-base-400 shadow-inner rounded-xl p-6 h-full transition-colors">
+	<div
+		class="bg-base-200 border border-base-400 shadow-inner rounded-xl p-6 h-full transition-colors"
+	>
 		<div class="text-center text-content/40 h-full flex items-center justify-center">
 			<div>
 				<BookOpen class="w-12 h-12 mx-auto mb-4 text-content/20" />

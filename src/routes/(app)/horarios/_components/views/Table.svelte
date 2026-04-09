@@ -151,9 +151,7 @@
 </script>
 
 <div class="flex flex-col bg-base-100 rounded-2xl border border-base-400 shadow-sm overflow-hidden">
-	<div
-		class="lg:hidden flex items-center justify-between p-4 border-b border-base-300 bg-base-200"
-	>
+	<div class="lg:hidden flex items-center justify-between p-4 border-b border-base-300 bg-base-200">
 		<button
 			class="p-2 hover:bg-base-300 rounded-full transition-colors cursor-pointer"
 			onclick={() => (selectedDayIdx = (selectedDayIdx - 1 + 6) % 6)}
@@ -166,7 +164,9 @@
 			<div class="flex gap-1.5 mt-1.5 justify-center">
 				{#each weekDays as day, i (day.id)}
 					<div
-						class="w-1.5 h-1.5 rounded-full {i === selectedDayIdx ? 'bg-schedule-100' : 'bg-base-400'}"
+						class="w-1.5 h-1.5 rounded-full {i === selectedDayIdx
+							? 'bg-schedule-100'
+							: 'bg-base-400'}"
 					></div>
 				{/each}
 			</div>
@@ -201,11 +201,7 @@
 
 	<div class="flex-1 relative">
 		<div class="grid" style="grid-template-columns: {TIME_GUTTER_PX}px 1fr;">
-
-			<div
-				class="relative border-r border-base-300 bg-base-100"
-				style="height: {boardHeight}px;"
-			>
+			<div class="relative border-r border-base-300 bg-base-100" style="height: {boardHeight}px;">
 				{#each timeSlots as slot (slot.label)}
 					<div
 						class="absolute right-2 -translate-y-1/2 text-[10px] font-bold {slot.m === 0

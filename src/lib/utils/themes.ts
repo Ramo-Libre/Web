@@ -1,3 +1,4 @@
+import type { ComponentType } from 'svelte';
 import { Sun, Moon, Snowflake, Coffee, Music, TreePine, Ghost, Flower2 } from '@lucide/svelte';
 
 export type Theme =
@@ -10,7 +11,7 @@ export type Theme =
 	| 'dracula'
 	| 'sakura';
 
-export type ThemeOption = { id: Theme; label: string; icon: any; class: string };
+export type ThemeOption = { id: Theme; label: string; icon: ComponentType; class: string };
 
 export const themes: ThemeOption[] = [
 	{ id: 'light', label: 'Claro', icon: Sun, class: '' },

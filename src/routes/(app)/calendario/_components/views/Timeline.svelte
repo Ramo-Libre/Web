@@ -175,33 +175,47 @@
 
 	function statusLabel(status: string) {
 		switch (status) {
-			case 'completed': return 'Completado';
-			case 'overdue': return 'Vencido';
-			default: return 'Pendiente';
+			case 'completed':
+				return 'Completado';
+			case 'overdue':
+				return 'Vencido';
+			default:
+				return 'Pendiente';
 		}
 	}
 
 	function statusClasses(status: string) {
 		switch (status) {
-			case 'completed': return 'bg-success-400 text-success-100 border border-success-300';
-			case 'overdue': return 'bg-error-400 text-error-100 border border-error-300';
-			default: return 'bg-base-200 text-content/70 border border-base-400';
+			case 'completed':
+				return 'bg-success-400 text-success-100 border border-success-300';
+			case 'overdue':
+				return 'bg-error-400 text-error-100 border border-error-300';
+			default:
+				return 'bg-base-200 text-content/70 border border-base-400';
 		}
 	}
 
 	function priorityLabel(priority: string) {
 		switch (priority) {
-			case 'high': return 'Alta';
-			case 'medium': return 'Media';
-			case 'low': default: return 'Baja';
+			case 'high':
+				return 'Alta';
+			case 'medium':
+				return 'Media';
+			case 'low':
+			default:
+				return 'Baja';
 		}
 	}
 
 	function priorityClasses(priority: string) {
 		switch (priority) {
-			case 'high': return 'bg-error-400 text-error-100 border border-error-300';
-			case 'medium': return 'bg-warning-400 text-warning-100 border border-warning-300';
-			case 'low': default: return 'bg-success-400 text-success-100 border border-success-300';
+			case 'high':
+				return 'bg-error-400 text-error-100 border border-error-300';
+			case 'medium':
+				return 'bg-warning-400 text-warning-100 border border-warning-300';
+			case 'low':
+			default:
+				return 'bg-success-400 text-success-100 border border-success-300';
 		}
 	}
 
@@ -247,7 +261,8 @@
 		<div class="text-sm font-semibold text-content/90">Línea de tiempo</div>
 		<div class="flex items-center gap-2">
 			<button
-				class="cursor-pointer px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors {rangeMode === 'month'
+				class="cursor-pointer px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors {rangeMode ===
+				'month'
 					? 'bg-calendar-400 text-calendar-100 border-calendar-300'
 					: 'border-base-400 text-content/60 hover:bg-base-200'}"
 				onclick={() => setRangeMode('month')}
@@ -255,7 +270,8 @@
 				Mes
 			</button>
 			<button
-				class="cursor-pointer px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors {rangeMode === 'week'
+				class="cursor-pointer px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors {rangeMode ===
+				'week'
 					? 'bg-calendar-400 text-calendar-100 border-calendar-300'
 					: 'border-base-400 text-content/60 hover:bg-base-200'}"
 				onclick={() => setRangeMode('week')}
@@ -354,14 +370,20 @@
 									</div>
 
 									<div class="mt-2 flex flex-wrap gap-2 text-xs">
-										<span class={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${priorityClasses(ev.priority)}`}>
+										<span
+											class={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${priorityClasses(ev.priority)}`}
+										>
 											{priorityLabel(ev.priority)}
 										</span>
-										<span class={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${statusClasses(getStatus(ev))}`}>
+										<span
+											class={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${statusClasses(getStatus(ev))}`}
+										>
 											{statusLabel(getStatus(ev))}
 										</span>
 										{#if ev.ramoId}
-											<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold border border-base-400 bg-base-200 text-content/70">
+											<span
+												class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold border border-base-400 bg-base-200 text-content/70"
+											>
 												{getRamoName(ev.ramoId)}
 											</span>
 										{/if}
@@ -388,13 +410,21 @@
 
 	{#if deleteConfirmEvent !== null}
 		<div class="fixed inset-0 z-50 flex items-center justify-center">
-			<button class="absolute inset-0 bg-black/40 z-0 backdrop-blur-sm cursor-pointer transition-all" onclick={cancelDelete} aria-label="Cerrar"></button>
+			<button
+				class="absolute inset-0 bg-black/40 z-0 backdrop-blur-sm cursor-pointer transition-all"
+				onclick={cancelDelete}
+				aria-label="Cerrar"
+			></button>
 
-			<div class="relative z-10 w-full max-w-md bg-base-100 rounded-2xl shadow-xl border border-base-400 p-6 m-4">
+			<div
+				class="relative z-10 w-full max-w-md bg-base-100 rounded-2xl shadow-xl border border-base-400 p-6 m-4"
+			>
 				<h3 class="text-lg font-bold text-content mb-2">¿Confirmar eliminación?</h3>
 				<p class="text-sm text-content/70 mb-6">
 					Esta acción eliminará permanentemente el evento
-					<strong class="font-semibold text-content inline-block max-w-[20ch] align-bottom truncate">
+					<strong
+						class="font-semibold text-content inline-block max-w-[20ch] align-bottom truncate"
+					>
 						"{deleteConfirmEvent.title}"
 					</strong>. Esta acción no se puede deshacer.
 				</p>

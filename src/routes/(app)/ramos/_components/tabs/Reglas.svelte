@@ -116,10 +116,17 @@
 
 	function getTagHexColor(colorClasses: string): string {
 		const mapping: Record<string, string> = {
-			'bg-blue-': '#3b82f6', 'bg-green-': '#10b981', 'bg-purple-': '#8b5cf6',
-			'bg-orange-': '#f59e0b', 'bg-red-': '#ef4444', 'bg-yellow-': '#f59e0b',
-			'bg-indigo-': '#6366f1', 'bg-pink-': '#ec4899', 'bg-emerald-': '#10b981',
-			'bg-cyan-': '#06b6d4', 'bg-teal-': '#14b8a6'
+			'bg-blue-': '#3b82f6',
+			'bg-green-': '#10b981',
+			'bg-purple-': '#8b5cf6',
+			'bg-orange-': '#f59e0b',
+			'bg-red-': '#ef4444',
+			'bg-yellow-': '#f59e0b',
+			'bg-indigo-': '#6366f1',
+			'bg-pink-': '#ec4899',
+			'bg-emerald-': '#10b981',
+			'bg-cyan-': '#06b6d4',
+			'bg-teal-': '#14b8a6'
 		};
 		for (const [key, value] of Object.entries(mapping)) {
 			if (colorClasses.includes(key)) return value;
@@ -154,7 +161,9 @@
 					<span class="font-semibold text-content/80">{contexto?.nota_aprobacion ?? '-'}</span>
 				</div>
 			</div>
-			<div class="ml-auto flex items-center gap-1 text-xs font-semibold text-content/60 hover:text-primary-100 transition-colors">
+			<div
+				class="ml-auto flex items-center gap-1 text-xs font-semibold text-content/60 hover:text-primary-100 transition-colors"
+			>
 				<Pencil size={14} />
 				<span class="max-sm:hidden">Editar escala</span>
 			</div>
@@ -239,7 +248,10 @@
 							{@const tag = getTag(rule.tag_objetivo)}
 							{#if tag}
 								{@const tagColor = getTagHexColor(tag.color)}
-								<div class="w-3 h-3 rounded-full shadow-xs" style="background-color: {tagColor}"></div>
+								<div
+									class="w-3 h-3 rounded-full shadow-xs"
+									style="background-color: {tagColor}"
+								></div>
 							{/if}
 						{/if}
 						<span class="font-medium text-content/90">

@@ -95,9 +95,12 @@
 
 	function statusLabel(status: string) {
 		switch (status) {
-			case 'completed': return 'Completado';
-			case 'overdue': return 'Vencido';
-			default: return 'Pendiente';
+			case 'completed':
+				return 'Completado';
+			case 'overdue':
+				return 'Vencido';
+			default:
+				return 'Pendiente';
 		}
 	}
 
@@ -114,9 +117,13 @@
 
 	function priorityLabel(priority: string) {
 		switch (priority) {
-			case 'high': return 'Alta';
-			case 'medium': return 'Media';
-			case 'low': default: return 'Baja';
+			case 'high':
+				return 'Alta';
+			case 'medium':
+				return 'Media';
+			case 'low':
+			default:
+				return 'Baja';
 		}
 	}
 
@@ -169,7 +176,8 @@
 	<div class="flex gap-2 sm:hidden">
 		{#each columns as col (col.key)}
 			<button
-				class="cursor-pointer transition duration-100 flex-1 px-3 py-2 rounded-lg text-sm font-semibold border {selectedColumn === col.key
+				class="cursor-pointer transition duration-100 flex-1 px-3 py-2 rounded-lg text-sm font-semibold border {selectedColumn ===
+				col.key
 					? 'bg-calendar-400 text-calendar-100 border-calendar-300'
 					: 'bg-base-200 border-base-400 text-content/60 hover:bg-base-300'}"
 				onclick={() => (selectedColumn = col.key)}
@@ -181,8 +189,16 @@
 
 	<div class="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-3 gap-4">
 		{#each columns as column (column.key)}
-			<div class="rounded-xl border border-base-400 bg-base-100 shadow-sm {isDesktop ? 'block' : (column.key === selectedColumn ? 'block' : 'hidden')}">
-				<div class="px-4 py-3 border-b border-base-300 text-sm font-bold text-content/80 uppercase tracking-tight">
+			<div
+				class="rounded-xl border border-base-400 bg-base-100 shadow-sm {isDesktop
+					? 'block'
+					: column.key === selectedColumn
+						? 'block'
+						: 'hidden'}"
+			>
+				<div
+					class="px-4 py-3 border-b border-base-300 text-sm font-bold text-content/80 uppercase tracking-tight"
+				>
 					{column.title}
 				</div>
 				<div class="p-4 space-y-3">
@@ -236,14 +252,20 @@
 								</div>
 
 								<div class="mt-2 flex flex-wrap gap-2 text-xs">
-									<span class={`inline-flex items-center px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide ${priorityClasses(ev.priority)}`}>
+									<span
+										class={`inline-flex items-center px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide ${priorityClasses(ev.priority)}`}
+									>
 										{priorityLabel(ev.priority)}
 									</span>
-									<span class={`inline-flex items-center px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide ${statusClasses(getStatus(ev))}`}>
+									<span
+										class={`inline-flex items-center px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide ${statusClasses(getStatus(ev))}`}
+									>
 										{statusLabel(getStatus(ev))}
 									</span>
 									{#if ev.ramoId}
-										<span class="inline-flex items-center px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide border border-base-400 bg-base-200 text-content/60">
+										<span
+											class="inline-flex items-center px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide border border-base-400 bg-base-200 text-content/60"
+										>
 											{getRamoName(ev.ramoId)}
 										</span>
 									{/if}
@@ -269,19 +291,32 @@
 
 	{#if deleteConfirmEvent !== null}
 		<div class="fixed inset-0 z-50 flex items-center justify-center">
-			<button class="absolute inset-0 bg-black/40 backdrop-blur-sm cursor-pointer transition-all" aria-label="Cerrar" onclick={cancelDelete}></button>
-			<div class="relative z-10 w-full max-w-md bg-base-100 rounded-2xl shadow-xl border border-base-400 p-6 m-4">
+			<button
+				class="absolute inset-0 bg-black/40 backdrop-blur-sm cursor-pointer transition-all"
+				aria-label="Cerrar"
+				onclick={cancelDelete}
+			></button>
+			<div
+				class="relative z-10 w-full max-w-md bg-base-100 rounded-2xl shadow-xl border border-base-400 p-6 m-4"
+			>
 				<h3 class="text-lg font-bold text-content mb-2">¿Confirmar eliminación?</h3>
 				<p class="text-sm text-content/70 mb-6">
 					Esta acción eliminará permanentemente el evento
-					<strong class="font-semibold text-content inline-block max-w-[20ch] truncate align-bottom">"{deleteConfirmEvent.title}"</strong>.
-					Esta acción no se puede deshacer.
+					<strong class="font-semibold text-content inline-block max-w-[20ch] truncate align-bottom"
+						>"{deleteConfirmEvent.title}"</strong
+					>. Esta acción no se puede deshacer.
 				</p>
 				<div class="flex justify-end gap-3">
-					<button onclick={cancelDelete} class="px-4 py-2 rounded-lg border border-base-400 text-content/70 text-sm font-semibold hover:bg-base-200 hover:text-content transition-colors cursor-pointer">
+					<button
+						onclick={cancelDelete}
+						class="px-4 py-2 rounded-lg border border-base-400 text-content/70 text-sm font-semibold hover:bg-base-200 hover:text-content transition-colors cursor-pointer"
+					>
 						Cancelar
 					</button>
-					<button onclick={confirmDelete} class="px-4 py-2 rounded-lg bg-error-100 text-base-100 text-sm font-semibold hover:opacity-90 transition-opacity cursor-pointer">
+					<button
+						onclick={confirmDelete}
+						class="px-4 py-2 rounded-lg bg-error-100 text-base-100 text-sm font-semibold hover:opacity-90 transition-opacity cursor-pointer"
+					>
 						Eliminar
 					</button>
 				</div>

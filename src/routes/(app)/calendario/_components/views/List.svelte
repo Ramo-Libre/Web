@@ -303,6 +303,7 @@
 		<div class="fixed inset-0 z-50 flex items-center justify-center">
 			<button
 				class="absolute inset-0 bg-black/40 z-0 backdrop-blur-sm cursor-pointer"
+				aria-label="Cancelar eliminación de evento"
 				onclick={cancelDelete}
 			></button>
 			<div

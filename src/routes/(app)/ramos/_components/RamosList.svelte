@@ -71,7 +71,9 @@
 	}
 </script>
 
-<div class="hidden sm:flex bg-base-100 border border-base-400 rounded-xl p-6 flex-col h-full min-h-0 overflow-hidden">
+<div
+	class="hidden sm:flex bg-base-100 border border-base-400 rounded-xl p-6 flex-col h-full min-h-0 overflow-hidden"
+>
 	<div class="flex items-center justify-between mb-6 shrink-0">
 		<h2 class="text-xl font-bold text-content">Mis Ramos</h2>
 		{#if hasRamos}
@@ -123,7 +125,8 @@
 	<div class="space-y-3 flex-1 overflow-y-auto min-h-0 pr-1">
 		{#each db.ramos.list as [id, ramo] (id)}
 			<div
-				class="group flex items-center gap-3 p-3 rounded-lg border transition-all duration-200 cursor-pointer {selectedRamoId === id
+				class="group flex items-center gap-3 p-3 rounded-lg border transition-all duration-200 cursor-pointer {selectedRamoId ===
+				id
 					? 'bg-classes-400 border-classes-300 shadow-sm'
 					: 'bg-base-100 border-base-400 hover:border-classes-300 hover:bg-classes-400/50'}"
 				onclick={() => onSelectRamo(id)}
@@ -144,7 +147,10 @@
 				</div>
 
 				<button
-					onclick={(e) => { e.stopPropagation(); openDeleteConfirm(id); }}
+					onclick={(e) => {
+						e.stopPropagation();
+						openDeleteConfirm(id);
+					}}
 					class="p-2 text-content/20 hover:text-error-100 hover:bg-error-400 opacity-0 group-hover:opacity-100 rounded transition-all cursor-pointer"
 					title="Eliminar ramo"
 				>
@@ -169,7 +175,10 @@
 		>
 			{#if selectedRamo}
 				<div class="flex items-center gap-3">
-					<div class="h-8 w-8 rounded-lg text-base-100 flex items-center justify-center font-bold text-xs" style="background-color: {selectedRamo.color};">
+					<div
+						class="h-8 w-8 rounded-lg text-base-100 flex items-center justify-center font-bold text-xs"
+						style="background-color: {selectedRamo.color};"
+					>
 						{selectedRamo.nombre.substring(0, 2).toUpperCase()}
 					</div>
 					<div class="text-left">
@@ -179,37 +188,78 @@
 				</div>
 			{:else}
 				<div class="flex items-center gap-3 text-content/50">
-					<div class="h-8 w-8 rounded-lg bg-base-300 flex items-center justify-center"><Plus class="w-4 h-4" /></div>
+					<div class="h-8 w-8 rounded-lg bg-base-300 flex items-center justify-center">
+						<Plus class="w-4 h-4" />
+					</div>
 					<span class="font-medium">Seleccionar ramo</span>
 				</div>
 			{/if}
-			<ChevronRight class="w-5 h-5 text-content/40 transition-transform {isMobileDropdownOpen ? 'rotate-90' : ''}" />
+			<ChevronRight
+				class="w-5 h-5 text-content/40 transition-transform {isMobileDropdownOpen
+					? 'rotate-90'
+					: ''}"
+			/>
 		</button>
 
 		{#if isMobileDropdownOpen}
-			<div class="fixed inset-0 z-40 bg-black/20 backdrop-blur-[2px]" onclick={closeMobileDropdown}></div>
+			<button
+				class="fixed inset-0 z-40 bg-black/20 backdrop-blur-[2px]"
+				aria-label="Cerrar menú de ramos"
+				onclick={closeMobileDropdown}
+			></button>
 
-			<div class="absolute top-full left-0 right-0 mt-2 bg-base-100 border border-base-400 rounded-xl shadow-lg z-50 max-h-80 overflow-y-auto">
+			<div
+				class="absolute top-full left-0 right-0 mt-2 bg-base-100 border border-base-400 rounded-xl shadow-lg z-50 max-h-80 overflow-y-auto"
+			>
 				<div class="p-2">
 					<div class="flex items-center justify-between px-3 py-2 border-b border-base-300 mb-1">
-						<div class="text-xs font-semibold text-content/50 uppercase">Mis Ramos ({db.ramos.list.length})</div>
-						<button onclick={(e) => { e.stopPropagation(); isMobileFormVisible = !isMobileFormVisible; }} class="p-2 text-content/40 hover:text-classes-100 rounded transition-all {isMobileFormVisible ? 'rotate-45' : ''}">
+						<div class="text-xs font-semibold text-content/50 uppercase">
+							Mis Ramos ({db.ramos.list.length})
+						</div>
+						<button
+							onclick={(e) => {
+								e.stopPropagation();
+								isMobileFormVisible = !isMobileFormVisible;
+							}}
+							class="p-2 text-content/40 hover:text-classes-100 rounded transition-all {isMobileFormVisible
+								? 'rotate-45'
+								: ''}"
+						>
 							<Plus class="w-5 h-5" />
 						</button>
 					</div>
 
 					{#if isMobileFormVisible}
 						<div class="mx-2 mb-2 p-3 bg-base-200 border border-base-300 rounded-lg space-y-3">
-							<input bind:value={nombreRamo} placeholder="Nueva asignatura" class="w-full px-3 py-2 bg-base-100 text-content rounded-lg border border-base-400 text-sm focus:ring-2 focus:ring-classes-100" />
-							<button onclick={handleAgregar} disabled={!nombreRamo.trim()} class="w-full bg-primary-100 text-base-100 py-2 rounded-md font-medium">Agregar</button>
+							<input
+								bind:value={nombreRamo}
+								placeholder="Nueva asignatura"
+								class="w-full px-3 py-2 bg-base-100 text-content rounded-lg border border-base-400 text-sm focus:ring-2 focus:ring-classes-100"
+							/>
+							<button
+								onclick={handleAgregar}
+								disabled={!nombreRamo.trim()}
+								class="w-full bg-primary-100 text-base-100 py-2 rounded-md font-medium"
+								>Agregar</button
+							>
 						</div>
 					{/if}
 
 					<div class="space-y-1">
 						{#each db.ramos.list as [id, ramo] (id)}
-							<div class="flex items-center gap-2 p-2 rounded-lg {selectedRamoId === id ? 'bg-classes-400' : ''}">
-								<button onclick={() => handleMobileSelect(id)} class="flex-1 flex items-center gap-3 text-left">
-									<div class="h-8 w-8 rounded-lg text-base-100 flex items-center justify-center font-bold text-xs" style="background-color: {ramo.color};">
+							<div
+								class="flex items-center gap-2 p-2 rounded-lg {selectedRamoId === id
+									? 'bg-classes-400'
+									: ''}"
+							>
+								<button
+									onclick={() => handleMobileSelect(id)}
+									class="flex-1 flex items-center gap-3 text-left"
+								>
+									<div
+										class="h-8 w-8 rounded-lg text-base-100 flex items-center justify-center font-bold text-xs"
+										style="background-color: {ramo.color};"
+									>
 										{ramo.nombre.substring(0, 2).toUpperCase()}
 									</div>
 									<div class="flex-1 min-w-0">
@@ -217,7 +267,13 @@
 										<div class="text-xs text-content/40 font-mono">{id.slice(0, 8)}</div>
 									</div>
 								</button>
-								<button onclick={(e) => { e.stopPropagation(); openDeleteConfirm(id); }} class="p-2 text-content/20 hover:text-error-100">
+								<button
+									onclick={(e) => {
+										e.stopPropagation();
+										openDeleteConfirm(id);
+									}}
+									class="p-2 text-content/20 hover:text-error-100"
+								>
 									<Trash class="w-4 h-4" />
 								</button>
 							</div>
@@ -231,16 +287,32 @@
 
 {#if deleteConfirmData !== null}
 	<div class="fixed inset-0 z-100 flex items-center justify-center p-4">
-		<button class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick={cancelDelete}></button>
-		<div class="relative bg-base-100 border border-base-400 rounded-2xl shadow-xl max-w-md w-full p-6">
+		<button
+			class="absolute inset-0 bg-black/40 backdrop-blur-sm"
+			aria-label="Cancelar eliminación de ramo"
+			onclick={cancelDelete}
+		></button>
+		<div
+			class="relative bg-base-100 border border-base-400 rounded-2xl shadow-xl max-w-md w-full p-6"
+		>
 			<h3 class="text-lg font-bold text-content mb-2">¿Confirmar eliminación?</h3>
 			<p class="text-sm text-content/70 mb-6">
-				Esta acción eliminará permanentemente el ramo <strong class="text-content">"{deleteConfirmData.name}"</strong>
+				Esta acción eliminará permanentemente el ramo <strong class="text-content"
+					>"{deleteConfirmData.name}"</strong
+				>
 				y todos sus datos asociados. No se puede deshacer.
 			</p>
 			<div class="flex justify-end gap-3">
-				<button onclick={cancelDelete} class="px-4 py-2 rounded-lg border border-base-400 text-content/70 font-semibold hover:bg-base-200">Cancelar</button>
-				<button onclick={confirmDelete} class="px-4 py-2 rounded-lg bg-error-100 text-base-100 font-semibold hover:opacity-90">Eliminar</button>
+				<button
+					onclick={cancelDelete}
+					class="px-4 py-2 rounded-lg border border-base-400 text-content/70 font-semibold hover:bg-base-200"
+					>Cancelar</button
+				>
+				<button
+					onclick={confirmDelete}
+					class="px-4 py-2 rounded-lg bg-error-100 text-base-100 font-semibold hover:opacity-90"
+					>Eliminar</button
+				>
 			</div>
 		</div>
 	</div>

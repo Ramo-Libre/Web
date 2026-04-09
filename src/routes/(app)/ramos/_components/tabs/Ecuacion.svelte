@@ -100,7 +100,9 @@
 		if (!selectedRamoId) return;
 		const evaluacion = db.notas.getEvaluaciones(selectedRamoId).get(evaluacionId);
 		if (evaluacion) {
-			db.notas.getEvaluaciones(selectedRamoId).update(evaluacionId, { ...evaluacion, peso: newPeso });
+			db.notas
+				.getEvaluaciones(selectedRamoId)
+				.update(evaluacionId, { ...evaluacion, peso: newPeso });
 		}
 	}
 
@@ -116,12 +118,16 @@
 	<div class="bg-base-100 p-5 rounded-xl border border-base-400 shadow-sm space-y-4">
 		<div class="flex justify-between items-end">
 			<div>
-				<span class="text-xs font-bold text-content/40 uppercase tracking-wider flex items-center gap-2 mb-1">
+				<span
+					class="text-xs font-bold text-content/40 uppercase tracking-wider flex items-center gap-2 mb-1"
+				>
 					<Tag size={14} /> Banco de Etiquetas
 				</span>
 				<p class="text-[11px] text-content/50 h-4 max-sm:hidden">
 					{#if paintMode && selectedTagForPainting}
-						<span class="text-primary-100 font-bold animate-pulse">Pintando con etiqueta seleccionada:</span> Toca las evaluaciones para asignar.
+						<span class="text-primary-100 font-bold animate-pulse"
+							>Pintando con etiqueta seleccionada:</span
+						> Toca las evaluaciones para asignar.
 					{:else if paintMode}
 						<span class="text-warning-100 font-bold">Modo Pintor Activo:</span> Selecciona una etiqueta.
 					{:else}
@@ -167,7 +173,10 @@
 
 					{#if !paintMode}
 						<button
-							onclick={(e) => { e.stopPropagation(); deleteTag(tagId); }}
+							onclick={(e) => {
+								e.stopPropagation();
+								deleteTag(tagId);
+							}}
 							class="w-5 h-5 flex items-center justify-center rounded-full hover:bg-error-400 hover:text-error-100 transition-colors ml-1 opacity-60 hover:opacity-100"
 						>
 							<X size={12} />
@@ -177,7 +186,9 @@
 			{/each}
 
 			{#if !paintMode}
-				<div class="flex items-center gap-2 px-3 py-1.5 rounded-full border border-dashed border-base-400 bg-base-200 focus-within:border-primary-100 focus-within:ring-1 focus-within:ring-primary-100 transition-all">
+				<div
+					class="flex items-center gap-2 px-3 py-1.5 rounded-full border border-dashed border-base-400 bg-base-200 focus-within:border-primary-100 focus-within:ring-1 focus-within:ring-primary-100 transition-all"
+				>
 					<Plus size={14} class="text-content/40" />
 					<input
 						type="text"
@@ -206,7 +217,10 @@
 							class="h-5 w-5 rounded border border-base-100/20 shadow-sm transition-all hover:scale-110 cursor-pointer
 							{isCurrentColor ? 'ring-2 ring-primary-100 scale-110' : 'hover:ring-1 hover:ring-base-400'}"
 							style="background-color: {color}"
-							onclick={() => selectedTagForPainting && changeTagColor(selectedTagForPainting, color)}
+							aria-label="Seleccionar color {color}"
+							title="Seleccionar color {color}"
+							onclick={() =>
+								selectedTagForPainting && changeTagColor(selectedTagForPainting, color)}
 						></button>
 					{/each}
 				</div>
@@ -238,18 +252,33 @@
 					role="button"
 					tabindex="0"
 					onclick={() => paintMode && selectedTagForPainting && paintEvaluation(evaluacionId)}
-					onkeydown={(e) => e.key === 'Enter' && paintMode && selectedTagForPainting && paintEvaluation(evaluacionId)}
+					onkeydown={(e) =>
+						e.key === 'Enter' &&
+						paintMode &&
+						selectedTagForPainting &&
+						paintEvaluation(evaluacionId)}
 					class="relative bg-base-100 border border-base-400 rounded-xl p-3 shadow-sm transition-all group
-                    {paintMode && selectedTagForPainting ? 'cursor-crosshair hover:border-primary-100 hover:shadow-md' : paintMode ? 'opacity-75' : ''}
-                    {paintMode && selectedTagForPainting && evaluacion.tags.includes(selectedTagForPainting) ? 'bg-primary-400/20 ring-1 ring-primary-100/50' : ''}"
+                    {paintMode && selectedTagForPainting
+						? 'cursor-crosshair hover:border-primary-100 hover:shadow-md'
+						: paintMode
+							? 'opacity-75'
+							: ''}
+                    {paintMode &&
+					selectedTagForPainting &&
+					evaluacion.tags.includes(selectedTagForPainting)
+						? 'bg-primary-400/20 ring-1 ring-primary-100/50'
+						: ''}"
 				>
 					<div class="flex items-center gap-3">
 						<input
 							type="text"
 							value={evaluacion.id}
-							onchange={(e) => updateEvaluacionId(evaluacionId, (e.target as HTMLInputElement).value)}
+							onchange={(e) =>
+								updateEvaluacionId(evaluacionId, (e.target as HTMLInputElement).value)}
 							disabled={paintMode}
-							class="flex-1 bg-transparent border-none outline-none font-medium text-content placeholder-content/30 text-base min-w-0 {paintMode ? 'pointer-events-none' : 'focus:ring-0'}"
+							class="flex-1 bg-transparent border-none outline-none font-medium text-content placeholder-content/30 text-base min-w-0 {paintMode
+								? 'pointer-events-none'
+								: 'focus:ring-0'}"
 							placeholder="Nombre evaluación..."
 						/>
 
@@ -258,7 +287,12 @@
 								{#each evaluacion.tags as tagId (tagId)}
 									{@const tag = getTag(tagId)}
 									{#if tag}
-										<span class="text-[10px] px-2 py-0.5 rounded-md border font-medium {tag.color} {paintMode && selectedTagForPainting === tagId ? 'animate-pulse ring-1 ring-primary-100' : ''}">
+										<span
+											class="text-[10px] px-2 py-0.5 rounded-md border font-medium {tag.color} {paintMode &&
+											selectedTagForPainting === tagId
+												? 'animate-pulse ring-1 ring-primary-100'
+												: ''}"
+										>
 											{tag.name}
 										</span>
 									{/if}
@@ -266,11 +300,16 @@
 							</div>
 						{/if}
 
-						<div class="flex items-center gap-1 bg-base-200 px-2.5 py-1.5 rounded-lg border border-base-400 focus-within:ring-1 focus-within:ring-primary-100 {paintMode ? 'opacity-75' : ''}">
+						<div
+							class="flex items-center gap-1 bg-base-200 px-2.5 py-1.5 rounded-lg border border-base-400 focus-within:ring-1 focus-within:ring-primary-100 {paintMode
+								? 'opacity-75'
+								: ''}"
+						>
 							<input
 								type="number"
 								value={evaluacion.peso}
-								onchange={(e) => updateEvaluacionPeso(evaluacionId, Number((e.target as HTMLInputElement).value))}
+								onchange={(e) =>
+									updateEvaluacionPeso(evaluacionId, Number((e.target as HTMLInputElement).value))}
 								disabled={paintMode}
 								class="w-10 text-right bg-transparent outline-none font-bold text-content [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"
 							/>
@@ -278,7 +317,13 @@
 						</div>
 
 						{#if !paintMode}
-							<button onclick={(e) => { e.stopPropagation(); removeEvaluation(evaluacionId); }} class="text-content/20 hover:text-error-100 p-1.5 hover:bg-error-400 rounded-lg transition-all cursor-pointer">
+							<button
+								onclick={(e) => {
+									e.stopPropagation();
+									removeEvaluation(evaluacionId);
+								}}
+								class="text-content/20 hover:text-error-100 p-1.5 hover:bg-error-400 rounded-lg transition-all cursor-pointer"
+							>
 								<Trash2 size={16} />
 							</button>
 						{/if}
@@ -305,8 +350,13 @@
 					role="button"
 					tabindex="0"
 					onclick={() => document.getElementById('new-eval-input')?.focus()}
+					onkeydown={(e) =>
+						(e.key === 'Enter' || e.key === ' ') &&
+						(e.preventDefault(), document.getElementById('new-eval-input')?.focus())}
 				>
-					<div class="w-8 h-8 rounded-full bg-base-200 text-content/30 flex items-center justify-center group-hover:bg-primary-400 group-hover:text-primary-100">
+					<div
+						class="w-8 h-8 rounded-full bg-base-200 text-content/30 flex items-center justify-center group-hover:bg-primary-400 group-hover:text-primary-100"
+					>
 						<Plus size={18} />
 					</div>
 					<input

@@ -192,19 +192,26 @@
 			onclick={closeModal}
 		></button>
 
-		<div class="relative w-full max-w-lg bg-base-100 rounded-2xl shadow-xl border border-base-400 p-6 overflow-hidden">
+		<div
+			class="relative w-full max-w-lg bg-base-100 rounded-2xl shadow-xl border border-base-400 p-6 overflow-hidden"
+		>
 			<div class="flex items-center justify-between mb-6">
 				<div class="text-sm font-bold text-content uppercase tracking-widest">
 					{editingId ? 'Editar horario' : 'Nuevo horario'}
 				</div>
-				<button class="p-2 rounded-lg hover:bg-base-200 text-content/50 hover:text-content cursor-pointer transition-colors" onclick={closeModal}>
+				<button
+					class="p-2 rounded-lg hover:bg-base-200 text-content/50 hover:text-content cursor-pointer transition-colors"
+					onclick={closeModal}
+				>
 					<X class="w-4 h-4" />
 				</button>
 			</div>
 
 			<div class="space-y-6">
 				<div>
-					<div class="text-xs font-bold text-content/60 uppercase tracking-wider mb-3">Tipo de bloque</div>
+					<div class="text-xs font-bold text-content/60 uppercase tracking-wider mb-3">
+						Tipo de bloque
+					</div>
 					<div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
 						{#each iconOptions as option (option.id)}
 							<button
@@ -224,7 +231,10 @@
 
 				<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 					<div class="space-y-1.5">
-						<label class="text-xs font-bold text-content/60 uppercase tracking-wider" for="horario-day">Día</label>
+						<label
+							class="text-xs font-bold text-content/60 uppercase tracking-wider"
+							for="horario-day">Día</label
+						>
 						<select
 							id="horario-day"
 							class="w-full rounded-lg border border-base-400 bg-base-200 px-3 py-2 text-sm text-content focus:ring-2 focus:ring-classes-100 focus:outline-none cursor-pointer"
@@ -239,7 +249,10 @@
 						</select>
 					</div>
 					<div class="space-y-1.5">
-						<label class="text-xs font-bold text-content/60 uppercase tracking-wider" for="horario-location">Lugar</label>
+						<label
+							class="text-xs font-bold text-content/60 uppercase tracking-wider"
+							for="horario-location">Lugar</label
+						>
 						<input
 							id="horario-location"
 							type="text"
@@ -252,7 +265,10 @@
 
 				<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 					<div class="space-y-1.5">
-						<label class="text-xs font-bold text-content/60 uppercase tracking-wider" for="horario-start">Inicio</label>
+						<label
+							class="text-xs font-bold text-content/60 uppercase tracking-wider"
+							for="horario-start">Inicio</label
+						>
 						<input
 							id="horario-start"
 							type="time"
@@ -261,7 +277,10 @@
 						/>
 					</div>
 					<div class="space-y-1.5">
-						<label class="text-xs font-bold text-content/60 uppercase tracking-wider" for="horario-end">Fin</label>
+						<label
+							class="text-xs font-bold text-content/60 uppercase tracking-wider"
+							for="horario-end">Fin</label
+						>
 						<input
 							id="horario-end"
 							type="time"

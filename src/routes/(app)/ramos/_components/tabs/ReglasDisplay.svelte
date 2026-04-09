@@ -43,7 +43,9 @@
 </script>
 
 <div class="flex justify-center">
-	<div class="bg-grid-pattern rounded-xl p-8 border border-base-400 bg-base-200 w-full relative overflow-hidden transition-colors">
+	<div
+		class="bg-grid-pattern rounded-xl p-8 border border-base-400 bg-base-200 w-full relative overflow-hidden transition-colors"
+	>
 		{#if rules.length > 0}
 			<div class="absolute top-4 left-4 flex items-center gap-2 text-content/50">
 				<Shield class="w-5 h-5" />
@@ -55,9 +57,14 @@
 					{#each rules as rule, index (index)}
 						{@const tagColor = rule.tag_objetivo ? getTagColor(rule.tag_objetivo) : null}
 
-						<div class="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-base-400 bg-base-100 shadow-sm transition-colors">
+						<div
+							class="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-base-400 bg-base-100 shadow-sm transition-colors"
+						>
 							{#if rule.tag_objetivo}
-								<div class="w-2 h-2 rounded-full shadow-xs" style="background-color: {tagColor}"></div>
+								<div
+									class="w-2 h-2 rounded-full shadow-xs"
+									style="background-color: {tagColor}"
+								></div>
 							{/if}
 
 							<span class="font-medium text-sm text-content/90">
