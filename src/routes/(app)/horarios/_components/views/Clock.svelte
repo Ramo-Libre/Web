@@ -100,7 +100,7 @@
 	></div>
 
 	<div class="p-6 flex-1 flex flex-col items-center justify-center">
-		<div class="relative w-[280px] h-[280px] sm:w-[320px] sm:h-[320px] mb-8 flex-shrink-0">
+		<div class="relative w-[280px] h-[280px] sm:w-[320px] sm:h-80 mb-8 shrink-0">
 			<svg class="w-full h-full -rotate-90 transform" viewBox="0 0 256 256">
 				<circle
 					cx="128"
