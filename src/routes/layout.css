@@ -2,6 +2,8 @@
 
 @import 'tw-animate-css';
 
+@custom-variant dark (&:is(.dark *));
+
 @theme {
 	/* Superficie / Texto */
 	--color-base-100: oklch(1 0 0);
@@ -105,7 +107,6 @@
 }
 
 /*
-@custom-variant dark (&:is(.dark *));
 
 :root {
 	--radius: 0.625rem;

@@ -14,7 +14,6 @@
 		ChevronLeft,
 		ChevronRight
 	} from '@lucide/svelte';
-	import * as AlertDialog from '$lib/components/ui/alert-dialog';
 
 	type StatusFilter = 'all' | 'upcoming' | 'overdue' | 'completed';
 
@@ -176,47 +175,33 @@
 
 	function statusLabel(status: string) {
 		switch (status) {
-			case 'completed':
-				return 'Completado';
-			case 'overdue':
-				return 'Vencido';
-			default:
-				return 'Pendiente';
+			case 'completed': return 'Completado';
+			case 'overdue': return 'Vencido';
+			default: return 'Pendiente';
 		}
 	}
 
 	function statusClasses(status: string) {
 		switch (status) {
-			case 'completed':
-				return 'bg-emerald-50 text-emerald-700 border border-emerald-200';
-			case 'overdue':
-				return 'bg-red-50 text-red-700 border border-red-200';
-			default:
-				return 'bg-slate-50 text-slate-600 border border-slate-200';
+			case 'completed': return 'bg-success-400 text-success-100 border border-success-300';
+			case 'overdue': return 'bg-error-400 text-error-100 border border-error-300';
+			default: return 'bg-base-200 text-content/70 border border-base-400';
 		}
 	}
 
 	function priorityLabel(priority: string) {
 		switch (priority) {
-			case 'high':
-				return 'Alta';
-			case 'medium':
-				return 'Media';
-			case 'low':
-			default:
-				return 'Baja';
+			case 'high': return 'Alta';
+			case 'medium': return 'Media';
+			case 'low': default: return 'Baja';
 		}
 	}
 
 	function priorityClasses(priority: string) {
 		switch (priority) {
-			case 'high':
-				return 'bg-red-50 text-red-700 border border-red-200';
-			case 'medium':
-				return 'bg-amber-50 text-amber-700 border border-amber-200';
-			case 'low':
-			default:
-				return 'bg-emerald-50 text-emerald-700 border border-emerald-200';
+			case 'high': return 'bg-error-400 text-error-100 border border-error-300';
+			case 'medium': return 'bg-warning-400 text-warning-100 border border-warning-300';
+			case 'low': default: return 'bg-success-400 text-success-100 border border-success-300';
 		}
 	}
 
@@ -257,24 +242,22 @@
 	});
 </script>
 
-<div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+<div class="bg-base-100 rounded-2xl border border-base-400 shadow-sm p-6">
 	<div class="flex flex-wrap items-center justify-between gap-3 mb-2">
-		<div class="text-sm font-semibold text-slate-700">Línea de tiempo</div>
+		<div class="text-sm font-semibold text-content/90">Línea de tiempo</div>
 		<div class="flex items-center gap-2">
 			<button
-				class="cursor-pointer px-3 py-1.5 rounded-lg text-xs font-semibold border {rangeMode ===
-				'month'
-					? 'bg-blue-600 text-white border-blue-600'
-					: 'border-slate-200 text-slate-600 hover:bg-slate-50'}"
+				class="cursor-pointer px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors {rangeMode === 'month'
+					? 'bg-calendar-400 text-calendar-100 border-calendar-300'
+					: 'border-base-400 text-content/60 hover:bg-base-200'}"
 				onclick={() => setRangeMode('month')}
 			>
 				Mes
 			</button>
 			<button
-				class="cursor-pointer px-3 py-1.5 rounded-lg text-xs font-semibold border {rangeMode ===
-				'week'
-					? 'bg-blue-600 text-white border-blue-600'
-					: 'border-slate-200 text-slate-600 hover:bg-slate-50'}"
+				class="cursor-pointer px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors {rangeMode === 'week'
+					? 'bg-calendar-400 text-calendar-100 border-calendar-300'
+					: 'border-base-400 text-content/60 hover:bg-base-200'}"
 				onclick={() => setRangeMode('week')}
 			>
 				Semana
@@ -282,14 +265,14 @@
 		</div>
 		<div class="flex items-center gap-2">
 			<button
-				class="cursor-pointer p-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50"
+				class="cursor-pointer p-2 rounded-lg border border-base-400 text-content/60 hover:bg-base-200"
 				onclick={goPrev}
 				aria-label="Anterior"
 			>
 				<ChevronLeft class="w-4 h-4" />
 			</button>
 			<button
-				class="cursor-pointer p-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50"
+				class="cursor-pointer p-2 rounded-lg border border-base-400 text-content/60 hover:bg-base-200"
 				onclick={goNext}
 				aria-label="Siguiente"
 			>
@@ -297,25 +280,26 @@
 			</button>
 		</div>
 	</div>
-	<div class="text-xs text-slate-500 mb-4">{rangeLabel}</div>
+	<div class="text-xs text-content/50 mb-4">{rangeLabel}</div>
 
 	{#if groups.length === 0}
-		<div class="text-sm text-slate-500">No hay eventos registrados.</div>
+		<div class="text-sm text-content/50 italic">No hay eventos registrados.</div>
 	{:else}
 		<div class="relative pl-6">
-			<div class="absolute left-2 top-0 bottom-0 w-px bg-slate-200"></div>
+			<div class="absolute left-2 top-0 bottom-0 w-px bg-base-300"></div>
 
 			<div class="space-y-6">
 				{#each groups as group (group.date)}
 					<div class="relative">
 						<div
-							class="absolute -left-4 top-[5px] h-3 w-3 -translate-x-1/2 rounded-full bg-blue-500"
+							class="absolute -left-4 top-[5px] h-3 w-3 -translate-x-1/2 rounded-full bg-calendar-100 shadow-[0_0_8px_var(--color-calendar-100)]"
 						></div>
-						<div class="flex items-center gap-2 text-sm font-semibold text-slate-700">
+
+						<div class="flex items-center gap-2 text-sm font-semibold text-content/90">
 							<span>{formatDateLabel(group.date)}</span>
 							{#if group.date === todayKey}
 								<span
-									class="text-[10px] px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-200"
+									class="text-[10px] px-2 py-0.5 rounded-full bg-calendar-400 text-calendar-100 border border-calendar-300"
 								>
 									Hoy
 								</span>
@@ -326,26 +310,24 @@
 							{#each group.events as ev (ev.id)}
 								<div
 									data-event-id={ev.id}
-									class={`timeline-event rounded-xl border border-slate-200 bg-white p-3 shadow-sm ${
-										ev.id === focusEventId ? 'shine-effect' : ''
+									class={`timeline-event rounded-xl border border-base-400 bg-base-100 p-3 shadow-sm transition-all ${
+										ev.id === focusEventId ? 'ring-2 ring-calendar-100/50 shine-effect' : ''
 									}`}
 								>
 									<div class="flex items-start justify-between gap-2">
 										<div class="min-w-0 flex-1">
-											<div class="font-semibold text-slate-800 truncate">{ev.title}</div>
+											<div class="font-semibold text-content truncate">{ev.title}</div>
 											{#if ev.description}
-												<div class="mt-1 flex items-center gap-2 text-xs text-slate-500">
-													<FileText class="w-3.5 h-3.5 text-slate-400 shrink-0" />
+												<div class="mt-1 flex items-center gap-2 text-xs text-content/60">
+													<FileText class="w-3.5 h-3.5 text-content/40 shrink-0" />
 													<span class="truncate min-w-0 flex-1">{ev.description}</span>
 												</div>
 											{/if}
 										</div>
 										<div class="flex items-center gap-2 shrink-0">
 											<button
-												class="cursor-pointer text-emerald-600 hover:text-emerald-700"
-												aria-label={ev.completed
-													? 'Marcar como pendiente'
-													: 'Marcar como completado'}
+												class="cursor-pointer text-success-100 hover:opacity-80 transition-opacity"
+												aria-label={ev.completed ? 'Pendiente' : 'Completado'}
 												onclick={() => db.events.toggleCompleted(ev.id)}
 											>
 												{#if ev.completed}
@@ -355,15 +337,15 @@
 												{/if}
 											</button>
 											<button
-												class="cursor-pointer text-blue-600 hover:text-blue-700"
-												aria-label="Editar evento"
+												class="cursor-pointer text-calendar-100 hover:opacity-80 transition-opacity"
+												aria-label="Editar"
 												onclick={() => onEditEvent?.(ev)}
 											>
 												<Pencil class="w-4 h-4" />
 											</button>
 											<button
-												class="cursor-pointer text-rose-600 hover:text-rose-700"
-												aria-label="Borrar evento"
+												class="cursor-pointer text-error-100 hover:opacity-80 transition-opacity"
+												aria-label="Borrar"
 												onclick={() => openDeleteConfirm(ev)}
 											>
 												<Trash2 class="w-4 h-4" />
@@ -372,36 +354,26 @@
 									</div>
 
 									<div class="mt-2 flex flex-wrap gap-2 text-xs">
-										<span
-											class={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${priorityClasses(
-												ev.priority
-											)}`}
-										>
+										<span class={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${priorityClasses(ev.priority)}`}>
 											{priorityLabel(ev.priority)}
 										</span>
-										<span
-											class={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${statusClasses(
-												getStatus(ev)
-											)}`}
-										>
+										<span class={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${statusClasses(getStatus(ev))}`}>
 											{statusLabel(getStatus(ev))}
 										</span>
 										{#if ev.ramoId}
-											<span
-												class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold border border-slate-200 text-slate-600"
-											>
+											<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold border border-base-400 bg-base-200 text-content/70">
 												{getRamoName(ev.ramoId)}
 											</span>
 										{/if}
 									</div>
 
-									<div class="mt-2 flex items-center gap-2 text-xs text-slate-500">
-										<CalendarDays class="w-3.5 h-3.5 text-slate-400 shrink-0" />
+									<div class="mt-2 flex items-center gap-2 text-xs text-content/50">
+										<CalendarDays class="w-3.5 h-3.5 opacity-70 shrink-0" />
 										<span>{new Date(ev.dueDate).toLocaleDateString('es-CL')}</span>
 									</div>
 									{#if ev.location}
-										<div class="mt-1 flex items-center gap-2 text-xs text-slate-500">
-											<MapPin class="w-3.5 h-3.5 text-slate-400 shrink-0" />
+										<div class="mt-1 flex items-center gap-2 text-xs text-content/50">
+											<MapPin class="w-3.5 h-3.5 opacity-70 shrink-0" />
 											<span class="truncate min-w-0 flex-1">{ev.location}</span>
 										</div>
 									{/if}
@@ -414,34 +386,34 @@
 		</div>
 	{/if}
 
-	<AlertDialog.Root
-		open={deleteConfirmEvent !== null}
-		onOpenChange={(open) => !open && cancelDelete()}
-	>
-		<AlertDialog.Content>
-			<AlertDialog.Header>
-				<AlertDialog.Title>¿Confirmar eliminación?</AlertDialog.Title>
-				<AlertDialog.Description>
-					{#if deleteConfirmEvent}
-						Esta acción eliminará permanentemente el evento <strong
-							>"{deleteConfirmEvent.title.length > 30
-								? `${deleteConfirmEvent.title.slice(0, 30)}…`
-								: deleteConfirmEvent.title}"</strong
-						>. Esta acción no se puede deshacer.
-					{/if}
-				</AlertDialog.Description>
-			</AlertDialog.Header>
-			<AlertDialog.Footer>
-				<AlertDialog.Cancel onclick={cancelDelete} class="cursor-pointer">
-					Cancelar
-				</AlertDialog.Cancel>
-				<AlertDialog.Action
-					onclick={confirmDelete}
-					class="bg-red-600 hover:bg-red-700 cursor-pointer"
-				>
-					Eliminar
-				</AlertDialog.Action>
-			</AlertDialog.Footer>
-		</AlertDialog.Content>
-	</AlertDialog.Root>
+	{#if deleteConfirmEvent !== null}
+		<div class="fixed inset-0 z-50 flex items-center justify-center">
+			<button class="absolute inset-0 bg-black/40 z-0 backdrop-blur-sm cursor-pointer transition-all" onclick={cancelDelete} aria-label="Cerrar"></button>
+
+			<div class="relative z-10 w-full max-w-md bg-base-100 rounded-2xl shadow-xl border border-base-400 p-6 m-4">
+				<h3 class="text-lg font-bold text-content mb-2">¿Confirmar eliminación?</h3>
+				<p class="text-sm text-content/70 mb-6">
+					Esta acción eliminará permanentemente el evento
+					<strong class="font-semibold text-content inline-block max-w-[20ch] align-bottom truncate">
+						"{deleteConfirmEvent.title}"
+					</strong>. Esta acción no se puede deshacer.
+				</p>
+
+				<div class="flex justify-end gap-3">
+					<button
+						onclick={cancelDelete}
+						class="px-4 py-2 rounded-lg border border-base-400 text-content/70 text-sm font-semibold hover:bg-base-200 hover:text-content transition-colors cursor-pointer"
+					>
+						Cancelar
+					</button>
+					<button
+						onclick={confirmDelete}
+						class="px-4 py-2 rounded-lg bg-error-100 text-base-100 text-sm font-semibold hover:opacity-90 transition-opacity cursor-pointer"
+					>
+						Eliminar
+					</button>
+				</div>
+			</div>
+		</div>
+	{/if}
 </div>

@@ -19,7 +19,7 @@
                 onclick={() => onSelectView('table')}
                 class={`cursor-pointer inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium border transition-colors w-full sm:w-auto ${
                     selectedView === 'table'
-                        ? 'bg-schedule-100 text-base-100 border-schedule-100'
+                        ? 'bg-schedule-100 text-base-100 border-schedule-100 dark:bg-schedule-400 dark:text-schedule-100 dark:border-schedule-300'
                         : 'border-base-400 text-content/70 hover:bg-base-200 hover:text-content'
                 }`}
             >
@@ -30,7 +30,7 @@
                 onclick={() => onSelectView('list')}
                 class={`cursor-pointer inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium border transition-colors w-full sm:w-auto ${
                     selectedView === 'list'
-                        ? 'bg-schedule-100 text-base-100 border-schedule-100'
+                        ? 'bg-schedule-100 text-base-100 border-schedule-100 dark:bg-schedule-400 dark:text-schedule-100 dark:border-schedule-300'
                         : 'border-base-400 text-content/70 hover:bg-base-200 hover:text-content'
                 }`}
             >
@@ -41,7 +41,7 @@
                 onclick={() => onSelectView('clock')}
                 class={`cursor-pointer inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium border transition-colors w-full sm:w-auto ${
                     selectedView === 'clock'
-                        ? 'bg-schedule-100 text-base-100 border-schedule-100'
+                        ? 'bg-schedule-100 text-base-100 border-schedule-100 dark:bg-schedule-400 dark:text-schedule-100 dark:border-schedule-300'
                         : 'border-base-400 text-content/70 hover:bg-base-200 hover:text-content'
                 }`}
             >
@@ -52,7 +52,7 @@
                 onclick={() => onSelectView('gallery')}
                 class={`cursor-pointer inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium border transition-colors w-full sm:w-auto ${
                     selectedView === 'gallery'
-                        ? 'bg-schedule-100 text-base-100 border-schedule-100'
+                        ? 'bg-schedule-100 text-base-100 border-schedule-100 dark:bg-schedule-400 dark:text-schedule-100 dark:border-schedule-300'
                         : 'border-base-400 text-content/70 hover:bg-base-200 hover:text-content'
                 }`}
             >
