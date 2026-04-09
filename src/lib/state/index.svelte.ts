@@ -5,6 +5,7 @@ import { NotasManager } from './notas.svelte';
 import { EventsManager } from './events.svelte';
 import { PreferencesManager } from './preferences.svelte';
 import { EvaluacionEventsManager } from './evaluacion-events.svelte';
+import { HorariosManager } from './horarios.svelte';
 
 const STORAGE_KEY = (sem: string) => `RAMOLIBRE_ROOT_STORE_V1_${sem}`;
 const SEMESTER_KEY = 'RAMOLIBRE_SEMESTER';
@@ -15,6 +16,7 @@ class RootStore {
 	private _ramos = new RamosManager();
 	private _notas = new NotasManager();
 	private _events = new EventsManager();
+	private _horarios = new HorariosManager();
 	private _preferences = new PreferencesManager();
 	private _evaluacionEvents = new EvaluacionEventsManager();
 
@@ -32,6 +34,10 @@ class RootStore {
 
 	get events() {
 		return this._events;
+	}
+
+	get horarios() {
+		return this._horarios;
 	}
 
 	get preferences() {
@@ -84,6 +90,7 @@ class RootStore {
 		this.ramos.fromSerial(data.ramos ?? []);
 		this.notas.fromSerial(data.notas ?? { ramos: [] });
 		this.events.fromSerial(data.events ?? []);
+		this.horarios.fromSerial(data.horarios ?? []);
 		this.evaluacionEvents.fromSerial(data.evaluacionEvents ?? []);
 	}
 
@@ -109,12 +116,14 @@ class RootStore {
 		this.ramos.clear();
 		this.notas.clear();
 		this.events.clear();
+		this.horarios.clear();
 		this.evaluacionEvents.clear();
 	}
 
 	removeRamo(ramoId: string) {
 		this._ramos.remove(ramoId);
 		this._notas.clearRamo(ramoId);
+		this._horarios.removeByRamo(ramoId);
 		this._evaluacionEvents.removeByRamo(ramoId);
 	}
 
@@ -136,6 +145,7 @@ class RootStore {
 			ramos: this.ramos.toSerial(),
 			notas: this.notas.toSerial(),
 			events: this.events.toSerial(),
+			horarios: this.horarios.toSerial(),
 			evaluacionEvents: this.evaluacionEvents.toSerial()
 		};
 		const semester = this.semestres.activeName ?? 'default';

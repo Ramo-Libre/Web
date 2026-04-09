@@ -2,12 +2,16 @@ import type { Serializable } from '$lib/types/state';
 
 export type CalendarView = 'calendar' | 'list' | 'kanban' | 'timeline';
 export type CalendarStatusFilter = 'all' | 'upcoming' | 'overdue' | 'completed';
+export type ScheduleView = 'table' | 'list' | 'clock' | 'gallery';
 
 export interface Preferences {
 	calendar: {
 		view: CalendarView;
 		status: CalendarStatusFilter;
 		ramo: string;
+	};
+	schedule: {
+		view: ScheduleView;
 	};
 }
 
@@ -18,6 +22,9 @@ const DEFAULT_PREFERENCES: Preferences = {
 		view: 'calendar',
 		status: 'all',
 		ramo: 'all'
+	},
+	schedule: {
+		view: 'table'
 	}
 };
 
@@ -31,6 +38,10 @@ export class PreferencesManager implements Serializable<PreferencesSerial> {
 			calendar: {
 				...DEFAULT_PREFERENCES.calendar,
 				...(serial?.calendar ?? {})
+			},
+			schedule: {
+				...DEFAULT_PREFERENCES.schedule,
+				...(serial?.schedule ?? {})
 			}
 		};
 	}
@@ -47,7 +58,8 @@ export class PreferencesManager implements Serializable<PreferencesSerial> {
 		return (
 			this._prefs.calendar.view === DEFAULT_PREFERENCES.calendar.view &&
 			this._prefs.calendar.status === DEFAULT_PREFERENCES.calendar.status &&
-			this._prefs.calendar.ramo === DEFAULT_PREFERENCES.calendar.ramo
+			this._prefs.calendar.ramo === DEFAULT_PREFERENCES.calendar.ramo &&
+			this._prefs.schedule.view === DEFAULT_PREFERENCES.schedule.view
 		);
 	}
 
@@ -61,6 +73,10 @@ export class PreferencesManager implements Serializable<PreferencesSerial> {
 
 	get calendarRamo() {
 		return this._prefs.calendar.ramo;
+	}
+
+	get scheduleView() {
+		return this._prefs.schedule.view;
 	}
 
 	setCalendarView(view: CalendarView) {
@@ -89,6 +105,16 @@ export class PreferencesManager implements Serializable<PreferencesSerial> {
 			calendar: {
 				...this._prefs.calendar,
 				ramo
+			}
+		};
+	}
+
+	setScheduleView(view: ScheduleView) {
+		this._prefs = {
+			...this._prefs,
+			schedule: {
+				...this._prefs.schedule,
+				view
 			}
 		};
 	}
