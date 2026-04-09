@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Table2, List, ClockFading, GalleryHorizontalEnd, Layers2 } from '@lucide/svelte';
+	import { Table2, List, ClockFading, GalleryHorizontalEnd } from '@lucide/svelte';
 	type ViewMode = 'table' | 'list' | 'clock' | 'gallery';
 
 	interface Props {

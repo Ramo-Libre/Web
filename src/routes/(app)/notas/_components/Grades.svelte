@@ -133,7 +133,7 @@
 				<div class="flex items-center gap-2">
 					{#if eventId}
 						<a
-							href={`${resolve('/calendario' as '/calendario')}#${eventId}`}
+							href={resolve(`/calendario#${eventId}` as '/calendario')}
 							class="inline-flex items-center gap-1 rounded-md border border-emerald-200 bg-emerald-50 px-2 py-1 text-[11px] font-semibold text-emerald-700 hover:bg-emerald-100 cursor-pointer"
 						>
 							<CalendarCheck class="w-3.5 h-3.5" />
