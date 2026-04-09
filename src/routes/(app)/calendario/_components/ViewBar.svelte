@@ -63,13 +63,13 @@
 
 <div class="space-y-4">
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="bg-base-100">
-            <div class="flex items-center justify-between rounded-xl border border-warning-300 bg-warning-400 px-4 py-3 text-warning-100">
+        <div class="bg-base-100 rounded-xl">
+            <div class="flex items-center justify-between rounded-xl border border-primary-300 bg-primary-400 px-4 py-3 text-primary-100">
                 <div>
-                    <div class="text-xs uppercase tracking-wider text-warning-100/80 font-bold">Próximos</div>
+                    <div class="text-xs uppercase tracking-wider text-primary-100/80 font-bold">Próximos</div>
                     <div class="sm:text-2xl text-md font-semibold">{stats.upcoming}</div>
                 </div>
-                <ChevronsRight class="sm:w-6 sm:h-6 w-5 h-5 text-warning-100" />
+                <ChevronsRight class="sm:w-6 sm:h-6 w-5 h-5 text-primary-100" />
             </div>
         </div>
 

@@ -134,7 +134,7 @@ export class PreferencesManager implements Serializable<PreferencesSerial> {
 			}
         };
 
-		const root = document.documentElement;
+        const root = document.documentElement;
 		root.classList.remove('light', 'dark', 'nord', 'latte');
 		root.classList.add(theme);
 	}

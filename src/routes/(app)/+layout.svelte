@@ -9,11 +9,19 @@
 		BookMarked,
 		Bolt
 	} from '@lucide/svelte';
+	import { onMount } from 'svelte';
+	import { db } from '$lib';
 
 	let { children } = $props();
 
 	// Helper rápido para checkear active
 	const isActive = (path: string) => page.url.pathname === path;
+
+	onMount(() => {
+		const root = document.documentElement;
+		root.classList.remove('light', 'dark', 'nord', 'latte');
+		root.classList.add(db.preferences.theme);
+	});
 </script>
 
 <nav class="grid grid-cols-6 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-4 sm:mb-6 max-sm:pt-2">
