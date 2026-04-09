@@ -2,6 +2,7 @@ changelog:
   exclude:
     labels:
       - "Épica"
+      - "Release"
     authors:
       - renovate
       - dependabot
