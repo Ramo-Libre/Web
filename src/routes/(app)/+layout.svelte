@@ -18,9 +18,7 @@
 	const isActive = (path: string) => page.url.pathname === path;
 
 	onMount(() => {
-		const root = document.documentElement;
-		root.classList.remove('light', 'dark', 'nord', 'latte');
-		root.classList.add(db.preferences.theme);
+		db.preferences.applyTheme();
 	});
 </script>
 

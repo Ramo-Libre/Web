@@ -1,9 +1,9 @@
 import type { Serializable } from '$lib/types/state';
+import { themes, type Theme } from '$lib/utils/themes';
 
 export type CalendarView = 'calendar' | 'list' | 'kanban' | 'timeline';
 export type CalendarStatusFilter = 'all' | 'upcoming' | 'overdue' | 'completed';
 export type ScheduleView = 'table' | 'list' | 'clock' | 'gallery';
-export type Theme = 'light' | 'dark' | 'nord' | 'latte';
 
 export interface Preferences {
 	calendar: {
@@ -133,10 +133,13 @@ export class PreferencesManager implements Serializable<PreferencesSerial> {
 				theme
 			}
         };
+    }
 
-        const root = document.documentElement;
-		root.classList.remove('light', 'dark', 'nord', 'latte');
-		root.classList.add(theme);
+    applyTheme() {
+		const root = document.documentElement;
+        const cls = themes.map((t) => t.class).filter((c) => !!c);
+        root.classList.remove(...cls);
+		root.classList.add(this._prefs.general.theme);
 	}
 
 	setScheduleView(view: ScheduleView) {

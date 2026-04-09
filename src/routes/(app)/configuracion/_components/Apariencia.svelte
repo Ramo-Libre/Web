@@ -1,19 +1,13 @@
 <script lang="ts">
-    import { Sun, Moon, Snowflake, Check, Coffee } from '@lucide/svelte';
     import { db } from '$lib';
-	import type { Theme } from '$lib/state/preferences.svelte';
+	import { themes, type Theme } from '$lib/utils/themes';
+	import { Check } from '@lucide/svelte';
 
     let currentTheme = $derived<Theme>(db.preferences.theme);
 
-    const themes = [
-        { id: 'light', label: 'Claro', icon: Sun, class: '' },
-        { id: 'dark', label: 'Oscuro', icon: Moon, class: 'dark' },
-        { id: 'nord', label: 'Nord', icon: Snowflake, class: 'nord' },
-        { id: 'latte', label: 'Latte', icon: Coffee, class: 'latte' },
-    ];
-
     function onSetTheme(theme: Theme) {
         db.preferences.setTheme(theme);
+        db.preferences.applyTheme();
     }
 
 </script>
