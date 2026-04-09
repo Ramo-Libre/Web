@@ -154,8 +154,7 @@
 		<div class="flex flex-wrap items-center gap-3">
 			{#each tagsList as [tagId, tag] (tagId)}
 				<div
-					class="group relative flex items-center gap-1 px-2 py-1 rounded-full border text-xs font-medium transition-all
-                    {tag.color}
+					class="group relative flex items-center gap-1 px-2 py-1 rounded-full border text-xs font-medium transition-all {tag.color}
                     {paintMode && selectedTagForPainting === tagId
 						? 'ring-2 ring-primary-100 shadow-md scale-105 cursor-pointer ring-offset-base-100'
 						: paintMode

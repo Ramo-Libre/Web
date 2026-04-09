@@ -116,7 +116,7 @@
 	<div class="bg-base-100 rounded-2xl hover:scale-105 transition-all duration-200">
 		<a
 			href={resolve('/configuracion')}
-			class="group overflow-hidden relative rounded-2xl sm:px-6 py-4 border transition-all block overflow-hidden
+			class="group overflow-hidden relative rounded-2xl sm:px-6 py-4 border transition-all block
             {isActive('/configuracion')
 				? 'ring-2 ring-config-100 bg-config-400 border-config-300 text-config-100'
 				: 'border-base-400 text-content hover:border-config-300 hover:bg-config-400/50'}"
