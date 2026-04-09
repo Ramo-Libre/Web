@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Plus, Pencil, Trash2, BookOpen, FlaskConical, Users, Hammer, X } from '@lucide/svelte';
+	import { Plus, Pencil, Trash2, BookOpen, FlaskConical, Users, Hammer, X, CalendarX2 } from '@lucide/svelte';
 	import { db } from '$lib/state/index.svelte';
 	import type { Horario, HorarioDay, HorarioType } from '$lib/state/horarios.svelte';
 
@@ -123,6 +123,12 @@
 	</div>
 
 	<div class="space-y-2">
+	    {#if sortedHorarios.length === 0}
+			<div class="text-sm text-slate-500 flex justify-center items-center gap-1 mt-20">
+			    <CalendarX2 class="w-4 h-4" />
+			    No hay horarios agregados.
+			</div>
+		{:else}
 		{#each sortedHorarios as horario (horario.id)}
 			{@const TypeIcon = iconFor(horario.type)}
 			<div
@@ -162,6 +168,7 @@
 				</div>
 			</div>
 		{/each}
+		{/if}
 	</div>
 </div>
 
