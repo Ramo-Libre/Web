@@ -140,12 +140,13 @@ export class NotasManager implements Serializable<NotasSerial> {
 
 	// Obtener contexto de un ramo (auto-inicializa con recomendado si no existe)
 	getContexto(ramoId: RamoKey): Contexto {
-		const ramoData = this.ensureRamoData(ramoId);
-		if (!ramoData.contexto) {
-			ramoData.contexto = { ...this.getContextoRecomendado() };
+		const ramoData = this._ramos.get(ramoId);
+		if (!ramoData || !ramoData.contexto) {
+			return { ...this.getContextoRecomendado() };
 		}
 		return ramoData.contexto;
 	}
+
 
 	// Guardar contexto de un ramo y actualizar recomendación global
 	setContexto(ramoId: RamoKey, contexto: Contexto): void {
