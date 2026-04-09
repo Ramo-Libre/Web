@@ -1,3 +1,3 @@
 <div
-	class="bg-gray-50 rounded-xl p-6 flex items-center justify-between border-2 border-dashed border-gray-300"
+	class="bg-base-100 rounded-xl p-6 flex items-center justify-between border-2 border-dashed border-base-400"
 ></div>
