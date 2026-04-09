@@ -43,6 +43,6 @@
 		"vite": "7.2.7"
 	},
 	"dependencies": {
-		"@madmti/gradesolver": "file:madmti-gradesolver-1.0.0.tgz"
+		"@madmti/gradesolver": "^1.0.0"
 	}
 }

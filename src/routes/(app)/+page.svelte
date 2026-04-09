@@ -27,21 +27,23 @@
 		<div class="space-y-6">
 			<WelcomeBar />
 
-			<div class="columns-1 lg:columns-2 gap-6 space-y-6">
-				<div class="break-inside-avoid">
-					<NextClass />
+			<div class="home-cards">
+				<div class="home-cards__col">
+					<div class="home-cards__item">
+						<NextClass />
+					</div>
+					<div class="home-cards__item">
+						<SemestreProgress />
+					</div>
 				</div>
 
-				<div class="break-inside-avoid">
-					<SemestreProgress />
-				</div>
-
-				<div class="break-inside-avoid">
-					<AcademicHealth />
-				</div>
-
-				<div class="break-inside-avoid">
-					<UpcomingEvents />
+				<div class="home-cards__col">
+					<div class="home-cards__item">
+						<AcademicHealth />
+					</div>
+					<div class="home-cards__item">
+						<UpcomingEvents />
+					</div>
 				</div>
 			</div>
 		</div>
@@ -58,3 +60,36 @@
 		</div>
 	{/if}
 </div>
+
+<style>
+	.home-cards {
+		display: flex;
+		flex-direction: column;
+		gap: 1.5rem;
+		min-width: 0;
+	}
+	.home-cards__col {
+		display: flex;
+		flex-direction: column;
+		gap: 1.5rem;
+		min-width: 0;
+	}
+	.home-cards__item {
+		margin: 0;
+		min-width: 0;
+		width: 100%;
+		max-width: 100%;
+	}
+
+	@media (min-width: 1024px) {
+		.home-cards {
+			flex-direction: row;
+			align-items: flex-start;
+			min-width: 0;
+		}
+		.home-cards__col {
+			flex: 1;
+			min-width: 0;
+		}
+	}
+</style>

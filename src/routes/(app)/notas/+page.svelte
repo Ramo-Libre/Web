@@ -12,6 +12,7 @@
 	import StatusHeader from './_components/StatusHeader.svelte';
 	import Grades from './_components/Grades.svelte';
 	import Rules from './_components/Rules.svelte';
+	import EventModal from '../calendario/_components/EventModal.svelte';
 
 	type Plan = {
 		notas_objetivo?: Record<string, number>;
@@ -30,6 +31,40 @@
 
 	// Estado para el ramo seleccionado
 	let selectedRamoId = $state('');
+
+	let isEventModalOpen = $state(false);
+	let eventPrefill = $state<{ title?: string; ramoId?: string } | null>(null);
+	let lockRamo = $state(false);
+	let pendingRelation = $state<{ ramoId: string; evaluacionId: string } | null>(null);
+
+	function handleScheduleEvaluacion(payload: {
+		ramoId: string;
+		evaluacionId: string;
+		evaluacionName: string;
+		ramoName: string;
+	}) {
+		const { ramoId, evaluacionId, evaluacionName, ramoName } = payload;
+		eventPrefill = {
+			title: `${evaluacionName} - ${ramoName}`,
+			ramoId
+		};
+		lockRamo = true;
+		pendingRelation = { ramoId, evaluacionId };
+		isEventModalOpen = true;
+	}
+
+	function handleEventCreated(eventId: string) {
+		if (!pendingRelation) return;
+		db.evaluacionEvents.link(pendingRelation.ramoId, pendingRelation.evaluacionId, eventId);
+		pendingRelation = null;
+	}
+
+	function handleCloseEventModal() {
+		isEventModalOpen = false;
+		eventPrefill = null;
+		lockRamo = false;
+		pendingRelation = null;
+	}
 
 	// Sincronizar el ramo seleccionado con el fragmento de la URL
 	$effect(() => {
@@ -162,7 +197,7 @@
 		if (!prediction) return null;
 		const source = extractProbSource(prediction);
 		const values = Object.values(source)
-			.map((value) => value?.probabilidad_general)
+			.map((value) => value?.probabilidad_del_plan)
 			.filter((value) => typeof value === 'number') as number[];
 		return values.length ? values.reduce((acc, value) => acc + value, 0) / values.length : null;
 	});
@@ -506,7 +541,7 @@
 					const resolved = result as SolverOutput;
 					const source = extractProbSource(resolved);
 					const values = Object.values(source)
-						.map((value) => value?.probabilidad_general)
+						.map((value) => value?.probabilidad_del_plan)
 						.filter((value) => typeof value === 'number') as number[];
 					next[ramoId] = values.length
 						? values.reduce((acc, value) => acc + value, 0) / values.length
@@ -561,7 +596,13 @@
 
 				<!-- Componente 2: Calificaciones -->
 				<div class="sm:flex-none">
-					<Grades {selectedRamoId} {predictedNotas} {ramoProbabilities} {ramoStatuses} />
+					<Grades
+						{selectedRamoId}
+						{predictedNotas}
+						{ramoProbabilities}
+						{ramoStatuses}
+						onScheduleEvaluacion={handleScheduleEvaluacion}
+					/>
 				</div>
 
 				<!-- Componente 3: Reglas de Evaluación -->
@@ -569,6 +610,14 @@
 					<Rules />
 				</div>
 			</div>
+
+			<EventModal
+				open={isEventModalOpen}
+				onClose={handleCloseEventModal}
+				prefill={eventPrefill}
+				{lockRamo}
+				onCreated={handleEventCreated}
+			/>
 		</div>
 	</div>
 </div>
