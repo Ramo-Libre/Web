@@ -47,9 +47,9 @@
 	};
 
 	// --- ESTADO TEMPORAL ---
-	let now = $state(new Date('2026-04-09T11:24:00'));
+	let now = $state(new Date());
 	$effect(() => {
-		const interval = setInterval(() => (now = new Date('2026-04-09T11:24:00')), 60000);
+		const interval = setInterval(() => (now = new Date()), 60000);
 		return () => clearInterval(interval);
 	});
 
