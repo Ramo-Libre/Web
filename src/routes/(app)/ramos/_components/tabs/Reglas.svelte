@@ -66,6 +66,17 @@
 	let newRuleTarget = $state(40);
 	let newRuleTag = $state('');
 
+	function generateUUID(): string {
+		if (crypto.randomUUID) {
+			return crypto.randomUUID();
+		}
+		return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+			const r = (Math.random() * 16) | 0;
+			const v = c === 'x' ? r : (r & 0x3) | 0x8;
+			return v.toString(16);
+		});
+	}
+
 	// --- ACCIONES ---
 	function addRule() {
 		if (!selectedRamoId) return;
@@ -75,7 +86,7 @@
 		}
 
 		const restriccion: Restriccion = {
-			id: crypto.randomUUID(),
+			id: generateUUID(),
 			tipo: newRuleType,
 			valor_minimo: newRuleTarget,
 			tag_objetivo: newRuleTag
@@ -235,7 +246,9 @@
 
 			<button
 				onclick={addRule}
-				class="px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-lg hover:bg-blue-600 transition-colors cursor-pointer"
+				type="button"
+				style="touch-action: manipulation;"
+				class="px-4 py-2 bg-blue-500 text-white z-20 text-sm font-medium rounded-lg hover:bg-blue-600 transition-colors cursor-pointer"
 			>
 				+ Agregar
 			</button>
