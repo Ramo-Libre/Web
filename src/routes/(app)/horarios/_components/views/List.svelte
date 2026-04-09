@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { db } from '$lib/state/index.svelte';
 	import type { HorarioDay, HorarioType } from '$lib/state/horarios.svelte';
-	import { BookOpen, FlaskConical, Users, Hammer, MapPin } from '@lucide/svelte';
+	import { BookOpen, FlaskConical, Users, Hammer, MapPin, CalendarX2 } from '@lucide/svelte';
 
 	// --- MAPAS Y CONSTANTES ---
 	const dayMap: Record<number, HorarioDay> = { 1: 'L', 2: 'M', 3: 'X', 4: 'J', 5: 'V', 6: 'S' };
@@ -327,4 +327,10 @@
 			</div>
 		{/if}
 	{/each}
+	{#if db.horarios.list.length === 0}
+		<div class="text-center py-20 text-slate-400">
+			<CalendarX2 class="w-12 h-12 mx-auto mb-3 opacity-20" />
+			<p>No hay horarios agregados todavía.</p>
+		</div>
+	{/if}
 </div>
