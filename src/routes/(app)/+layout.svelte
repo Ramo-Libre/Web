@@ -7,10 +7,13 @@
 		TrendingUp,
 		CalendarDays,
 		BookMarked,
-		Bolt
+		Bolt,
+		Bone,
 	} from '@lucide/svelte';
 	import { onMount } from 'svelte';
 	import { db } from '$lib';
+	import { PUBLIC_SHOW_DEV_TOOLS } from '$env/static/public';
+	const showDevTools = PUBLIC_SHOW_DEV_TOOLS === 'true';
 
 	let { children } = $props();
 
@@ -22,7 +25,11 @@
 	});
 </script>
 
-<nav class="grid grid-cols-6 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-4 sm:mb-6 max-sm:pt-2">
+<nav
+	class="grid {!showDevTools
+		? 'grid-cols-6 sm:grid-cols-3 lg:grid-cols-6'
+		: 'grid-cols-7 gap-2 sm:gap-4 sm:mb-6 max-sm:pt-2'}"
+>
 	<div class="bg-base-100 rounded-2xl hover:scale-105 transition-all duration-200">
 		<a
 			href={resolve('/')}
@@ -132,6 +139,28 @@
 			{/if}
 		</a>
 	</div>
+
+	{#if showDevTools}
+		<div class="bg-base-100 rounded-2xl hover:scale-105 transition-all duration-200">
+			<a
+				href={resolve('/dev-tools')}
+				class="group overflow-hidden relative rounded-2xl sm:px-6 py-4 border transition-all block
+            {isActive('/dev-tools')
+					? 'ring-2 ring-config-100 bg-config-400 border-config-300 text-config-100'
+					: 'border-base-400 text-content hover:border-config-300 hover:bg-config-400/50'}"
+			>
+				<div class="flex items-center justify-center sm:justify-start gap-3">
+					<Bone class="w-8 h-8 max-sm:w-6 max-sm:h-6 rounded-md sm:p-1" />
+					<span class="text-lg font-semibold max-sm:hidden truncate">Dev Tools</span>
+				</div>
+				{#if isActive('/dev-tools')}
+					<div
+						class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 h-2 w-8 bg-config-100 rounded-full"
+					></div>
+				{/if}
+			</a>
+		</div>
+	{/if}
 </nav>
 
 <main class="flex-1 overflow-hidden overflow-y-auto max-sm:min-h-0">

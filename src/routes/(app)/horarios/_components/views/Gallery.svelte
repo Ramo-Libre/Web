@@ -81,7 +81,6 @@
 				id,
 				nombre: ramo.nombre,
 				color: ramo.color,
-				estado: ramo.estado,
 				schedules: mySchedules
 			};
 		});
@@ -111,23 +110,6 @@
 						<h3 class="text-lg font-bold text-content leading-tight mb-1">
 							{ramo.nombre}
 						</h3>
-
-						{#if ramo.estado}
-							<span
-								class="inline-flex text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md border
-                                    {ramo.estado === 'guaranteed'
-									? 'bg-success-400 text-success-100 border-success-300'
-									: ramo.estado === 'possible'
-										? 'bg-base-200 text-content/80 border-base-400'
-										: 'bg-error-400 text-error-100 border-error-300'}"
-							>
-								{ramo.estado === 'guaranteed'
-									? 'Garantizado'
-									: ramo.estado === 'possible'
-										? 'Posible'
-										: 'Imposible'}
-							</span>
-						{/if}
 					</div>
 				</div>
 

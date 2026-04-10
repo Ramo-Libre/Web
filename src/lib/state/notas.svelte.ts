@@ -26,13 +26,13 @@ type Perfil = {
 };
 type RamoKey = string;
 
-const DEFAULT_CONTEXTO: Contexto = {
+export const DEFAULT_CONTEXTO: Contexto = {
 	nota_minima: 0,
 	nota_maxima: 100,
 	nota_aprobacion: 55
 };
 
-const DEFAULT_PERFIL: Perfil = {
+export const DEFAULT_PERFIL: Perfil = {
 	mode: 'auto',
 	simulaciones: 1000,
 	media_historica: 65,
@@ -47,7 +47,7 @@ interface RamoData {
 	perfil?: Perfil;
 }
 
-type NotasSerial = {
+export type NotasSerial = {
 	last_contexto?: Contexto;
 	last_perfil?: Perfil;
 	ramos: [

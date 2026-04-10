@@ -4,6 +4,7 @@
 	import ReglasDisplay from './ReglasDisplay.svelte';
 	import ContextoModal from './_components/ContextoModal.svelte';
 	import type { Restriccion, Contexto } from '@madmti/gradesolver';
+	import { generateUUID } from '$lib/utils/crypto';
 
 	interface Props {
 		selectedRamoId?: string;
@@ -60,10 +61,6 @@
 	let newRuleType = $state<Restriccion['tipo']>('PROMEDIO_SIMPLE_TAG');
 	let newRuleTarget = $state(40);
 	let newRuleTag = $state('');
-
-	function generateUUID(): string {
-		return crypto.randomUUID();
-	}
 
 	// --- ACCIONES ---
 	function addRule() {
