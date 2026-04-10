@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import { HardDrive, Trash2, RefreshCw, Copy, Check } from '@lucide/svelte';
+	import { HardDrive, Trash2, RefreshCw, Copy, Check, Skull } from '@lucide/svelte';
 
 	let storageInfo = $state<{ key: string; size: number }[]>([]);
 	let totalSize = $state(0);
@@ -40,6 +40,18 @@
 		calculateStorage();
 	}
 
+	function nukeAll() {
+		const confirm1 = confirm("¿Estás seguro de que quieres borrar ABSOLUTAMENTE TODO el LocalStorage? Esto incluye preferencias, temas y datos de desarrollo.");
+		if (!confirm1) return;
+
+		const confirm2 = confirm("¿Última oportunidad? Se perderán todas las configuraciones.");
+		if (!confirm2) return;
+
+		localStorage.clear();
+		calculateStorage();
+		window.location.reload(); // Recargamos para que la app se inicialice desde cero
+	}
+
 	function copyKey(key: string) {
 		navigator.clipboard.writeText(key);
 		copiedKey = key;
@@ -75,7 +87,7 @@
 		</p>
 	</div>
 
-	<div class="space-y-4">
+	<div class="space-y-4 max-h-[300px] overflow-y-auto pr-2 custom-scroll">
 		{#each storageInfo as item (item.key)}
 			<div class="group flex flex-col gap-1.5">
 				<div class="flex justify-between items-center text-xs">
@@ -119,4 +131,26 @@
 			<p class="text-center text-xs text-content/40 py-4 italic">Storage vacío</p>
 		{/each}
 	</div>
+
+	{#if totalSize > 0}
+		<div class="border-t border-base-400 pt-2">
+			<button
+				onclick={nukeAll}
+				class="w-full flex items-center justify-center gap-2 p-3 bg-error-400/10 border border-error-100/30 text-error-100 rounded-xl text-xs font-bold hover:bg-error-400/20 active:scale-[0.98] transition-all cursor-pointer group"
+			>
+				<Skull size={16} class="group-hover:rotate-12 transition-transform" />
+				BORRAR TODO EL STORAGE
+			</button>
+		</div>
+	{/if}
 </div>
+
+<style>
+	.custom-scroll::-webkit-scrollbar {
+		width: 4px;
+	}
+	.custom-scroll::-webkit-scrollbar-thumb {
+		background: var(--color-base-400);
+		border-radius: 4px;
+	}
+</style>
