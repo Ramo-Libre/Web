@@ -4,6 +4,7 @@
 	import LocalStorageStatus from './_components/LocalStorageStatus.svelte';
 	import WriteLatency from './_components/WriteLatency.svelte';
 	import TimeTravel from './_components/TimeTravel.svelte';
+	import StorageTransfer from './_components/StorageTransfer.svelte';
 </script>
 
 <div in:fly={{ y: 10, duration: 300 }} class="w-full space-y-8">
@@ -22,6 +23,10 @@
 
 		<div class="break-inside-avoid">
 			<TimeTravel />
+		</div>
+
+		<div class="break-inside-avoid">
+			<StorageTransfer />
 		</div>
 	</div>
 </div>
