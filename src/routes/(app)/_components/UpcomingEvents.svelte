@@ -4,8 +4,9 @@
 	import { SvelteMap } from 'svelte/reactivity';
 	import { db } from '$lib/state/index.svelte';
 	import type { Event as CalendarEvent } from '$lib/state/events.svelte';
+	import { getNow } from '$lib/utils/date';
 
-	const todayKey = new Date().toISOString().slice(0, 10);
+	const todayKey = getNow().toISOString().slice(0, 10);
 	const calendarPath = resolve('/calendario' as const);
 
 	function keyToDate(key: string): Date {

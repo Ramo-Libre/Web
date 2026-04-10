@@ -10,6 +10,7 @@
 		BarChart3
 	} from '@lucide/svelte';
 	import { db } from '$lib/state/index.svelte';
+	import { getNow } from '$lib/utils/date';
 
 	type ViewMode = 'calendar' | 'list' | 'kanban' | 'timeline';
 	type StatusFilter = 'all' | 'upcoming' | 'overdue' | 'completed';
@@ -35,7 +36,7 @@
 	}: Props = $props();
 
 	const ramos = $derived.by(() => db.ramos.list);
-	const todayKey = new Date().toISOString().slice(0, 10);
+	const todayKey = getNow().toISOString().slice(0, 10);
 
 	const stats = $derived.by(() => {
 		let upcoming = 0;

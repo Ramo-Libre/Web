@@ -7,7 +7,7 @@ import type { SemestresSerial } from '$lib/state/semestres.svelte';
 import { generateUUID } from '$lib/utils/crypto';
 import { ColorUtils } from '$lib/utils/colors';
 
-interface MockDataInput {
+export interface MockDataInput {
 	// Semestres a generar
 	semestres: number;
 	// Ramos por semestre
@@ -20,7 +20,7 @@ interface MockDataInput {
 	notas: number;
 }
 
-type MockDataOutput = {
+export type MockDataOutput = {
 	semestres: SemestresSerial;
 	ramos: RamosSerial;
 	notas: NotasSerial;
@@ -58,7 +58,7 @@ class MockDataGenerator {
 			semestresSerial.list.push(semestre);
 		}
 		semestresSerial.list.sort();
-		semestresSerial.active = 0;
+        semestresSerial.active = semestresSerial.list.length - 1;
 
 		return semestresSerial;
 	}

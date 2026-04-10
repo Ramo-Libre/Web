@@ -1,0 +1,151 @@
+<script lang="ts">
+	import MockDataGenerator, { type MockDataOutput } from '$lib/dev-tools/gen';
+	import { Database, Check, RefreshCw, Code2, Copy, AlertCircle } from '@lucide/svelte';
+
+	let params = $state({
+		semestres: 2,
+		ramos: 5,
+		eventos: 10,
+		horarios: 3,
+		notas: 4
+	});
+
+	let generatedData = $state<MockDataOutput | null>(null);
+	let jsonString = $state(''); // Estado para el texto editable
+	let isValidJson = $state(true);
+
+	function handleGenerate() {
+		generatedData = MockDataGenerator.generate({ ...params });
+		jsonString = JSON.stringify(generatedData, null, 2);
+		isValidJson = true;
+	}
+
+	function handleApply() {
+		try {
+			const dataToApply = JSON.parse(jsonString);
+			console.log('Aplicando datos (pueden estar modificados):', dataToApply);
+			// db.import(dataToApply);
+			isValidJson = true;
+		} catch {
+			isValidJson = false;
+			console.error('JSON inválido, no se puede aplicar');
+		}
+	}
+
+	function copyToClipboard() {
+		navigator.clipboard.writeText(jsonString);
+	}
+
+	// Validar JSON mientras se escribe
+	function handleJsonInput(e: Event) {
+		const value = (e.target as HTMLTextAreaElement).value;
+		jsonString = value;
+		try {
+			JSON.parse(value);
+			isValidJson = true;
+		} catch {
+			isValidJson = false;
+		}
+	}
+</script>
+
+<div class="bg-base-100 border border-base-400 rounded-2xl p-6 shadow-sm flex flex-col gap-5">
+	<div class="flex items-center justify-between">
+		<div class="flex items-center gap-2 text-config-100">
+			<Database size={20} />
+			<h2 class="font-bold text-content">Generador de Datos</h2>
+		</div>
+	</div>
+
+	<div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+		{#each Object.keys(params) as key (key)}
+			<div class="flex flex-col gap-1">
+				<label for={key} class="text-[10px] font-bold text-content/50 uppercase tracking-tighter">
+					{key}
+				</label>
+				<input
+					id={key}
+					type="number"
+					bind:value={params[key as keyof typeof params]}
+					class="bg-base-200 border border-base-400 rounded-lg px-2 py-1.5 text-sm text-content focus:ring-2 focus:ring-config-100 focus:outline-none transition-all"
+				/>
+			</div>
+		{/each}
+	</div>
+
+	<div class="flex gap-2">
+		<button
+			onclick={handleGenerate}
+			class="flex-1 flex items-center justify-center gap-2 bg-primary-100 text-base-100 py-2 rounded-xl font-bold hover:opacity-90 active:scale-95 transition-all cursor-pointer"
+		>
+			<RefreshCw size={16} />
+			Generar
+		</button>
+		<button
+			onclick={handleApply}
+			disabled={!jsonString || !isValidJson}
+			class="px-4 flex items-center justify-center bg-success-400 border border-success-300 text-success-100 py-2 rounded-xl font-bold hover:bg-success-300 disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
+			title={isValidJson ? 'Aplicar cambios' : 'JSON inválido'}
+		>
+			<Check size={18} />
+		</button>
+	</div>
+
+	{#if jsonString}
+		<div class="space-y-2 mt-2">
+			<div class="flex items-center justify-between">
+				<div class="flex items-center gap-2 text-xs font-mono {isValidJson ? 'text-content/50' : 'text-error-100'}">
+					{#if !isValidJson}
+						<AlertCircle size={14} />
+						<span class="font-bold">JSON Inválido</span>
+					{:else}
+						<Code2 size={14} />
+						<span>Editor de salida</span>
+					{/if}
+				</div>
+				<button
+					onclick={copyToClipboard}
+					class="text-content/40 hover:text-content transition-colors cursor-pointer"
+					title="Copiar JSON"
+				>
+					<Copy size={14} />
+				</button>
+			</div>
+
+			<div class="relative group">
+				<textarea
+					value={jsonString}
+					oninput={handleJsonInput}
+					spellcheck="false"
+					class="w-full bg-base-400/20 p-3 rounded-xl overflow-auto text-[11px] font-mono text-content/70 h-64 border transition-all custom-scroll resize-none focus:outline-none
+                    {isValidJson ? 'border-base-400 focus:border-config-100' : 'border-error-100 bg-error-400/10'}"
+				></textarea>
+
+				{#if isValidJson}
+					<div class="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+						<span class="text-[9px] font-bold text-config-100 uppercase tracking-widest">Editable</span>
+					</div>
+				{/if}
+			</div>
+		</div>
+	{/if}
+</div>
+
+<style>
+	.custom-scroll::-webkit-scrollbar {
+		width: 4px;
+		height: 4px;
+	}
+	.custom-scroll::-webkit-scrollbar-thumb {
+		background: var(--color-base-400);
+		border-radius: 4px;
+	}
+	input[type='number'] {
+		-webkit-appearance: textfield !important;
+		margin: 0;
+		-moz-appearance: textfield !important;
+	}
+	textarea {
+		tab-size: 2;
+	}
+</style>

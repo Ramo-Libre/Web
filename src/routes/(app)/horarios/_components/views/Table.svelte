@@ -11,6 +11,7 @@
 		Clock
 	} from '@lucide/svelte';
 	import { SvelteMap } from 'svelte/reactivity';
+	import { getNow } from '$lib/utils/date';
 
 	// --- CONFIGURACIÓN ---
 	const weekDays: { id: HorarioDay; name: string; short: string; dow: number }[] = [
@@ -40,9 +41,9 @@
 	};
 
 	// --- ESTADO TEMPORAL ---
-	let now = $state(new Date());
+	let now = $state(getNow());
 	$effect(() => {
-		const interval = setInterval(() => (now = new Date()), 60000);
+		const interval = setInterval(() => (now = getNow()), 60000);
 		return () => clearInterval(interval);
 	});
 

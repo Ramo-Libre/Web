@@ -2,6 +2,7 @@
 	import { db } from '$lib/state/index.svelte';
 	import type { HorarioDay, HorarioType } from '$lib/state/horarios.svelte';
 	import { BookOpen, FlaskConical, Users, Hammer, MapPin } from '@lucide/svelte';
+	import { getNow } from '$lib/utils/date';
 
 	// --- MAPAS Y CONSTANTES ---
 	const dayOrder: Record<HorarioDay, number> = { L: 1, M: 2, X: 3, J: 4, V: 5, S: 6 };
@@ -31,9 +32,9 @@
 
 	// --- ESTADO TEMPORAL ---
 	// Mantenemos un reloj simple por si quieres resaltar la clase actual
-	let now = $state(new Date());
+	let now = $state(getNow());
 	$effect(() => {
-		const interval = setInterval(() => (now = new Date()), 60000);
+		const interval = setInterval(() => (now = getNow()), 60000);
 		return () => clearInterval(interval);
 	});
 
