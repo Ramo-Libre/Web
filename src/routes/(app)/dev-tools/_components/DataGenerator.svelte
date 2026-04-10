@@ -1,6 +1,8 @@
 <script lang="ts">
 	import MockDataGenerator, { type MockDataOutput } from '$lib/dev-tools/gen';
-	import { Database, Check, RefreshCw, Code2, Copy, AlertCircle, Trash2 } from '@lucide/svelte';
+	import { Database, Check, RefreshCw, Code2, Copy, AlertCircle, Trash2, PartyPopper } from '@lucide/svelte';
+	import { db } from '$lib';
+	import { slide, fade } from 'svelte/transition';
 
 	let params = $state({
 		semestres: 2,
@@ -14,25 +16,33 @@
 	let jsonString = $state('');
 	let isValidJson = $state(true);
 	let isCopied = $state(false);
+	let isApplied = $state(false); // Estado para el feedback de inyección
 
 	function handleGenerate() {
 		generatedData = MockDataGenerator.generate({ ...params });
 		jsonString = JSON.stringify(generatedData, null, 2);
 		isValidJson = true;
+		isApplied = false; // Resetear éxito al generar nuevo
 	}
 
 	function handleClear() {
 		generatedData = null;
 		jsonString = '';
 		isValidJson = true;
+		isApplied = false;
 	}
 
 	function handleApply() {
 		try {
-			const dataToApply = JSON.parse(jsonString);
-			console.log('Aplicando datos:', dataToApply);
-			// db.import(dataToApply);
+			const dataToApply = JSON.parse(jsonString) as MockDataOutput;
+			db.fromMock(dataToApply);
 			isValidJson = true;
+
+			// Feedback visual de éxito
+			isApplied = true;
+			setTimeout(() => {
+				isApplied = false;
+			}, 4000);
 		} catch {
 			isValidJson = false;
 		}
@@ -50,6 +60,7 @@
 	function handleJsonInput(e: Event) {
 		const value = (e.target as HTMLTextAreaElement).value;
 		jsonString = value;
+		isApplied = false; // Si edita, el mensaje de "aplicado" desaparece
 		try {
 			JSON.parse(value);
 			isValidJson = true;
@@ -65,6 +76,12 @@
 			<Database size={20} />
 			<h2 class="font-bold text-content">Generador de Datos</h2>
 		</div>
+		{#if isApplied}
+			<div in:fade out:fade class="flex items-center gap-1.5 text-success-100">
+				<PartyPopper size={14} />
+				<span class="text-[10px] font-bold uppercase tracking-wider">¡Datos Inyectados!</span>
+			</div>
+		{/if}
 	</div>
 
 	<div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
@@ -105,16 +122,32 @@
 		<button
 			onclick={handleApply}
 			disabled={!jsonString || !isValidJson}
-			class="px-4 flex items-center justify-center bg-success-400 border border-success-300 text-success-100 py-2 rounded-xl font-bold hover:bg-success-300 disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
+			class="px-4 flex items-center justify-center {isApplied ? 'bg-success-300' : 'bg-success-400'} border border-success-300 text-success-100 py-2 rounded-xl font-bold hover:bg-success-300 disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer relative overflow-hidden"
 		>
+			{#if isApplied}
+				<div in:slide={{ axis: 'y' }} class="absolute inset-0 flex items-center justify-center bg-success-100 text-base-100">
+					<Check size={20} strokeWidth={3} />
+				</div>
+			{/if}
 			<Check size={18} />
 		</button>
 	</div>
 
 	{#if jsonString}
 		<div class="space-y-2 mt-2">
+			{#if isApplied}
+				<div transition:slide class="bg-success-400/10 border border-success-100/20 rounded-lg p-2 flex items-center gap-2 text-success-100 text-[11px] font-medium">
+					<Check size={14} />
+					<span>Todos los semestres han sido sobrescritos con éxito en LocalStorage.</span>
+				</div>
+			{/if}
+
 			<div class="flex items-center justify-between">
-				<div class="flex items-center gap-2 text-xs font-mono {isValidJson ? 'text-content/50' : 'text-error-100'}">
+				<div
+					class="flex items-center gap-2 text-xs font-mono {isValidJson
+						? 'text-content/50'
+						: 'text-error-100'}"
+				>
 					{#if !isValidJson}
 						<AlertCircle size={14} />
 						<span class="font-bold">JSON Inválido</span>
@@ -125,7 +158,9 @@
 				</div>
 				<button
 					onclick={copyToClipboard}
-					class="flex items-center gap-1 transition-all cursor-pointer {isCopied ? 'text-success-100' : 'text-content/40 hover:text-content'}"
+					class="flex items-center gap-1 transition-all cursor-pointer {isCopied
+						? 'text-success-100'
+						: 'text-content/40 hover:text-content'}"
 				>
 					{#if isCopied}
 						<span class="text-[10px] font-bold uppercase tracking-wider">Copiado</span>
@@ -146,8 +181,12 @@
 				></textarea>
 
 				{#if isValidJson}
-					<div class="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-						<span class="text-[9px] font-bold text-config-100 uppercase tracking-widest">Editable</span>
+					<div
+						class="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
+					>
+						<span class="text-[9px] font-bold text-config-100 uppercase tracking-widest"
+							>Editable</span
+						>
 					</div>
 				{/if}
 			</div>

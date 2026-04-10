@@ -22,26 +22,37 @@ export interface MockDataInput {
 
 export type MockDataOutput = {
 	semestres: SemestresSerial;
-	ramos: RamosSerial;
-	notas: NotasSerial;
-	eventos: EventsSerial;
-	horarios: HorariosSerial;
+	semestres_data: Record<
+		string,
+		{
+			ramos: RamosSerial;
+			notas: NotasSerial;
+			eventos: EventsSerial;
+			horarios: HorariosSerial;
+		}
+	>;
 };
 
 class MockDataGenerator {
 	public static generate(input: MockDataInput): MockDataOutput {
 		const { semestres, ramos, eventos, horarios, notas } = input;
 		const semestresSerial = this.generateSemestres(semestres);
-		const ramosSerial = this.generateRamos(ramos);
-		const eventosSerial = this.generateEventos(eventos, ramosSerial);
-		const horariosSerial = this.generateHorarios(horarios, ramosSerial);
-		const notasSerial = this.generateNotas(notas, ramosSerial);
+        const semestresData = {} as MockDataOutput['semestres_data'];
+		for (const semestre of semestresSerial.list) {
+			const ramosSerial = this.generateRamos(ramos);
+			const eventosSerial = this.generateEventos(eventos, ramosSerial);
+			const horariosSerial = this.generateHorarios(horarios, ramosSerial);
+			const notasSerial = this.generateNotas(notas, ramosSerial);
+			semestresData[semestre] = {
+                ramos: ramosSerial,
+                notas: notasSerial,
+                eventos: eventosSerial,
+                horarios: horariosSerial
+            };
+        }
 		return {
 			semestres: semestresSerial,
-			ramos: ramosSerial,
-			eventos: eventosSerial,
-			horarios: horariosSerial,
-			notas: notasSerial
+			semestres_data: semestresData
 		};
 	}
 
@@ -58,7 +69,7 @@ class MockDataGenerator {
 			semestresSerial.list.push(semestre);
 		}
 		semestresSerial.list.sort();
-        semestresSerial.active = semestresSerial.list.length - 1;
+		semestresSerial.active = semestresSerial.list.length - 1;
 
 		return semestresSerial;
 	}
@@ -168,7 +179,7 @@ class MockDataGenerator {
 			const notasList = [];
 			const n_tags = Math.ceil(n_notas / 4);
 			const tagList = new Array(n_tags).fill(0).map(() => faker.lorem.word());
-            const notas_per_tag = new Array(n_tags).fill(0);
+			const notas_per_tag = new Array(n_tags).fill(0);
 			// Generar las notas base sin peso para el ramo actual
 			for (let j = 0; j < n_notas; j++) {
 				const id = generateUUID();
@@ -178,34 +189,46 @@ class MockDataGenerator {
 				const nombre = `${tag[0].toUpperCase()}${notas_per_tag[tagIndex]++}`;
 				const has_valor_actual = faker.datatype.boolean({ probability: 0.7 });
 				const valor_actual = has_valor_actual
-					? faker.number.float({ min: DEFAULT_CONTEXTO.nota_minima, max: DEFAULT_CONTEXTO.nota_maxima, fractionDigits: 2 })
+					? faker.number.float({
+							min: DEFAULT_CONTEXTO.nota_minima,
+							max: DEFAULT_CONTEXTO.nota_maxima,
+							fractionDigits: 2
+						})
 					: null;
 				notasList.push({
-                    id,
-                    nombre,
-                    valor_actual,
-                    tags: [tag],
-                    peso: 0.0
-                });
-            }
-            // Asignar pesos a las notas del ramo actual, asegurando que sumen 1
-            const pesos = new Array(n_notas).fill(0).map(() => faker.number.float({ min: 0.01, max: 1, fractionDigits: 2 }));
-            const pesoSum = pesos.reduce((a, b) => a + b, 0);
-            for (let j = 0; j < n_notas; j++) {
-                notasList[j].peso = parseFloat((pesos[j] / pesoSum).toFixed(2));
-            }
-            notasData.set(ramoId, {
-                perfil: DEFAULT_PERFIL,
-                contexto: DEFAULT_CONTEXTO,
-                tags: tagList.map(tag => [generateUUID(), { name: tag, color: ColorUtils.getRandomColor() }]),
-                restricciones: [],
-                evaluaciones: notasList.map(nota => [nota.id, {
-                    id: nota.nombre,
-                    peso: nota.peso,
-                    valor_actual: nota.valor_actual,
-                    tags: nota.tags
-                }])
-            });
+					id,
+					nombre,
+					valor_actual,
+					tags: [tag],
+					peso: 0.0
+				});
+			}
+			// Asignar pesos a las notas del ramo actual, asegurando que sumen 1
+			const pesos = new Array(n_notas)
+				.fill(0)
+				.map(() => faker.number.float({ min: 0.01, max: 1, fractionDigits: 2 }));
+			const pesoSum = pesos.reduce((a, b) => a + b, 0);
+			for (let j = 0; j < n_notas; j++) {
+                notasList[j].peso = parseFloat((pesos[j] / pesoSum).toFixed(2)) * 100;
+			}
+			notasData.set(ramoId, {
+				perfil: DEFAULT_PERFIL,
+				contexto: DEFAULT_CONTEXTO,
+				tags: tagList.map((tag) => [
+					generateUUID(),
+					{ name: tag, color: ColorUtils.getRandomColor() }
+				]),
+				restricciones: [],
+				evaluaciones: notasList.map((nota) => [
+					nota.id,
+					{
+						id: nota.nombre,
+						peso: nota.peso,
+						valor_actual: nota.valor_actual,
+						tags: nota.tags
+					}
+				])
+			});
 		}
 
 		return {
