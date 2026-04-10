@@ -4,10 +4,16 @@
 	import { slide } from 'svelte/transition';
 
 	let isEnabled = $state(db.dev?.timeTravelEnabled || false);
-	let selectedDate = $state(db.dev?.timeTravelDate || new Date().toISOString().slice(0, 16));
+
+	// Separamos la fecha y la hora en dos estados de string
+	let datePart = $state(db.dev?.timeTravelDate?.split('T')[0] || new Date().toISOString().split('T')[0]);
+	let timePart = $state(db.dev?.timeTravelDate?.split('T')[1]?.slice(0, 5) || new Date().toTimeString().slice(0, 5));
+
+	// Derivamos la fecha completa combinando ambos
+	let selectedDate = $derived(`${datePart}T${timePart}`);
 
 	function toggleTimeTravel() {
-	    if (!db.dev) return;
+		if (!db.dev) return;
 		db.dev.timeTravelEnabled = isEnabled;
 		if (isEnabled) {
 			db.dev.timeTravelDate = selectedDate;
@@ -17,10 +23,19 @@
 	}
 
 	function resetToNow() {
+		const now = new Date();
 		isEnabled = false;
-		selectedDate = new Date().toISOString().slice(0, 16);
+		datePart = now.toISOString().split('T')[0];
+		timePart = now.toTimeString().slice(0, 5);
 		toggleTimeTravel();
 	}
+
+	// Efecto para actualizar la DB cuando cambien los inputs si el viaje está activo
+	$effect(() => {
+		if (isEnabled && db.dev) {
+			db.dev.timeTravelDate = selectedDate;
+		}
+	});
 </script>
 
 <div class="bg-base-100 border border-base-400 rounded-2xl p-6 shadow-sm flex flex-col gap-5">
@@ -46,23 +61,33 @@
 		</p>
 
 		<div class="flex flex-col gap-2">
-			<div class="relative">
-				<div
-					class="absolute inset-y-0 left-3 flex items-center pointer-events-none text-content/30"
-				>
-					<Calendar size={14} />
+			<div class="grid grid-cols-5 gap-2">
+				<div class="relative col-span-3">
+					<div class="absolute inset-y-0 left-3 flex items-center pointer-events-none text-content/30">
+						<Calendar size={14} />
+					</div>
+					<input
+						type="date"
+						bind:value={datePart}
+						class="w-full bg-base-200 border border-base-400 rounded-xl pl-9 pr-3 py-2.5 text-xs text-content focus:ring-2 focus:ring-config-100 focus:outline-none transition-all"
+					/>
 				</div>
-				<input
-					type="datetime-local"
-					bind:value={selectedDate}
-					oninput={() => isEnabled && toggleTimeTravel()}
-					class="w-full bg-base-200 border border-base-400 rounded-xl pl-10 pr-4 py-2.5 text-sm text-content focus:ring-2 focus:ring-config-100 focus:outline-none transition-all"
-				/>
+
+				<div class="relative col-span-2">
+					<div class="absolute inset-y-0 left-3 flex items-center pointer-events-none text-content/30">
+						<Clock size={14} />
+					</div>
+					<input
+						type="time"
+						bind:value={timePart}
+						class="w-full bg-base-200 border border-base-400 rounded-xl pl-9 pr-3 py-2.5 text-xs text-content focus:ring-2 focus:ring-config-100 focus:outline-none transition-all"
+					/>
+				</div>
 			</div>
 
 			<button
 				onclick={resetToNow}
-				class="flex items-center justify-center gap-2 text-[11px] font-bold text-content/40 hover:text-content transition-colors py-1 uppercase tracking-wider"
+				class="flex items-center justify-center gap-2 text-[11px] font-bold text-content/40 hover:text-content transition-colors py-1 uppercase tracking-wider cursor-pointer"
 			>
 				<RotateCcw size={12} />
 				Resetear a tiempo real
@@ -78,9 +103,9 @@
 					<div class="w-2 h-2 bg-primary-100 rounded-full"></div>
 				</div>
 				<div class="flex flex-col">
-					<span class="text-[10px] font-bold text-primary-100 uppercase leading-none"
-						>Viaje Activo</span
-					>
+					<span class="text-[10px] font-bold text-primary-100 uppercase leading-none">
+						Viaje Activo
+					</span>
 					<span class="text-[11px] text-content/70 font-mono mt-1">
 						{new Date(selectedDate).toLocaleString()}
 					</span>
@@ -89,3 +114,19 @@
 		{/if}
 	</div>
 </div>
+
+<style>
+	/* Limpiar los iconos nativos en algunos navegadores para que no choquen con los de Lucide */
+	input::-webkit-calendar-picker-indicator {
+		background: transparent;
+		bottom: 0;
+		color: transparent;
+		cursor: pointer;
+		height: auto;
+		left: 0;
+		position: absolute;
+		right: 0;
+		top: 0;
+		width: auto;
+	}
+</style>
