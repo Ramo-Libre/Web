@@ -7,7 +7,7 @@
 	import StorageTransfer from './_components/StorageTransfer.svelte';
 </script>
 
-<div in:fly={{ y: 10, duration: 300 }} class="w-full space-y-8">
+<div in:fly={{ y: 10, duration: 300, delay: 100 }} class="w-full space-y-8">
 	<div class="columns-1 md:columns-2 gap-6 space-y-6">
 		<div class="break-inside-avoid">
 			<DataGenerator />

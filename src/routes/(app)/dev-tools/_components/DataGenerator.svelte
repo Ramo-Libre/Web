@@ -1,6 +1,6 @@
 <script lang="ts">
 	import MockDataGenerator, { type MockDataOutput } from '$lib/dev-tools/gen';
-	import { Database, Check, RefreshCw, Code2, Copy, AlertCircle } from '@lucide/svelte';
+	import { Database, Check, RefreshCw, Code2, Copy, AlertCircle, Trash2 } from '@lucide/svelte';
 
 	let params = $state({
 		semestres: 2,
@@ -11,8 +11,9 @@
 	});
 
 	let generatedData = $state<MockDataOutput | null>(null);
-	let jsonString = $state(''); // Estado para el texto editable
+	let jsonString = $state('');
 	let isValidJson = $state(true);
+	let isCopied = $state(false);
 
 	function handleGenerate() {
 		generatedData = MockDataGenerator.generate({ ...params });
@@ -20,23 +21,32 @@
 		isValidJson = true;
 	}
 
+	function handleClear() {
+		generatedData = null;
+		jsonString = '';
+		isValidJson = true;
+	}
+
 	function handleApply() {
 		try {
 			const dataToApply = JSON.parse(jsonString);
-			console.log('Aplicando datos (pueden estar modificados):', dataToApply);
+			console.log('Aplicando datos:', dataToApply);
 			// db.import(dataToApply);
 			isValidJson = true;
 		} catch {
 			isValidJson = false;
-			console.error('JSON inválido, no se puede aplicar');
 		}
 	}
 
 	function copyToClipboard() {
+		if (!jsonString) return;
 		navigator.clipboard.writeText(jsonString);
+		isCopied = true;
+		setTimeout(() => {
+			isCopied = false;
+		}, 2000);
 	}
 
-	// Validar JSON mientras se escribe
 	function handleJsonInput(e: Event) {
 		const value = (e.target as HTMLTextAreaElement).value;
 		jsonString = value;
@@ -81,11 +91,21 @@
 			<RefreshCw size={16} />
 			Generar
 		</button>
+
+		{#if jsonString}
+			<button
+				onclick={handleClear}
+				class="px-4 flex items-center justify-center border border-base-400 text-content/40 hover:text-error-100 hover:border-error-100/30 py-2 rounded-xl transition-all cursor-pointer"
+				title="Limpiar salida"
+			>
+				<Trash2 size={18} />
+			</button>
+		{/if}
+
 		<button
 			onclick={handleApply}
 			disabled={!jsonString || !isValidJson}
 			class="px-4 flex items-center justify-center bg-success-400 border border-success-300 text-success-100 py-2 rounded-xl font-bold hover:bg-success-300 disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
-			title={isValidJson ? 'Aplicar cambios' : 'JSON inválido'}
 		>
 			<Check size={18} />
 		</button>
@@ -105,10 +125,14 @@
 				</div>
 				<button
 					onclick={copyToClipboard}
-					class="text-content/40 hover:text-content transition-colors cursor-pointer"
-					title="Copiar JSON"
+					class="flex items-center gap-1 transition-all cursor-pointer {isCopied ? 'text-success-100' : 'text-content/40 hover:text-content'}"
 				>
-					<Copy size={14} />
+					{#if isCopied}
+						<span class="text-[10px] font-bold uppercase tracking-wider">Copiado</span>
+						<Check size={14} />
+					{:else}
+						<Copy size={14} />
+					{/if}
 				</button>
 			</div>
 
@@ -118,7 +142,7 @@
 					oninput={handleJsonInput}
 					spellcheck="false"
 					class="w-full bg-base-400/20 p-3 rounded-xl overflow-auto text-[11px] font-mono text-content/70 h-64 border transition-all custom-scroll resize-none focus:outline-none
-                    {isValidJson ? 'border-base-400 focus:border-config-100' : 'border-error-100 bg-error-400/10'}"
+					{isValidJson ? 'border-base-400 focus:border-config-100' : 'border-error-100 bg-error-400/10'}"
 				></textarea>
 
 				{#if isValidJson}
@@ -144,8 +168,5 @@
 		-webkit-appearance: textfield !important;
 		margin: 0;
 		-moz-appearance: textfield !important;
-	}
-	textarea {
-		tab-size: 2;
 	}
 </style>
