@@ -56,10 +56,10 @@ export default defineConfig({
 				enabled: true
 			}
 		})
-    ],
-    preview: {
-        allowedHosts: true,
-    },
+	],
+	preview: {
+		allowedHosts: true
+	},
 	optimizeDeps: {
 		exclude: ['@madmti/gradesolver']
 	}
