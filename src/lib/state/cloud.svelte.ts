@@ -4,6 +4,7 @@ import { db, RAMOLIBE_KEY_PREFIX, SAVE_EVENT, type SaveEventData } from './index
 import { supabase } from '$lib/supabase/client';
 import { untrack } from 'svelte';
 import { PUBLIC_CLOUD_SYNC_DEBOUNCE } from '$env/static/public';
+import { network } from './network.svelte';
 
 const CLOUD_SYNC_DEBOUNCE = parseInt(PUBLIC_CLOUD_SYNC_DEBOUNCE) || 5000;
 const CLOUD_KEY = `${RAMOLIBE_KEY_PREFIX}CLOUD_V1`;
@@ -35,35 +36,43 @@ const DEFAULT_AUTH_STATE: AuthState = {
 class CloudStore {
 	private _cloud: CloudSerial = $state<CloudSerial>(DEFAULT_CLOUD_STATE);
 	private _auth: AuthState = $state<AuthState>(DEFAULT_AUTH_STATE);
-    private _syncTimeout: NodeJS.Timeout | null = null;
+	private _syncTimeout: NodeJS.Timeout | null = null;
 
-    private saveListener = (ev: Event) => {
-        const { timestamp, preferencesChanged } = (ev as unknown as SaveEventData).detail;
-        if (preferencesChanged) return;
-        this._cloud.lastLocalUpdate = new Date(timestamp).toISOString();
-        if (!this._cloud.autoSync) return;
-        this.sync(timestamp);
-    };
+	private saveListener = (ev: Event) => {
+		const { timestamp, preferencesChanged } = (ev as unknown as SaveEventData).detail;
+		if (preferencesChanged) return;
+		this._cloud.lastLocalUpdate = new Date(timestamp).toISOString();
+		if (!this._cloud.autoSync) return;
+		this.sync(timestamp);
+	};
 
-    private focusListener = () => {
-        console.log('Ventana enfocada');
-        if (this.isAuthenticated && this.autoSync) {
-            this.sync();
-        }
-    };
+	private focusListener = () => {
+		console.log('Ventana enfocada');
+		if (this.isAuthenticated && this.autoSync) {
+			this.sync();
+		}
+	};
 
 	constructor() {
 		if (browser) {
-            this.load().then(() => {
-                window.removeEventListener(SAVE_EVENT, this.saveListener);
-                window.removeEventListener('focus', this.focusListener);
-                window.addEventListener(SAVE_EVENT, this.saveListener);
-                window.addEventListener('focus', this.focusListener);
+			this.load().then(() => {
+				window.removeEventListener(SAVE_EVENT, this.saveListener);
+				window.removeEventListener('focus', this.focusListener);
+				window.addEventListener(SAVE_EVENT, this.saveListener);
+				window.addEventListener('focus', this.focusListener);
+
 				$effect.root(() => {
 					$effect(() => {
 						// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 						this._cloud;
 						this.save();
+					});
+				});
+				$effect.root(() => {
+					$effect(() => {
+						if (network.online && this.autoSync) {
+							untrack(() => this.sync());
+						}
 					});
 				});
 			});
