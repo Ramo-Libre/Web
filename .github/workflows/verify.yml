@@ -35,6 +35,8 @@ jobs:
         env:
           PUBLIC_SHOW_DEV_TOOLS: 'true'
           PUBLIC_VERSION: 'vX.X.X'
+          PUBLIC_SUPABASE_URL: 'https://url.supabase.co'
+          PUBLIC_SUPABASE_PUBLISHABLE_KEY: 'sb_super_secret_key'
 
       - name: 🏗️ Build
         run: pnpm run build
