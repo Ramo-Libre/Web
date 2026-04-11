@@ -49,13 +49,13 @@
 			</div>
 		{:else if user}
 			<div
-				class="relative bg-linear-to-r from-grades-100 to-grades-100/90 p-6 sm:p-8 text-content transition-all group/hero border-b border-base-400 overflow-hidden"
+				class="relative bg-linear-to-r {cloud.isSyncing ? 'from-warning-200 to-warning-200/90' : cloud.isSynced ? 'from-success-100 to-success-100/90' : 'from-base-200 to-base-200/90'} p-6 sm:p-8 text-content transition-all group/hero border-b border-base-400 overflow-hidden"
 			>
 				<div class="flex items-center justify-between mb-4">
-					<div class="flex items-center gap-2 opacity-80">
-						<CheckCircle2 size={16} class="text-base-100" />
-						<span class="text-xs font-bold uppercase tracking-widest text-base-100"
-							>Cuenta Sincronizada</span
+					<div class="flex items-center gap-2 opacity-80 {cloud.isSynced || cloud.isSyncing ? 'text-base-100' : 'text-content'}">
+						<CheckCircle2 size={16} />
+						<span class="text-xs font-bold uppercase tracking-widest"
+							>Cuenta {cloud.isSyncing ? 'Sincronizandose' : cloud.isSynced ? 'Sincronizada' : 'No sincronizada'}</span
 						>
 					</div>
 
@@ -79,7 +79,7 @@
 					</div>
 					<div>
 						<div class="text-2xl sm:text-3xl font-bold text-content leading-tight">{userName}</div>
-						<div class="text-sm font-medium text-content/60 mt-0.5">{userMail}</div>
+						<div class="text-sm font-medium text-content/90 mt-0.5">{userMail}</div>
 					</div>
 				</div>
 
@@ -127,8 +127,12 @@
 						aria-checked={isAutoSyncEnabled}
 						onclick={toggleAutoSync}
 						class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none {isAutoSyncEnabled
-							? 'bg-grades-100'
-							: 'bg-grades-400'}"
+							? cloud.isSyncing
+                                ? 'bg-warning-200'
+                                : cloud.isSynced
+                                    ? 'bg-success-100'
+                                    : 'bg-success-400'
+							: 'bg-base-400'}"
 					>
 						<span class="sr-only">Activar sincronización automática</span>
 						<span

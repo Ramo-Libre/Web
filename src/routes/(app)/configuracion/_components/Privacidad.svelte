@@ -84,11 +84,10 @@
 		showDeleteLocalModal = false;
 	}
 
-	function confirmDeleteAccount() {
-		cloud.deleteCloudData().then(() => {
-			showDeleteAccountModal = false;
-			window.location.reload();
-		});
+	async function confirmDeleteAccount() {
+		await cloud.deleteCloudData();
+		showDeleteAccountModal = false;
+		window.location.reload();
 	}
 </script>
 
