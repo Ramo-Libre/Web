@@ -10,14 +10,14 @@
 	);
 	let userMail = $derived(user?.email ?? 'Sin sesión activa');
 	let currentProvider = $derived((user?.app_metadata?.provider as string) ?? 'github');
+	let isSyncing = $derived(cloud.isSyncing);
+	let isSynced = $derived(cloud.isSynced);
 
 	const providerColors: Record<string, string> = {
 		github: 'bg-base-200 text-content border border-base-400',
 		google: 'bg-base-100 text-content border border-base-400',
 		discord: 'bg-[#5865F2] text-white border border-[#4752c4]'
 	};
-
-	const syncStatusColors = 'bg-success-400 text-success-100 border border-success-300';
 
 	function handleAccountNavigation() {
 		goto(resolve('/configuracion#sync' as '/configuracion'));
@@ -53,10 +53,15 @@
 					class="text-content/50 flex items-center justify-end space-x-1 mt-1 max-md:flex-col max-md:gap-2"
 				>
 					<span
-						class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium {syncStatusColors} gap-1 shadow-sm"
+						class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium gap-1 shadow-sm transition-colors duration-300
+                        {isSyncing
+							? 'bg-warning-400 text-warning-100 border border-warning-200'
+							: isSynced
+								? 'bg-success-400 text-success-100 border border-success-300'
+								: 'bg-base-200 text-content/50 border border-base-300'}"
 					>
-						<RefreshCw size={10} />
-						Synced
+						<RefreshCw size={10} class={isSyncing ? 'animate-spin' : ''} />
+						{isSyncing ? 'Sincronizando...' : isSynced ? 'Sincronizado' : 'No sincronizado'}
 					</span>
 					<span
 						class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium {providerColors[

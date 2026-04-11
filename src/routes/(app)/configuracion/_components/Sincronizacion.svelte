@@ -20,9 +20,9 @@
 	let currentProvider = $derived((user?.app_metadata?.provider as string) ?? 'github');
 
 	// --- ESTADO LOCAL ---
-	let isSyncing = $state(false);
 	let lastSync = $derived(cloud.lastSync);
 	let isAutoSyncEnabled = $derived(cloud.autoSync);
+	let isSyncing = $derived(cloud.isSyncing);
 
 	// --- ACCIONES ---
 	async function handleLogout() {
@@ -30,14 +30,11 @@
 	}
 
 	function handleSync() {
-		isSyncing = true;
-		cloud.sync().finally(() => {
-            isSyncing = false;
-        });
+		cloud.sync();
 	}
 
 	function toggleAutoSync() {
-	    cloud.autoSync = !isAutoSyncEnabled;
+		cloud.autoSync = !isAutoSyncEnabled;
 	}
 </script>
 
@@ -99,7 +96,12 @@
 					<div>
 						<div class="font-semibold text-content text-sm">Estado de los datos</div>
 						<div class="text-xs text-content/50 mt-1">
-							Última sincronización: Hoy a las {lastSync}
+							Última sincronización: {lastSync ? new Date(lastSync).toLocaleString() : 'Nunca'}
+						</div>
+						<div class="text-xs text-content/50 mt-1">
+							Ultimo cambio local: {cloud.lastLocalUpdate
+								? new Date(cloud.lastLocalUpdate).toLocaleString()
+								: 'Nunca'}
 						</div>
 					</div>
 					<button
