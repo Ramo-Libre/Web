@@ -57,7 +57,7 @@
 		>
 			<div class="flex items-center justify-between mb-2">
 				<div class="flex items-center gap-2 opacity-80">
-					<CircleCheck size={16} class="text-success-100" />
+					<CircleCheck size={16} class="text-base-100" />
 					<span class="text-xs font-bold uppercase tracking-widest text-base-100"
 						>Periodo Actual</span
 					>

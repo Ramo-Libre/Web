@@ -1,0 +1,21 @@
+name: Supabase Keep-Alive
+
+on:
+  schedule:
+    # Se ejecuta a las 00:00 cada 4 días
+    - cron: '0 0 */4 * *'
+  workflow_dispatch:
+
+jobs:
+  ping-db:
+    runs-on: ubuntu-latest
+    environment: cron
+    steps:
+      - name: Ping Supabase Data
+        run: |
+            curl -I -X GET "${{ secrets.SUPABASE_URL }}/rest/v1/backups?select=*" \
+            -H "apikey: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
+            -H "Range: 0-0" \
+            -H "Prefer: count=exact" \
+            --max-time 30
