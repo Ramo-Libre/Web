@@ -9,11 +9,10 @@ import { HorariosManager } from './horarios.svelte';
 import { DevManager } from './dev.svelte';
 import { PUBLIC_SHOW_DEV_TOOLS } from '$env/static/public';
 import type { MockDataOutput } from '$lib/dev-tools/gen';
-import { AuthManager } from './auth.svelte';
 
 export const RAMOLIBE_KEY_PREFIX = 'RAMOLIBRE_';
 const STORAGE_KEY = (sem: string) => `${RAMOLIBE_KEY_PREFIX}ROOT_STORE_V1_${sem}`;
-const SEMESTER_KEY = `${RAMOLIBE_KEY_PREFIX}SEMESTER`;
+const SEMESTER_KEY = `${RAMOLIBE_KEY_PREFIX}SEMESTER_V1`;
 const PREFERENCES_KEY = `${RAMOLIBE_KEY_PREFIX}PREFERENCES_V1`;
 const DEV_KEY = `${RAMOLIBE_KEY_PREFIX}DEV_V1`;
 
@@ -27,7 +26,6 @@ class RootStore {
 	private _evaluacionEvents = new EvaluacionEventsManager();
 
 	private _dev: null | DevManager = null;
-	private _auth = new AuthManager();
 
 	get semestres() {
 		return this._semestres;
@@ -59,10 +57,6 @@ class RootStore {
 
 	get dev() {
 		return this._dev;
-	}
-
-	get auth() {
-		return this._auth;
 	}
 
 	get empty(): boolean {

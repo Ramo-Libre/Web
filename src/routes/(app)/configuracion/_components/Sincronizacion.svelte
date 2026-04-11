@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { db } from '$lib';
+	import { cloud } from '$lib/state/cloud.svelte';
 	import {
 		Cloud,
 		CloudOff,
@@ -11,8 +12,8 @@
 	} from '@lucide/svelte';
 
 	// --- DERIVADOS (Estado Global) ---
-	let user = $derived(db.auth.user);
-	let isLoading = $derived(db.auth.isLoading);
+	let user = $derived(cloud.user);
+	let isLoading = $derived(cloud.isLoading);
 	let userName = $derived(
 		user?.user_metadata?.full_name ?? user?.email?.split('@')[0] ?? 'Usuario'
 	);
@@ -21,22 +22,21 @@
 
 	// --- ESTADO LOCAL ---
 	let isSyncing = $state(false);
-	let lastSync = $state(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+	let lastSync = $derived(cloud.lastSync);
 
-	// Estado para el switch de auto-sync (Idealmente, esto debería venir de db.auth o db.settings)
+	// Estado para el switch de auto-sync (Idealmente, esto debería venir de cloud o db.settings)
 	let isAutoSyncEnabled = $derived(db.preferences.autoSync);
 
 	// --- ACCIONES ---
 	async function handleLogout() {
-		await db.auth.logout();
+		await cloud.logout();
 	}
 
 	function handleSync() {
 		isSyncing = true;
-		setTimeout(() => {
-			isSyncing = false;
-			lastSync = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-		}, 1500);
+		cloud.sync().finally(() => {
+            isSyncing = false;
+        });
 	}
 
 	function toggleAutoSync() {
@@ -181,14 +181,14 @@
 			<div class="bg-base-100 flex-1 flex flex-col items-center justify-center p-8">
 				<div class="flex flex-wrap gap-3 w-full">
 					<button
-						onclick={() => db.auth.loginWith('github')}
+						onclick={() => cloud.loginWith('github')}
 						class="cursor-pointer w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-base-200 border border-base-400 text-content rounded-lg text-sm font-semibold hover:bg-base-300 transition-all shadow-sm"
 					>
 						<GithubIcon size={18} /> Continuar con GitHub
 					</button>
 
 					<button
-						onclick={() => db.auth.loginWith('google')}
+						onclick={() => cloud.loginWith('google')}
 						class="cursor-pointer w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-base-200 border border-base-400 text-content rounded-lg text-sm font-semibold hover:bg-base-300 transition-all shadow-sm"
 					>
 						<svg class="w-4.5 h-4.5" viewBox="0 0 512 512"
@@ -210,7 +210,7 @@
 					</button>
 
 					<button
-						onclick={() => db.auth.loginWith('discord')}
+						onclick={() => cloud.loginWith('discord')}
 						class="cursor-pointer w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-[#5865F2] text-white rounded-lg text-sm font-semibold hover:bg-[#4752c4] transition-all shadow-sm border border-[#4752c4]/50"
 					>
 						<svg class="w-5 h-5 fill-current" viewBox="0.02 57.8 511.92 396.3"

@@ -16,7 +16,8 @@ export interface Preferences {
 	};
 	general: {
         theme: Theme;
-		autoSync: boolean;
+        autoSync: boolean;
+		lastSync: Date | null;
 	};
 }
 
@@ -33,7 +34,8 @@ const DEFAULT_PREFERENCES: Preferences = {
 	},
 	general: {
         theme: 'light',
-		autoSync: true
+        autoSync: true,
+		lastSync: null
 	}
 };
 
@@ -101,6 +103,10 @@ export class PreferencesManager implements Serializable<PreferencesSerial> {
         return this._prefs.general.autoSync;
     }
 
+    get lastSync() {
+        return this._prefs.general.lastSync;
+    }
+
 	setCalendarView(view: CalendarView) {
 		this._prefs = {
 			...this._prefs,
@@ -154,6 +160,16 @@ export class PreferencesManager implements Serializable<PreferencesSerial> {
             general: {
                 ...this._prefs.general,
                 autoSync
+            }
+        };
+    }
+
+    setLastSync(date: Date) {
+        this._prefs = {
+            ...this._prefs,
+            general: {
+                ...this._prefs.general,
+                lastSync: date
             }
         };
     }
