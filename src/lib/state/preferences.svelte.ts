@@ -15,7 +15,8 @@ export interface Preferences {
 		view: ScheduleView;
 	};
 	general: {
-		theme: Theme;
+        theme: Theme;
+		autoSync: boolean;
 	};
 }
 
@@ -31,7 +32,8 @@ const DEFAULT_PREFERENCES: Preferences = {
 		view: 'table'
 	},
 	general: {
-		theme: 'light'
+        theme: 'light',
+		autoSync: true
 	}
 };
 
@@ -93,7 +95,11 @@ export class PreferencesManager implements Serializable<PreferencesSerial> {
 
 	get theme() {
 		return this._prefs.general.theme;
-	}
+    }
+
+    get autoSync() {
+        return this._prefs.general.autoSync;
+    }
 
 	setCalendarView(view: CalendarView) {
 		this._prefs = {
@@ -140,7 +146,17 @@ export class PreferencesManager implements Serializable<PreferencesSerial> {
 		const cls = themes.map((t) => t.class).filter((c) => !!c);
 		root.classList.remove(...cls);
 		root.classList.add(this._prefs.general.theme);
-	}
+    }
+
+    setAutoSync(autoSync: boolean) {
+        this._prefs = {
+            ...this._prefs,
+            general: {
+                ...this._prefs.general,
+                autoSync
+            }
+        };
+    }
 
 	setScheduleView(view: ScheduleView) {
 		this._prefs = {

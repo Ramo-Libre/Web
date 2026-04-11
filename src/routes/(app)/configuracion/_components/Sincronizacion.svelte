@@ -24,7 +24,7 @@
 	let lastSync = $state(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
 
 	// Estado para el switch de auto-sync (Idealmente, esto debería venir de db.auth o db.settings)
-	let isAutoSyncEnabled = $state(true);
+	let isAutoSyncEnabled = $derived(db.preferences.autoSync);
 
 	// --- ACCIONES ---
 	async function handleLogout() {
@@ -40,9 +40,7 @@
 	}
 
 	function toggleAutoSync() {
-		isAutoSyncEnabled = !isAutoSyncEnabled;
-		// Aquí puedes llamar a tu base de datos para guardar la preferencia
-		// ej: db.settings.updateAutoSync(isAutoSyncEnabled);
+		db.preferences.setAutoSync(!isAutoSyncEnabled);
 	}
 </script>
 
@@ -68,9 +66,14 @@
 					</div>
 
 					<div
-						class="px-3 py-1 bg-base-100/50 backdrop-blur-sm border border-base-400 rounded-full text-xs font-semibold capitalize flex items-center gap-2 shadow-sm z-20"
+						class="px-3 py-1 hidden bg-base-100/50 backdrop-blur-sm border border-base-400 rounded-full text-xs font-semibold capitalize sm:flex items-center gap-2 shadow-sm z-20"
 					>
 						Conectado vía {currentProvider}
+					</div>
+					<div
+						class="px-3 py-1 sm:hidden bg-base-100/50 backdrop-blur-sm border border-base-400 rounded-full text-xs font-semibold capitalize flex items-center gap-2 shadow-sm z-20"
+					>
+						{currentProvider}
 					</div>
 				</div>
 
