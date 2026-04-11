@@ -6,6 +6,7 @@
 	import Sincronizacion from './_components/Sincronizacion.svelte';
 	import Aparicencia from './_components/Apariencia.svelte';
 	import About from './_components/About.svelte';
+	import Privacidad from './_components/Privacidad.svelte';
 
 	let highlightedComponent = $state('');
 
@@ -47,6 +48,15 @@
 				: ''}"
 		>
 			<Sincronizacion />
+		</div>
+
+		<div
+			id="privacy"
+			class="break-inside-avoid transition-all duration-500 {highlightedComponent === 'privacy'
+				? 'shine-effect'
+				: ''}"
+		>
+			<Privacidad />
 		</div>
 
 		<div

@@ -91,7 +91,7 @@
 			</div>
 
 			<div
-				class="w-12 h-12 bg-primary-400 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md border border-primary-300 transform transition-transform duration-200"
+				class="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md border border-primary-300 transform transition-transform duration-200"
 			>
 				{userName.charAt(0).toUpperCase()}
 			</div>
