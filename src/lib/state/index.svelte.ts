@@ -21,23 +21,23 @@ export const RAMOLIBRE_EVENT_PREFIX = 'ramolibre:';
 export const SAVE_EVENT = `${RAMOLIBRE_EVENT_PREFIX}save`;
 
 export type FullSnapshot = {
-    semestres: ReturnType<SemestresManager['toSerial']>;
-    snapshots: {
-        [semester: string]: {
-            ramos: ReturnType<RamosManager['toSerial']>;
-            notas: ReturnType<NotasManager['toSerial']>;
-            events: ReturnType<EventsManager['toSerial']>;
-            horarios: ReturnType<HorariosManager['toSerial']>;
-            evaluacionEvents: ReturnType<EvaluacionEventsManager['toSerial']>;
-        };
-    };
+	semestres: ReturnType<SemestresManager['toSerial']>;
+	snapshots: {
+		[semester: string]: {
+			ramos: ReturnType<RamosManager['toSerial']>;
+			notas: ReturnType<NotasManager['toSerial']>;
+			events: ReturnType<EventsManager['toSerial']>;
+			horarios: ReturnType<HorariosManager['toSerial']>;
+			evaluacionEvents: ReturnType<EvaluacionEventsManager['toSerial']>;
+		};
+	};
 };
 export type SaveEventData = {
-    detail: {
-        timestamp: number;
-        preferencesChanged: boolean;
-    }
-}
+	detail: {
+		timestamp: number;
+		preferencesChanged: boolean;
+	};
+};
 
 class RootStore {
 	private _semestres = new SemestresManager();
@@ -136,26 +136,26 @@ class RootStore {
 			this._dev = new DevManager();
 			this._dev.fromSerial(JSON.parse(localStorage.getItem(DEV_KEY) || '{}'));
 		}
-    }
+	}
 
 	fromMock(data: MockDataOutput) {
 		if (!browser) return;
-        console.log('Iniciando inyección masiva de Mock Data...');
-        this.hydrate({
-            semestres: data.semestres,
-            snapshots: Object.fromEntries(
-                Object.entries(data.semestres_data).map(([semesterName, semData]) => [
-                    semesterName,
-                    {
-                        ramos: semData.ramos,
-                        notas: semData.notas,
-                        events: semData.eventos,
-                        horarios: semData.horarios,
-                        evaluacionEvents: []
-                    }
-                ])
-            )
-		})
+		console.log('Iniciando inyección masiva de Mock Data...');
+		this.hydrate({
+			semestres: data.semestres,
+			snapshots: Object.fromEntries(
+				Object.entries(data.semestres_data).map(([semesterName, semData]) => [
+					semesterName,
+					{
+						ramos: semData.ramos,
+						notas: semData.notas,
+						events: semData.eventos,
+						horarios: semData.horarios,
+						evaluacionEvents: []
+					}
+				])
+			)
+		});
 		console.log('Inyección masiva completada.');
 	}
 
@@ -217,65 +217,65 @@ class RootStore {
 			evaluacionEvents: this.evaluacionEvents.toSerial()
 		};
 		const semester = this.semestres.activeName ?? 'default';
-        const semesters = this.semestres.toSerial();
+		const semesters = this.semestres.toSerial();
 
-        const prevPreferences = localStorage.getItem(PREFERENCES_KEY) || '{}';
-        const currentPreferences = JSON.stringify(this.preferences.toSerial());
+		const prevPreferences = localStorage.getItem(PREFERENCES_KEY) || '{}';
+		const currentPreferences = JSON.stringify(this.preferences.toSerial());
 
 		localStorage.setItem(STORAGE_KEY(semester), JSON.stringify(semesterSnapshot));
 		localStorage.setItem(SEMESTER_KEY, JSON.stringify(semesters));
-        localStorage.setItem(PREFERENCES_KEY, currentPreferences);
+		localStorage.setItem(PREFERENCES_KEY, currentPreferences);
 
-        const preferencesChanged = prevPreferences !== currentPreferences;
+		const preferencesChanged = prevPreferences !== currentPreferences;
 
 		if (PUBLIC_SHOW_DEV_TOOLS === 'true' && this._dev) {
 			localStorage.setItem(DEV_KEY, JSON.stringify(this._dev.toSerial()));
 		}
 
-        untrack(() => {
-            const eventData: SaveEventData = {
-                detail: {
-                    timestamp: Date.now(),
-                    preferencesChanged
-                }
-            };
-            window.dispatchEvent(new CustomEvent(SAVE_EVENT, eventData));
-        });
-    }
+		untrack(() => {
+			const eventData: SaveEventData = {
+				detail: {
+					timestamp: Date.now(),
+					preferencesChanged
+				}
+			};
+			window.dispatchEvent(new CustomEvent(SAVE_EVENT, eventData));
+		});
+	}
 
-    hydrate(fullSnapshot: FullSnapshot) {
-        const { semestres, snapshots } = fullSnapshot;
+	hydrate(fullSnapshot: FullSnapshot) {
+		const { semestres, snapshots } = fullSnapshot;
 
-        Object.keys(localStorage).forEach((key) => {
+		Object.keys(localStorage).forEach((key) => {
 			if (key.startsWith('RAMOLIBRE_') && key !== PREFERENCES_KEY && key !== DEV_KEY) {
 				localStorage.removeItem(key);
 			}
-        });
+		});
 
-        Object.entries(snapshots).forEach(([semesterName, snapshot]) => {
+		Object.entries(snapshots).forEach(([semesterName, snapshot]) => {
 			localStorage.setItem(STORAGE_KEY(semesterName), JSON.stringify(snapshot));
-        });
+		});
 
-        this.semestres.fromSerial(semestres);
-        this.loadCurrentSemesterRamos();
-    }
+		this.semestres.fromSerial(semestres);
+		this.loadCurrentSemesterRamos();
+	}
 
-    createFullSnapshot(): FullSnapshot {
-        const semestres = this.semestres.toSerial();
-        const snapshots: FullSnapshot['snapshots'] = {};
+	createFullSnapshot(): FullSnapshot {
+		const semestres = this.semestres.toSerial();
+		const snapshots: FullSnapshot['snapshots'] = {};
 
-        semestres.list.forEach((semesterName) => {
-            snapshots[semesterName] = {
-                ramos: this.ramos.toSerial(),
-                notas: this.notas.toSerial(),
-                events: this.events.toSerial(),
-                horarios: this.horarios.toSerial(),
-                evaluacionEvents: this.evaluacionEvents.toSerial()
-            };
-        });
+		semestres.list.forEach((semesterName) => {
+			snapshots[semesterName] = {
+				ramos: this.ramos.toSerial(),
+				notas: this.notas.toSerial(),
+				events: this.events.toSerial(),
+				horarios: this.horarios.toSerial(),
+				evaluacionEvents: this.evaluacionEvents.toSerial()
+			};
+		});
 
-        return { semestres, snapshots };
-    }
+		return { semestres, snapshots };
+	}
 }
 
 export const db = new RootStore();

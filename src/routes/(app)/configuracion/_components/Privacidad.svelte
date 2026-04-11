@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { cloud } from '$lib/state/cloud.svelte';
 	import { RAMOLIBE_KEY_PREFIX } from '$lib/state/index.svelte';
-	import { supabase } from '$lib/supabase/client';
 	import { Download, Upload, AlertTriangle, UserX, Trash } from '@lucide/svelte';
 	import { fade } from 'svelte/transition';
 
@@ -87,7 +86,7 @@
 
 	function confirmDeleteAccount() {
 		cloud.deleteCloudData().then(() => {
-		    showDeleteAccountModal = false;
+			showDeleteAccountModal = false;
 			window.location.reload();
 		});
 	}
