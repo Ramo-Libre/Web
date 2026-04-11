@@ -111,6 +111,7 @@
 	<div class="fixed inset-0 z-100 flex items-center justify-center p-4">
 		<button
 			class="absolute inset-0 bg-black/40 backdrop-blur-sm"
+			aria-label="Cerrar modal de limpieza de datos"
 			onclick={() => (showDeleteLocalModal = false)}
 		>
 		</button>
@@ -143,6 +144,7 @@
 	<div class="fixed inset-0 z-100 flex items-center justify-center p-4">
 		<button
 			class="absolute inset-0 bg-black/40 backdrop-blur-sm"
+			aria-label="Cerrar modal de eliminación de cuenta"
 			onclick={() => (showDeleteAccountModal = false)}
 		>
 		</button>
