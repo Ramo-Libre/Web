@@ -50,7 +50,7 @@
 					class="w-full flex gap-2 items-center justify-center sm:w-auto px-4 py-2 rounded-lg border border-base-400 text-content/70 font-semibold hover:bg-base-200 transition-all cursor-pointer"
 				>
 					{#if isExporting}
-						<div class="animate-spin h-3 w-3 border-2 border-base-100 border-t-transparent rounded-full"></div>
+						<div class="animate-spin h-3 w-3 border-2 border-content border-t-transparent rounded-full"></div>
 						Exportando...
 					{:else}
 						<Download size={14} />
