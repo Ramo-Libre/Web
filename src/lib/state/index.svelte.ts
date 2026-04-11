@@ -16,6 +16,9 @@ const SEMESTER_KEY = `${RAMOLIBE_KEY_PREFIX}SEMESTER_V1`;
 const PREFERENCES_KEY = `${RAMOLIBE_KEY_PREFIX}PREFERENCES_V1`;
 const DEV_KEY = `${RAMOLIBE_KEY_PREFIX}DEV_V1`;
 
+export const RAMOLIBRE_EVENT_PREFIX = 'ramolibre:';
+export const SAVE_EVENT = `${RAMOLIBRE_EVENT_PREFIX}save`;
+
 class RootStore {
 	private _semestres = new SemestresManager();
 	private _ramos = new RamosManager();
@@ -211,6 +214,8 @@ class RootStore {
 		if (PUBLIC_SHOW_DEV_TOOLS === 'true' && this._dev) {
 			localStorage.setItem(DEV_KEY, JSON.stringify(this._dev.toSerial()));
 		}
+
+		window.dispatchEvent(new CustomEvent(SAVE_EVENT, { detail: { timestamp: Date.now() } }));
 	}
 }
 

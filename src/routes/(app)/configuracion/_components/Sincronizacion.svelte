@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { db } from '$lib';
 	import { cloud } from '$lib/state/cloud.svelte';
 	import {
 		Cloud,
@@ -23,9 +22,7 @@
 	// --- ESTADO LOCAL ---
 	let isSyncing = $state(false);
 	let lastSync = $derived(cloud.lastSync);
-
-	// Estado para el switch de auto-sync (Idealmente, esto debería venir de cloud o db.settings)
-	let isAutoSyncEnabled = $derived(db.preferences.autoSync);
+	let isAutoSyncEnabled = $derived(cloud.autoSync);
 
 	// --- ACCIONES ---
 	async function handleLogout() {
@@ -40,7 +37,7 @@
 	}
 
 	function toggleAutoSync() {
-		db.preferences.setAutoSync(!isAutoSyncEnabled);
+	    cloud.autoSync = !isAutoSyncEnabled;
 	}
 </script>
 
