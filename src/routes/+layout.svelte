@@ -10,15 +10,19 @@
 			registerSW({
 				immediate: true,
 				onRegistered(r: ServiceWorkerRegistration | undefined) {
-					// uncomment following code if you want check for updates
-					r && setInterval(() => {
-					   console.log('Checking for sw update')
-					   r.update()
-					}, 20000 /* 20s for testing purposes */)
-					console.log(`SW Registered: ${r}`);
+					if (!r) return;
+
+					const interval = setInterval(() => {
+						console.log('Checking for SW update...');
+						r.update();
+					}, 3600000);
+
+					console.log(`SW Registered`);
+
+					return () => clearInterval(interval);
 				},
 				onRegisterError(error: Error) {
-					console.log('SW registration error', error);
+					console.error('SW registration error', error);
 				}
 			});
 		}
@@ -40,9 +44,11 @@
 <svelte:head>
 	{@html webManifest}
 	<title>Ramo Libre</title>
-    <meta name="theme-color" content="#ffffff" id="theme-meta" />
+	<meta name="theme-color" content="#ffffff" id="theme-meta" />
 </svelte:head>
 
-<div class="h-[calc(100dvh-4rem)] max-sm:h-dvh w-full flex flex-col max-sm:flex-col-reverse max-sm:p-4">
+<div
+	class="h-[calc(100dvh-4rem)] max-sm:h-dvh w-full flex flex-col max-sm:flex-col-reverse max-sm:p-4"
+>
 	{@render children()}
 </div>
