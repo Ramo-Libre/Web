@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { RAMOLIBE_KEY_PREFIX } from '$lib/state/index.svelte';
 	import { Download, AlertTriangle, UserX, Trash } from '@lucide/svelte';
 	import { fade } from 'svelte/transition';
 
@@ -10,14 +11,29 @@
 	// --- ACCIONES ---
 	function handleExportData() {
 		isExporting = true;
-		setTimeout(() => {
-			isExporting = false;
-			// Aquí iría tu lógica de descarga
-		}, 1000);
+		let data: Record<string, unknown> = {};
+		for (const key in localStorage) {
+			if (key.startsWith(RAMOLIBE_KEY_PREFIX)) {
+				const key_data = localStorage.getItem(key);
+				if (key_data) {
+                    data[key] = JSON.parse(key_data);
+                }
+			}
+		}
+		const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `ramolibe_backup_${new Date().toISOString().slice(0, 10)}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+
+		isExporting = false;
 	}
 
 	function confirmDeleteLocal() {
-		// db.nukeLocal();
+		localStorage.clear();
+		window.location.reload();
 		showDeleteLocalModal = false;
 	}
 
