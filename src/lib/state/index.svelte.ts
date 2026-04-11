@@ -9,6 +9,7 @@ import { HorariosManager } from './horarios.svelte';
 import { DevManager } from './dev.svelte';
 import { PUBLIC_SHOW_DEV_TOOLS } from '$env/static/public';
 import type { MockDataOutput } from '$lib/dev-tools/gen';
+import { untrack } from 'svelte';
 
 export const RAMOLIBE_KEY_PREFIX = 'RAMOLIBRE_';
 const STORAGE_KEY = (sem: string) => `${RAMOLIBE_KEY_PREFIX}ROOT_STORE_V1_${sem}`;
@@ -215,7 +216,9 @@ class RootStore {
 			localStorage.setItem(DEV_KEY, JSON.stringify(this._dev.toSerial()));
 		}
 
-		window.dispatchEvent(new CustomEvent(SAVE_EVENT, { detail: { timestamp: Date.now() } }));
+		untrack(() => {
+            window.dispatchEvent(new CustomEvent(SAVE_EVENT, { detail: { timestamp: Date.now() } }));
+        });
 	}
 }
 
