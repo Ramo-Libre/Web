@@ -30,8 +30,8 @@
 				Ramo Libre es un gestor académico de <span class="text-content font-medium"
 					>alto rendimiento</span
 				>
-				diseñado para estudiantes que buscan control total sobre su progreso. Construido con una
-				arquitectura <span class="italic">local-first</span> para garantizar privacidad y velocidad.
+				diseñado para estudiantes que buscan control total sobre su progreso. Construido con una arquitectura
+				<span class="italic">local-first</span> para garantizar privacidad y velocidad.
 			</p>
 		</div>
 

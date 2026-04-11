@@ -23,10 +23,10 @@ class RootStore {
 	private _events = new EventsManager();
 	private _horarios = new HorariosManager();
 	private _preferences = new PreferencesManager();
-    private _evaluacionEvents = new EvaluacionEventsManager();
+	private _evaluacionEvents = new EvaluacionEventsManager();
 
-    private _dev: null | DevManager = null;
-    private _auth = new AuthManager();
+	private _dev: null | DevManager = null;
+	private _auth = new AuthManager();
 
 	get semestres() {
 		return this._semestres;
@@ -58,11 +58,11 @@ class RootStore {
 
 	get dev() {
 		return this._dev;
-    }
+	}
 
-    get auth() {
-        return this._auth;
-    }
+	get auth() {
+		return this._auth;
+	}
 
 	get empty(): boolean {
 		return this._semestres.empty() && this._ramos.empty();

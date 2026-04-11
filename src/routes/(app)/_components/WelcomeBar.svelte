@@ -49,7 +49,9 @@
 				<div class="font-medium text-content transition-colors hidden md:block">
 					{userMail}
 				</div>
-				<div class="text-content/50 flex items-center justify-end space-x-1 mt-1 max-md:flex-col max-md:gap-2">
+				<div
+					class="text-content/50 flex items-center justify-end space-x-1 mt-1 max-md:flex-col max-md:gap-2"
+				>
 					<span
 						class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium {syncStatusColors} gap-1 shadow-sm"
 					>
