@@ -11,10 +11,11 @@ import { PUBLIC_SHOW_DEV_TOOLS } from '$env/static/public';
 import type { MockDataOutput } from '$lib/dev-tools/gen';
 import { AuthManager } from './auth.svelte';
 
-const STORAGE_KEY = (sem: string) => `RAMOLIBRE_ROOT_STORE_V1_${sem}`;
-const SEMESTER_KEY = 'RAMOLIBRE_SEMESTER';
-const PREFERENCES_KEY = 'RAMOLIBRE_PREFERENCES_V1';
-const DEV_KEY = 'RAMOLIBRE_DEV_V1';
+export const RAMOLIBE_KEY_PREFIX = 'RAMOLIBRE_';
+const STORAGE_KEY = (sem: string) => `${RAMOLIBE_KEY_PREFIX}ROOT_STORE_V1_${sem}`;
+const SEMESTER_KEY = `${RAMOLIBE_KEY_PREFIX}SEMESTER`;
+const PREFERENCES_KEY = `${RAMOLIBE_KEY_PREFIX}PREFERENCES_V1`;
+const DEV_KEY = `${RAMOLIBE_KEY_PREFIX}DEV_V1`;
 
 class RootStore {
 	private _semestres = new SemestresManager();
