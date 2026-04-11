@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { db } from '$lib';
+	import { cloud } from '$lib/state/cloud.svelte';
 	import {
 		Cloud,
 		CloudOff,
@@ -11,8 +11,8 @@
 	} from '@lucide/svelte';
 
 	// --- DERIVADOS (Estado Global) ---
-	let user = $derived(db.auth.user);
-	let isLoading = $derived(db.auth.isLoading);
+	let user = $derived(cloud.user);
+	let isLoading = $derived(cloud.isLoading);
 	let userName = $derived(
 		user?.user_metadata?.full_name ?? user?.email?.split('@')[0] ?? 'Usuario'
 	);
@@ -20,29 +20,21 @@
 	let currentProvider = $derived((user?.app_metadata?.provider as string) ?? 'github');
 
 	// --- ESTADO LOCAL ---
-	let isSyncing = $state(false);
-	let lastSync = $state(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
-
-	// Estado para el switch de auto-sync (Idealmente, esto debería venir de db.auth o db.settings)
-	let isAutoSyncEnabled = $state(true);
+	let lastSync = $derived(cloud.lastSync);
+	let isAutoSyncEnabled = $derived(cloud.autoSync);
+	let isSyncing = $derived(cloud.isSyncing);
 
 	// --- ACCIONES ---
 	async function handleLogout() {
-		await db.auth.logout();
+		await cloud.logout();
 	}
 
 	function handleSync() {
-		isSyncing = true;
-		setTimeout(() => {
-			isSyncing = false;
-			lastSync = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-		}, 1500);
+		cloud.sync();
 	}
 
 	function toggleAutoSync() {
-		isAutoSyncEnabled = !isAutoSyncEnabled;
-		// Aquí puedes llamar a tu base de datos para guardar la preferencia
-		// ej: db.settings.updateAutoSync(isAutoSyncEnabled);
+		cloud.autoSync = !isAutoSyncEnabled;
 	}
 </script>
 
@@ -57,20 +49,37 @@
 			</div>
 		{:else if user}
 			<div
-				class="relative bg-linear-to-r from-grades-100 to-grades-100/90 p-6 sm:p-8 text-content transition-all group/hero border-b border-base-400 overflow-hidden"
+				class="relative bg-linear-to-r {cloud.isSyncing
+					? 'from-warning-200 to-warning-200/90'
+					: cloud.isSynced
+						? 'from-success-100 to-success-100/90'
+						: 'from-base-200 to-base-200/90'} p-6 sm:p-8 text-content transition-all group/hero border-b border-base-400 overflow-hidden"
 			>
 				<div class="flex items-center justify-between mb-4">
-					<div class="flex items-center gap-2 opacity-80">
-						<CheckCircle2 size={16} class="text-base-100" />
-						<span class="text-xs font-bold uppercase tracking-widest text-base-100"
-							>Cuenta Sincronizada</span
+					<div
+						class="flex items-center gap-2 opacity-80 {cloud.isSynced || cloud.isSyncing
+							? 'text-base-100'
+							: 'text-content'}"
+					>
+						<CheckCircle2 size={16} />
+						<span class="text-xs font-bold uppercase tracking-widest"
+							>Cuenta {cloud.isSyncing
+								? 'Sincronizandose'
+								: cloud.isSynced
+									? 'Sincronizada'
+									: 'No sincronizada'}</span
 						>
 					</div>
 
 					<div
-						class="px-3 py-1 bg-base-100/50 backdrop-blur-sm border border-base-400 rounded-full text-xs font-semibold capitalize flex items-center gap-2 shadow-sm z-20"
+						class="px-3 py-1 hidden bg-base-100/50 backdrop-blur-sm border border-base-400 rounded-full text-xs font-semibold capitalize sm:flex items-center gap-2 shadow-sm z-20"
 					>
 						Conectado vía {currentProvider}
+					</div>
+					<div
+						class="px-3 py-1 sm:hidden bg-base-100/50 backdrop-blur-sm border border-base-400 rounded-full text-xs font-semibold capitalize flex items-center gap-2 shadow-sm z-20"
+					>
+						{currentProvider}
 					</div>
 				</div>
 
@@ -82,7 +91,7 @@
 					</div>
 					<div>
 						<div class="text-2xl sm:text-3xl font-bold text-content leading-tight">{userName}</div>
-						<div class="text-sm font-medium text-content/60 mt-0.5">{userMail}</div>
+						<div class="text-sm font-medium text-content/90 mt-0.5">{userMail}</div>
 					</div>
 				</div>
 
@@ -99,7 +108,12 @@
 					<div>
 						<div class="font-semibold text-content text-sm">Estado de los datos</div>
 						<div class="text-xs text-content/50 mt-1">
-							Última sincronización: Hoy a las {lastSync}
+							Última sincronización: {lastSync ? new Date(lastSync).toLocaleString() : 'Nunca'}
+						</div>
+						<div class="text-xs text-content/50 mt-1">
+							Ultimo cambio local: {cloud.lastLocalUpdate
+								? new Date(cloud.lastLocalUpdate).toLocaleString()
+								: 'Nunca'}
 						</div>
 					</div>
 					<button
@@ -125,8 +139,12 @@
 						aria-checked={isAutoSyncEnabled}
 						onclick={toggleAutoSync}
 						class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none {isAutoSyncEnabled
-							? 'bg-grades-100'
-							: 'bg-grades-400'}"
+							? cloud.isSyncing
+								? 'bg-warning-200'
+								: cloud.isSynced
+									? 'bg-success-100'
+									: 'bg-success-400'
+							: 'bg-base-400'}"
 					>
 						<span class="sr-only">Activar sincronización automática</span>
 						<span
@@ -178,14 +196,14 @@
 			<div class="bg-base-100 flex-1 flex flex-col items-center justify-center p-8">
 				<div class="flex flex-wrap gap-3 w-full">
 					<button
-						onclick={() => db.auth.loginWith('github')}
+						onclick={() => cloud.loginWith('github')}
 						class="cursor-pointer w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-base-200 border border-base-400 text-content rounded-lg text-sm font-semibold hover:bg-base-300 transition-all shadow-sm"
 					>
 						<GithubIcon size={18} /> Continuar con GitHub
 					</button>
 
 					<button
-						onclick={() => db.auth.loginWith('google')}
+						onclick={() => cloud.loginWith('google')}
 						class="cursor-pointer w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-base-200 border border-base-400 text-content rounded-lg text-sm font-semibold hover:bg-base-300 transition-all shadow-sm"
 					>
 						<svg class="w-4.5 h-4.5" viewBox="0 0 512 512"
@@ -207,7 +225,7 @@
 					</button>
 
 					<button
-						onclick={() => db.auth.loginWith('discord')}
+						onclick={() => cloud.loginWith('discord')}
 						class="cursor-pointer w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-[#5865F2] text-white rounded-lg text-sm font-semibold hover:bg-[#4752c4] transition-all shadow-sm border border-[#4752c4]/50"
 					>
 						<svg class="w-5 h-5 fill-current" viewBox="0.02 57.8 511.92 396.3"

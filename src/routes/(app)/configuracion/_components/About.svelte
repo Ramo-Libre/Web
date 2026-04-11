@@ -10,11 +10,9 @@
 		class="p-8 flex flex-col items-center text-center border-b border-base-400/50 bg-base-200/20"
 	>
 		<div
-			class="h-20 w-20 bg-primary-100 rounded-2xl shadow-lg shadow-primary-100/20 flex items-center justify-center mb-4 rotate-3 group hover:rotate-0 transition-transform duration-300"
+			class="h-20 w-20 bg-white rounded-2xl shadow-lg shadow-primary-100/20 flex items-center justify-center mb-4 rotate-3 group hover:rotate-0 transition-transform duration-300"
 		>
-			<span class="text-3xl font-black text-base-100">
-				<GraduationCap size={32} />
-			</span>
+			<img src="/favicon.webp" alt="Ramo Libre Logo" class="w-12 h-12" />
 		</div>
 		<h1 class="text-2xl font-black text-content uppercase tracking-tight">Ramo Libre</h1>
 		<p class="text-xs font-mono text-content/40 mt-1">{PUBLIC_VERSION} • Open Source</p>
@@ -33,6 +31,24 @@
 				diseñado para estudiantes que buscan control total sobre su progreso. Construido con una arquitectura
 				<span class="italic">local-first</span> para garantizar privacidad y velocidad.
 			</p>
+		</div>
+
+		<div class="space-y-3">
+			<h3
+				class="text-[10px] font-black text-content/30 uppercase tracking-widest flex items-center gap-2"
+			>
+				<Code2 size={12} />
+				Powered by
+			</h3>
+			<div class="flex flex-wrap gap-2">
+				{#each ['Svelte 5', 'SvelteKit', 'C++20', 'WebAssembly', 'Tailwind', 'Supabase'] as tech (tech)}
+					<span
+						class="px-2.5 py-1 bg-base-200 text-content/70 rounded-md text-[10px] font-bold border border-base-400/50"
+					>
+						{tech}
+					</span>
+				{/each}
+			</div>
 		</div>
 
 		<div class="p-4 bg-base-200 rounded-xl border border-base-300 flex items-center gap-4">
@@ -63,25 +79,7 @@
 			</a>
 		</div>
 
-		<div class="space-y-3">
-			<h3
-				class="text-[10px] font-black text-content/30 uppercase tracking-widest flex items-center gap-2"
-			>
-				<Code2 size={12} />
-				Powered by
-			</h3>
-			<div class="flex flex-wrap gap-2">
-				{#each ['Svelte 5', 'SvelteKit', 'C++20', 'WebAssembly', 'Tailwind', 'Supabase'] as tech (tech)}
-					<span
-						class="px-2.5 py-1 bg-base-200 text-content/70 rounded-md text-[10px] font-bold border border-base-400/50"
-					>
-						{tech}
-					</span>
-				{/each}
-			</div>
-		</div>
-
-		<div class="pt-2 grid grid-cols-2 gap-3">
+		<div class="grid grid-cols-2 gap-3">
 			<a
 				href="https://github.com/madmti/Ramo-Libre-Web"
 				target="_blank"

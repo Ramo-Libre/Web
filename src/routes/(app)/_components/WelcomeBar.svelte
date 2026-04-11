@@ -2,22 +2,22 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { GithubIcon, RefreshCw, UserCircle } from '@lucide/svelte';
-	import { db } from '$lib';
+	import { cloud } from '$lib/state/cloud.svelte';
 
-	let user = $derived(db.auth.user);
+	let user = $derived(cloud.user);
 	let userName = $derived(
 		user?.user_metadata?.full_name ?? user?.email?.split('@')[0] ?? 'Invitado'
 	);
 	let userMail = $derived(user?.email ?? 'Sin sesión activa');
 	let currentProvider = $derived((user?.app_metadata?.provider as string) ?? 'github');
+	let isSyncing = $derived(cloud.isSyncing);
+	let isSynced = $derived(cloud.isSynced);
 
 	const providerColors: Record<string, string> = {
 		github: 'bg-base-200 text-content border border-base-400',
 		google: 'bg-base-100 text-content border border-base-400',
 		discord: 'bg-[#5865F2] text-white border border-[#4752c4]'
 	};
-
-	const syncStatusColors = 'bg-success-400 text-success-100 border border-success-300';
 
 	function handleAccountNavigation() {
 		goto(resolve('/configuracion#sync' as '/configuracion'));
@@ -27,7 +27,7 @@
 <div
 	class="bg-base-100 rounded-lg border border-base-400 p-6 shadow-sm min-h-[110px] flex items-center justify-between gap-6 transition-all duration-300"
 >
-	{#if db.auth.isLoading}
+	{#if cloud.isLoading}
 		<div class="flex items-center space-x-4 w-full animate-pulse">
 			<div class="rounded-full bg-base-200 h-12 w-12"></div>
 			<div class="flex-1 space-y-2">
@@ -53,10 +53,15 @@
 					class="text-content/50 flex items-center justify-end space-x-1 mt-1 max-md:flex-col max-md:gap-2"
 				>
 					<span
-						class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium {syncStatusColors} gap-1 shadow-sm"
+						class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium gap-1 shadow-sm transition-colors duration-300
+                        {isSyncing
+							? 'bg-warning-400 text-warning-100 border border-warning-200'
+							: isSynced
+								? 'bg-success-400 text-success-100 border border-success-300'
+								: 'bg-base-200 text-content/50 border border-base-300'}"
 					>
-						<RefreshCw size={10} />
-						Synced
+						<RefreshCw size={10} class={isSyncing ? 'animate-spin' : ''} />
+						{isSyncing ? 'Sincronizando...' : isSynced ? 'Sincronizado' : 'No sincronizado'}
 					</span>
 					<span
 						class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium {providerColors[
@@ -111,13 +116,13 @@
 
 		<div class="flex flex-wrap gap-3 justify-center w-full md:w-auto">
 			<button
-				onclick={() => db.auth.loginWith('github')}
+				onclick={() => cloud.loginWith('github')}
 				class="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-base-100 border border-base-400 text-content rounded-lg text-xs font-semibold hover:bg-base-200 transition-all active:scale-95 shadow-sm"
 			>
 				<GithubIcon size={16} /> GitHub
 			</button>
 			<button
-				onclick={() => db.auth.loginWith('google')}
+				onclick={() => cloud.loginWith('google')}
 				class="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-base-100 border border-base-400 text-content rounded-lg text-xs font-semibold hover:bg-base-200 transition-all active:scale-95 shadow-sm"
 			>
 				<svg class="w-4 h-4" viewBox="0 0 512 512"
@@ -137,7 +142,7 @@
 				> Google
 			</button>
 			<button
-				onclick={() => db.auth.loginWith('discord')}
+				onclick={() => cloud.loginWith('discord')}
 				class="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-[#5865F2] text-white rounded-lg text-xs font-semibold hover:bg-[#4752c4] transition-all active:scale-95 shadow-sm"
 			>
 				<svg class="w-4 h-4 fill-current" viewBox="0.02 57.8 511.92 396.3"
