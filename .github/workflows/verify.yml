@@ -32,6 +32,10 @@ jobs:
 
       - name: 🛡️ Type Check
         run: pnpm run check
+        env:
+          PUBLIC_SHOW_DEV_TOOLS: 'true'
 
       - name: 🏗️ Build
         run: pnpm run build
+        env:
+          PUBLIC_SHOW_DEV_TOOLS: 'true'
