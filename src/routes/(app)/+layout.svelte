@@ -8,7 +8,7 @@
 		CalendarDays,
 		BookMarked,
 		Bolt,
-		Bone,
+		Bone
 	} from '@lucide/svelte';
 	import { onMount } from 'svelte';
 	import { db } from '$lib';

@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { PUBLIC_SHOW_DEV_TOOLS } from '$env/static/public';
-    const showDevTools = PUBLIC_SHOW_DEV_TOOLS === 'true';
+	import { PUBLIC_SHOW_DEV_TOOLS } from '$env/static/public';
+	const showDevTools = PUBLIC_SHOW_DEV_TOOLS === 'true';
 	let { children } = $props();
 </script>
 

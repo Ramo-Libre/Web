@@ -37,19 +37,19 @@ class MockDataGenerator {
 	public static generate(input: MockDataInput): MockDataOutput {
 		const { semestres, ramos, eventos, horarios, notas } = input;
 		const semestresSerial = this.generateSemestres(semestres);
-        const semestresData = {} as MockDataOutput['semestres_data'];
+		const semestresData = {} as MockDataOutput['semestres_data'];
 		for (const semestre of semestresSerial.list) {
 			const ramosSerial = this.generateRamos(ramos);
 			const eventosSerial = this.generateEventos(eventos, ramosSerial);
 			const horariosSerial = this.generateHorarios(horarios, ramosSerial);
 			const notasSerial = this.generateNotas(notas, ramosSerial);
 			semestresData[semestre] = {
-                ramos: ramosSerial,
-                notas: notasSerial,
-                eventos: eventosSerial,
-                horarios: horariosSerial
-            };
-        }
+				ramos: ramosSerial,
+				notas: notasSerial,
+				eventos: eventosSerial,
+				horarios: horariosSerial
+			};
+		}
 		return {
 			semestres: semestresSerial,
 			semestres_data: semestresData
@@ -209,7 +209,7 @@ class MockDataGenerator {
 				.map(() => faker.number.float({ min: 0.01, max: 1, fractionDigits: 2 }));
 			const pesoSum = pesos.reduce((a, b) => a + b, 0);
 			for (let j = 0; j < n_notas; j++) {
-                notasList[j].peso = parseFloat((pesos[j] / pesoSum).toFixed(2)) * 100;
+				notasList[j].peso = parseFloat((pesos[j] / pesoSum).toFixed(2)) * 100;
 			}
 			notasData.set(ramoId, {
 				perfil: DEFAULT_PERFIL,

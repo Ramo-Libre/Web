@@ -6,8 +6,12 @@
 	let isEnabled = $state(db.dev?.timeTravelEnabled || false);
 
 	// Separamos la fecha y la hora en dos estados de string
-	let datePart = $state(db.dev?.timeTravelDate?.split('T')[0] || new Date().toISOString().split('T')[0]);
-	let timePart = $state(db.dev?.timeTravelDate?.split('T')[1]?.slice(0, 5) || new Date().toTimeString().slice(0, 5));
+	let datePart = $state(
+		db.dev?.timeTravelDate?.split('T')[0] || new Date().toISOString().split('T')[0]
+	);
+	let timePart = $state(
+		db.dev?.timeTravelDate?.split('T')[1]?.slice(0, 5) || new Date().toTimeString().slice(0, 5)
+	);
 
 	// Derivamos la fecha completa combinando ambos
 	let selectedDate = $derived(`${datePart}T${timePart}`);
@@ -63,7 +67,9 @@
 		<div class="flex flex-col gap-2">
 			<div class="grid grid-cols-5 gap-2">
 				<div class="relative col-span-3">
-					<div class="absolute inset-y-0 left-3 flex items-center pointer-events-none text-content/30">
+					<div
+						class="absolute inset-y-0 left-3 flex items-center pointer-events-none text-content/30"
+					>
 						<Calendar size={14} />
 					</div>
 					<input
@@ -74,7 +80,9 @@
 				</div>
 
 				<div class="relative col-span-2">
-					<div class="absolute inset-y-0 left-3 flex items-center pointer-events-none text-content/30">
+					<div
+						class="absolute inset-y-0 left-3 flex items-center pointer-events-none text-content/30"
+					>
 						<Clock size={14} />
 					</div>
 					<input

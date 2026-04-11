@@ -41,10 +41,12 @@
 	}
 
 	function nukeAll() {
-		const confirm1 = confirm("¿Estás seguro de que quieres borrar ABSOLUTAMENTE TODO el LocalStorage? Esto incluye preferencias, temas y datos de desarrollo.");
+		const confirm1 = confirm(
+			'¿Estás seguro de que quieres borrar ABSOLUTAMENTE TODO el LocalStorage? Esto incluye preferencias, temas y datos de desarrollo.'
+		);
 		if (!confirm1) return;
 
-		const confirm2 = confirm("¿Última oportunidad? Se perderán todas las configuraciones.");
+		const confirm2 = confirm('¿Última oportunidad? Se perderán todas las configuraciones.');
 		if (!confirm2) return;
 
 		localStorage.clear();
@@ -79,7 +81,9 @@
 		</button>
 	</div>
 
-	<div class="bg-base-200 border border-base-300 rounded-xl p-4 flex flex-col items-center justify-center">
+	<div
+		class="bg-base-200 border border-base-300 rounded-xl p-4 flex flex-col items-center justify-center"
+	>
 		<span class="text-xs font-bold text-content/40 uppercase tracking-wider">Peso Total</span>
 		<span class="text-3xl font-black text-content">{formatBytes(totalSize)}</span>
 		<p class="text-[10px] text-content/30 mt-1 italic text-center">
@@ -92,7 +96,10 @@
 			<div class="group flex flex-col gap-1.5">
 				<div class="flex justify-between items-center text-xs">
 					<div class="flex items-center gap-2 min-w-0">
-						<span class="font-mono font-bold text-content/70 truncate max-w-[150px]" title={item.key}>
+						<span
+							class="font-mono font-bold text-content/70 truncate max-w-[150px]"
+							title={item.key}
+						>
 							{item.key}
 						</span>
 						<button

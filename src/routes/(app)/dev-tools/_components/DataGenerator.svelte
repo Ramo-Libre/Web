@@ -1,6 +1,15 @@
 <script lang="ts">
 	import MockDataGenerator, { type MockDataOutput } from '$lib/dev-tools/gen';
-	import { Database, Check, RefreshCw, Code2, Copy, AlertCircle, Trash2, PartyPopper } from '@lucide/svelte';
+	import {
+		Database,
+		Check,
+		RefreshCw,
+		Code2,
+		Copy,
+		AlertCircle,
+		Trash2,
+		PartyPopper
+	} from '@lucide/svelte';
 	import { db } from '$lib';
 	import { slide, fade } from 'svelte/transition';
 
@@ -122,10 +131,15 @@
 		<button
 			onclick={handleApply}
 			disabled={!jsonString || !isValidJson}
-			class="px-4 flex items-center justify-center {isApplied ? 'bg-success-300' : 'bg-success-400'} border border-success-300 text-success-100 py-2 rounded-xl font-bold hover:bg-success-300 disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer relative overflow-hidden"
+			class="px-4 flex items-center justify-center {isApplied
+				? 'bg-success-300'
+				: 'bg-success-400'} border border-success-300 text-success-100 py-2 rounded-xl font-bold hover:bg-success-300 disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer relative overflow-hidden"
 		>
 			{#if isApplied}
-				<div in:slide={{ axis: 'y' }} class="absolute inset-0 flex items-center justify-center bg-success-100 text-base-100">
+				<div
+					in:slide={{ axis: 'y' }}
+					class="absolute inset-0 flex items-center justify-center bg-success-100 text-base-100"
+				>
 					<Check size={20} strokeWidth={3} />
 				</div>
 			{/if}
@@ -136,7 +150,10 @@
 	{#if jsonString}
 		<div class="space-y-2 mt-2">
 			{#if isApplied}
-				<div transition:slide class="bg-success-400/10 border border-success-100/20 rounded-lg p-2 flex items-center gap-2 text-success-100 text-[11px] font-medium">
+				<div
+					transition:slide
+					class="bg-success-400/10 border border-success-100/20 rounded-lg p-2 flex items-center gap-2 text-success-100 text-[11px] font-medium"
+				>
 					<Check size={14} />
 					<span>Todos los semestres han sido sobrescritos con éxito en LocalStorage.</span>
 				</div>
