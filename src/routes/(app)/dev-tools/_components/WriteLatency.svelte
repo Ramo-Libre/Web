@@ -206,6 +206,7 @@
 	/* Quitamos las flechitas del input number para que se vea más limpio */
 	input[type='number'] {
 		-webkit-appearance: textfield !important;
+		appearance: textfield !important;
 		margin: 0;
 		-moz-appearance: textfield !important;
 	}

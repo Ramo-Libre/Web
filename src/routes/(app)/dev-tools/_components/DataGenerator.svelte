@@ -222,6 +222,7 @@
 	}
 	input[type='number'] {
 		-webkit-appearance: textfield !important;
+		appearance: textfield !important;
 		margin: 0;
 		-moz-appearance: textfield !important;
 	}
