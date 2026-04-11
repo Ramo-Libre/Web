@@ -22,32 +22,8 @@
 	}
 </script>
 
-<div in:fly={{ y: 10, duration: 300, delay: 100 }} class="grid h-full w-full">
-	{#if !db.empty}
-		<div class="space-y-6">
-			<WelcomeBar />
-
-			<div class="home-cards">
-				<div class="home-cards__col">
-					<div class="home-cards__item">
-						<NextClass />
-					</div>
-					<div class="home-cards__item">
-						<SemestreProgress />
-					</div>
-				</div>
-
-				<div class="home-cards__col">
-					<div class="home-cards__item">
-						<AcademicHealth />
-					</div>
-					<div class="home-cards__item">
-						<UpcomingEvents />
-					</div>
-				</div>
-			</div>
-		</div>
-	{:else}
+{#if db.empty}
+	<div in:fly={{ y: 10, duration: 300, delay: 100 }} class="grid h-full w-full">
 		<div class="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
 			<div class="md:col-span-2 grid">
 				<OnBoarding bind:semesterName onStart={handleStart} />
@@ -58,38 +34,23 @@
 				<Offline />
 			</div>
 		</div>
-	{/if}
-</div>
+	</div>
+{:else}
+	<div in:fly={{ y: 10, duration: 300, delay: 100 }} class="flex flex-col h-full w-full min-w-0">
+		<div class="flex flex-col gap-6 w-full min-w-0">
+			<WelcomeBar />
 
-<style>
-	.home-cards {
-		display: flex;
-		flex-direction: column;
-		gap: 1.5rem;
-		min-width: 0;
-	}
-	.home-cards__col {
-		display: flex;
-		flex-direction: column;
-		gap: 1.5rem;
-		min-width: 0;
-	}
-	.home-cards__item {
-		margin: 0;
-		min-width: 0;
-		width: 100%;
-		max-width: 100%;
-	}
+			<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full min-w-0 items-start">
+				<div class="flex flex-col gap-6 w-full min-w-0">
+					<div class="w-full min-w-0"><NextClass /></div>
+					<div class="w-full min-w-0"><SemestreProgress /></div>
+				</div>
 
-	@media (min-width: 1024px) {
-		.home-cards {
-			flex-direction: row;
-			align-items: flex-start;
-			min-width: 0;
-		}
-		.home-cards__col {
-			flex: 1;
-			min-width: 0;
-		}
-	}
-</style>
+				<div class="flex flex-col gap-6 w-full min-w-0">
+					<div class="w-full min-w-0"><AcademicHealth /></div>
+					<div class="w-full min-w-0"><UpcomingEvents /></div>
+				</div>
+			</div>
+		</div>
+	</div>
+{/if}
