@@ -152,7 +152,7 @@
 			class="relative bg-base-100 border border-base-400 rounded-2xl shadow-xl max-w-md w-full p-6"
 			in:fade={{ duration: 200 }}
 		>
-			<h3 class="text-lg font-bold text-content mb-2 text-error-100">
+			<h3 class="text-lg font-bold mb-2 text-error-100">
 				¿Confirmar eliminación de cuenta?
 			</h3>
 			<p class="text-sm text-content/70 mb-6 leading-relaxed">
