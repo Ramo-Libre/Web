@@ -162,13 +162,13 @@ class CloudStore {
 
 	async logout() {
 		await supabase.auth.signOut().catch((error) => {
-            console.error('Logout error:', error.message);
-        });
+			console.error('Logout error:', error.message);
+		});
 	}
 
 	async deleteCloudData() {
-        await supabase.rpc('delete_own_user');
-        await this.logout();
+		await supabase.rpc('delete_own_user');
+		await this.logout();
 	}
 
 	async sync(timestamp: number = Date.now()) {
@@ -208,12 +208,12 @@ class CloudStore {
 		}
 	}
 
-    private async performSync(timestamp: number) {
-        if (!network.online) {
-            console.warn('No hay conexion de red, sincronizacion cancelada');
-            return false;
-        }
-        console.log(`Sincronizando con la nube: ${new Date(timestamp).toISOString()}`);
+	private async performSync(timestamp: number) {
+		if (!network.online) {
+			console.warn('No hay conexion de red, sincronizacion cancelada');
+			return false;
+		}
+		console.log(`Sincronizando con la nube: ${new Date(timestamp).toISOString()}`);
 		const { data: remote } = await supabase
 			.from('backups')
 			.select('payload, updated_at')

@@ -49,13 +49,25 @@
 			</div>
 		{:else if user}
 			<div
-				class="relative bg-linear-to-r {cloud.isSyncing ? 'from-warning-200 to-warning-200/90' : cloud.isSynced ? 'from-success-100 to-success-100/90' : 'from-base-200 to-base-200/90'} p-6 sm:p-8 text-content transition-all group/hero border-b border-base-400 overflow-hidden"
+				class="relative bg-linear-to-r {cloud.isSyncing
+					? 'from-warning-200 to-warning-200/90'
+					: cloud.isSynced
+						? 'from-success-100 to-success-100/90'
+						: 'from-base-200 to-base-200/90'} p-6 sm:p-8 text-content transition-all group/hero border-b border-base-400 overflow-hidden"
 			>
 				<div class="flex items-center justify-between mb-4">
-					<div class="flex items-center gap-2 opacity-80 {cloud.isSynced || cloud.isSyncing ? 'text-base-100' : 'text-content'}">
+					<div
+						class="flex items-center gap-2 opacity-80 {cloud.isSynced || cloud.isSyncing
+							? 'text-base-100'
+							: 'text-content'}"
+					>
 						<CheckCircle2 size={16} />
 						<span class="text-xs font-bold uppercase tracking-widest"
-							>Cuenta {cloud.isSyncing ? 'Sincronizandose' : cloud.isSynced ? 'Sincronizada' : 'No sincronizada'}</span
+							>Cuenta {cloud.isSyncing
+								? 'Sincronizandose'
+								: cloud.isSynced
+									? 'Sincronizada'
+									: 'No sincronizada'}</span
 						>
 					</div>
 
@@ -128,10 +140,10 @@
 						onclick={toggleAutoSync}
 						class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none {isAutoSyncEnabled
 							? cloud.isSyncing
-                                ? 'bg-warning-200'
-                                : cloud.isSynced
-                                    ? 'bg-success-100'
-                                    : 'bg-success-400'
+								? 'bg-warning-200'
+								: cloud.isSynced
+									? 'bg-success-100'
+									: 'bg-success-400'
 							: 'bg-base-400'}"
 					>
 						<span class="sr-only">Activar sincronización automática</span>
