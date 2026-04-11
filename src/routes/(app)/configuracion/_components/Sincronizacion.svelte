@@ -147,7 +147,7 @@
 					</div>
 					<button
 						onclick={handleLogout}
-						class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 bg-error-100 text-content rounded-lg text-sm font-semibold transition-all cursor-pointer shadow-sm hover:bg-error-400 hover:text-white"
+						class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 hover:bg-error-100 text-content rounded-lg text-sm font-semibold transition-all cursor-pointer shadow-sm hover:text-white"
 					>
 						<LogOut size={16} />
 					</button>
