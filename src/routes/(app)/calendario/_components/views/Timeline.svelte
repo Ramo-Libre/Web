@@ -14,6 +14,7 @@
 		ChevronLeft,
 		ChevronRight
 	} from '@lucide/svelte';
+	import { getNow } from '$lib/utils/date';
 
 	type StatusFilter = 'all' | 'upcoming' | 'overdue' | 'completed';
 
@@ -81,7 +82,7 @@
 		deleteConfirmEvent = null;
 	}
 
-	const today = new Date();
+	const today = getNow();
 	const todayKey = today.toISOString().slice(0, 10);
 	let rangeMode = $state<'week' | 'month'>('month');
 	let anchorDate = new SvelteDate(today.getFullYear(), today.getMonth(), today.getDate());

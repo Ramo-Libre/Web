@@ -1,4 +1,5 @@
 import type { Serializable } from '$lib/types/state';
+import { generateUUID } from '$lib/utils/crypto';
 import { SvelteMap } from 'svelte/reactivity';
 
 export type HorarioDay = 'L' | 'M' | 'X' | 'J' | 'V' | 'S';
@@ -15,19 +16,8 @@ export interface Horario {
 }
 
 type HorarioKey = string;
-type HorariosSerial = [HorarioKey, Horario][];
+export type HorariosSerial = [HorarioKey, Horario][];
 type Horarios = SvelteMap<HorarioKey, Horario>;
-
-function generateUUID(): string {
-	if (crypto.randomUUID) {
-		return crypto.randomUUID();
-	}
-	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-		const r = (Math.random() * 16) | 0;
-		const v = c === 'x' ? r : (r & 0x3) | 0x8;
-		return v.toString(16);
-	});
-}
 
 export class HorariosManager implements Serializable<HorariosSerial> {
 	private _horarios = $state<Horarios>(new SvelteMap<HorarioKey, Horario>());

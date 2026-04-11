@@ -137,7 +137,7 @@
 			id,
 			name: ramo.nombre,
 			color: ramo.color,
-			estado: statusByRamo[id] ?? (ramo.estado || 'possible')
+			estado: statusByRamo[id] ?? 'possible'
 		}));
 	});
 
