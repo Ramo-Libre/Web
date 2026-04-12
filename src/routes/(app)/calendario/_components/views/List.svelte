@@ -12,6 +12,7 @@
 	} from '@lucide/svelte';
 	// Eliminado AlertDialog de Shadcn
 	import type { Event as CalendarEvent } from '$lib/state/events.svelte';
+	import { getNow } from '$lib/utils/date';
 
 	type StatusFilter = 'all' | 'upcoming' | 'overdue' | 'completed';
 
@@ -68,7 +69,7 @@
 	}
 
 	const events = $derived.by(() => {
-		const today = new Date().toISOString().slice(0, 10);
+		const today = getNow().toISOString().slice(0, 10);
 		const list = db.events.list
 			.map(([, event]) => event)
 			.filter((event) => {
@@ -173,14 +174,14 @@
 							class={`inline-flex items-center px-2 py-1 rounded-full font-semibold ${
 								event.completed
 									? 'bg-success-400 text-success-100 border border-success-300'
-									: event.dueDate < new Date().toISOString().slice(0, 10)
+									: event.dueDate < getNow().toISOString().slice(0, 10)
 										? 'bg-error-400 text-error-100 border border-error-300'
 										: 'bg-base-300 text-content/70 border border-base-400'
 							}`}
 						>
 							{event.completed
 								? 'Completado'
-								: event.dueDate < new Date().toISOString().slice(0, 10)
+								: event.dueDate < getNow().toISOString().slice(0, 10)
 									? 'Vencido'
 									: 'Pendiente'}
 						</span>
@@ -254,14 +255,14 @@
 									class={`inline-flex items-center px-2 py-1 rounded-full text-[10px] font-bold ${
 										event.completed
 											? 'bg-success-400 text-success-100 border border-success-300'
-											: event.dueDate < new Date().toISOString().slice(0, 10)
+											: event.dueDate < getNow().toISOString().slice(0, 10)
 												? 'bg-error-400 text-error-100 border border-error-300'
 												: 'bg-base-300 text-content/70 border border-base-400'
 									}`}
 								>
 									{event.completed
 										? 'Completado'
-										: event.dueDate < new Date().toISOString().slice(0, 10)
+										: event.dueDate < getNow().toISOString().slice(0, 10)
 											? 'Vencido'
 											: 'Pendiente'}
 								</span>

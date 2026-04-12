@@ -1,4 +1,5 @@
 import type { Serializable } from '$lib/types/state';
+import { generateUUID } from '$lib/utils/crypto';
 import { SvelteMap } from 'svelte/reactivity';
 
 export type EventPriority = 'low' | 'medium' | 'high';
@@ -15,19 +16,8 @@ export interface Event {
 }
 
 type EventKey = string;
-type EventsSerial = [EventKey, Event][];
+export type EventsSerial = [EventKey, Event][];
 type Events = SvelteMap<EventKey, Event>;
-
-function generateUUID(): string {
-	if (crypto.randomUUID) {
-		return crypto.randomUUID();
-	}
-	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-		const r = (Math.random() * 16) | 0;
-		const v = c === 'x' ? r : (r & 0x3) | 0x8;
-		return v.toString(16);
-	});
-}
 
 export class EventsManager implements Serializable<EventsSerial> {
 	private _events = $state<Events>(new SvelteMap<EventKey, Event>());

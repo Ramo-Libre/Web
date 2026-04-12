@@ -2,14 +2,15 @@
 	import { db } from '$lib/state/index.svelte';
 	import type { HorarioDay } from '$lib/state/horarios.svelte';
 	import { Clock, MapPin, CheckCircle2, Coffee } from '@lucide/svelte';
+	import { getNow } from '$lib/utils/date';
 
 	// --- MAPAS Y CONSTANTES ---
 	const dayMap: Record<number, HorarioDay> = { 1: 'L', 2: 'M', 3: 'X', 4: 'J', 5: 'V', 6: 'S' };
 
 	// --- ESTADO TEMPORAL ---
-	let now = $state(new Date());
+	let now = $state(getNow());
 	$effect(() => {
-		const interval = setInterval(() => (now = new Date()), 1000);
+		const interval = setInterval(() => (now = getNow()), 1000);
 		return () => clearInterval(interval);
 	});
 

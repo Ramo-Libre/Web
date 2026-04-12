@@ -11,6 +11,7 @@
 		CheckCircle2,
 		Circle
 	} from '@lucide/svelte';
+	import { getNow } from '$lib/utils/date';
 
 	type StatusFilter = 'all' | 'upcoming' | 'overdue' | 'completed';
 
@@ -79,7 +80,7 @@
 		deleteConfirmEvent = null;
 	}
 
-	const todayKey = new Date().toISOString().slice(0, 10);
+	const todayKey = getNow().toISOString().slice(0, 10);
 	const ramosMap = $derived.by(() => new Map(db.ramos.list));
 
 	function getRamoName(ramoId?: string) {

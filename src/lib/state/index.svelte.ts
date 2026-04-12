@@ -6,10 +6,38 @@ import { EventsManager } from './events.svelte';
 import { PreferencesManager } from './preferences.svelte';
 import { EvaluacionEventsManager } from './evaluacion-events.svelte';
 import { HorariosManager } from './horarios.svelte';
+import { DevManager } from './dev.svelte';
+import { PUBLIC_SHOW_DEV_TOOLS } from '$env/static/public';
+import type { MockDataOutput } from '$lib/dev-tools/gen';
+import { untrack } from 'svelte';
 
-const STORAGE_KEY = (sem: string) => `RAMOLIBRE_ROOT_STORE_V1_${sem}`;
-const SEMESTER_KEY = 'RAMOLIBRE_SEMESTER';
-const PREFERENCES_KEY = 'RAMOLIBRE_PREFERENCES_V1';
+export const RAMOLIBE_KEY_PREFIX = 'RAMOLIBRE_';
+const STORAGE_KEY = (sem: string) => `${RAMOLIBE_KEY_PREFIX}ROOT_STORE_V1_${sem}`;
+const SEMESTER_KEY = `${RAMOLIBE_KEY_PREFIX}SEMESTER_V1`;
+const PREFERENCES_KEY = `${RAMOLIBE_KEY_PREFIX}PREFERENCES_V1`;
+const DEV_KEY = `${RAMOLIBE_KEY_PREFIX}DEV_V1`;
+
+export const RAMOLIBRE_EVENT_PREFIX = 'ramolibre:';
+export const SAVE_EVENT = `${RAMOLIBRE_EVENT_PREFIX}save`;
+
+export type FullSnapshot = {
+	semestres: ReturnType<SemestresManager['toSerial']>;
+	snapshots: {
+		[semester: string]: {
+			ramos: ReturnType<RamosManager['toSerial']>;
+			notas: ReturnType<NotasManager['toSerial']>;
+			events: ReturnType<EventsManager['toSerial']>;
+			horarios: ReturnType<HorariosManager['toSerial']>;
+			evaluacionEvents: ReturnType<EvaluacionEventsManager['toSerial']>;
+		};
+	};
+};
+export type SaveEventData = {
+	detail: {
+		timestamp: number;
+		preferencesChanged: boolean;
+	};
+};
 
 class RootStore {
 	private _semestres = new SemestresManager();
@@ -19,6 +47,8 @@ class RootStore {
 	private _horarios = new HorariosManager();
 	private _preferences = new PreferencesManager();
 	private _evaluacionEvents = new EvaluacionEventsManager();
+
+	private _dev: null | DevManager = null;
 
 	get semestres() {
 		return this._semestres;
@@ -46,6 +76,10 @@ class RootStore {
 
 	get evaluacionEvents() {
 		return this._evaluacionEvents;
+	}
+
+	get dev() {
+		return this._dev;
 	}
 
 	get empty(): boolean {
@@ -78,6 +112,12 @@ class RootStore {
 		const preferencesData = JSON.parse(localStorage.getItem(PREFERENCES_KEY) || '{}');
 		if (preferencesData) this.preferences.fromSerial(preferencesData);
 
+		const isDevDataEnabled = PUBLIC_SHOW_DEV_TOOLS === 'true';
+		if (isDevDataEnabled) {
+			const devData = JSON.parse(localStorage.getItem(DEV_KEY) || '{}');
+			if (devData && this._dev) this._dev.fromSerial(devData);
+		}
+
 		// Load current semester's ramo data
 		this.loadCurrentSemesterRamos();
 	}
@@ -92,6 +132,31 @@ class RootStore {
 		this.events.fromSerial(data.events ?? []);
 		this.horarios.fromSerial(data.horarios ?? []);
 		this.evaluacionEvents.fromSerial(data.evaluacionEvents ?? []);
+		if (PUBLIC_SHOW_DEV_TOOLS === 'true') {
+			this._dev = new DevManager();
+			this._dev.fromSerial(JSON.parse(localStorage.getItem(DEV_KEY) || '{}'));
+		}
+	}
+
+	fromMock(data: MockDataOutput) {
+		if (!browser) return;
+		console.log('Iniciando inyección masiva de Mock Data...');
+		this.hydrate({
+			semestres: data.semestres,
+			snapshots: Object.fromEntries(
+				Object.entries(data.semestres_data).map(([semesterName, semData]) => [
+					semesterName,
+					{
+						ramos: semData.ramos,
+						notas: semData.notas,
+						events: semData.eventos,
+						horarios: semData.horarios,
+						evaluacionEvents: []
+					}
+				])
+			)
+		});
+		console.log('Inyección masiva completada.');
 	}
 
 	deleteSemesterData(semesterName: string) {
@@ -118,6 +183,9 @@ class RootStore {
 		this.events.clear();
 		this.horarios.clear();
 		this.evaluacionEvents.clear();
+		if (PUBLIC_SHOW_DEV_TOOLS === 'true' && this._dev) {
+			this._dev.clear();
+		}
 	}
 
 	removeRamo(ramoId: string) {
@@ -151,9 +219,62 @@ class RootStore {
 		const semester = this.semestres.activeName ?? 'default';
 		const semesters = this.semestres.toSerial();
 
+		const prevPreferences = localStorage.getItem(PREFERENCES_KEY) || '{}';
+		const currentPreferences = JSON.stringify(this.preferences.toSerial());
+
 		localStorage.setItem(STORAGE_KEY(semester), JSON.stringify(semesterSnapshot));
 		localStorage.setItem(SEMESTER_KEY, JSON.stringify(semesters));
-		localStorage.setItem(PREFERENCES_KEY, JSON.stringify(this.preferences.toSerial()));
+		localStorage.setItem(PREFERENCES_KEY, currentPreferences);
+
+		const preferencesChanged = prevPreferences !== currentPreferences;
+
+		if (PUBLIC_SHOW_DEV_TOOLS === 'true' && this._dev) {
+			localStorage.setItem(DEV_KEY, JSON.stringify(this._dev.toSerial()));
+		}
+
+		untrack(() => {
+			const eventData: SaveEventData = {
+				detail: {
+					timestamp: Date.now(),
+					preferencesChanged
+				}
+			};
+			window.dispatchEvent(new CustomEvent(SAVE_EVENT, eventData));
+		});
+	}
+
+	hydrate(fullSnapshot: FullSnapshot) {
+		const { semestres, snapshots } = fullSnapshot;
+
+		Object.keys(localStorage).forEach((key) => {
+			if (key.startsWith('RAMOLIBRE_') && key !== PREFERENCES_KEY && key !== DEV_KEY) {
+				localStorage.removeItem(key);
+			}
+		});
+
+		Object.entries(snapshots).forEach(([semesterName, snapshot]) => {
+			localStorage.setItem(STORAGE_KEY(semesterName), JSON.stringify(snapshot));
+		});
+
+		this.semestres.fromSerial(semestres);
+		this.loadCurrentSemesterRamos();
+	}
+
+	createFullSnapshot(): FullSnapshot {
+		const semestres = this.semestres.toSerial();
+		const snapshots: FullSnapshot['snapshots'] = {};
+
+		semestres.list.forEach((semesterName) => {
+			snapshots[semesterName] = {
+				ramos: this.ramos.toSerial(),
+				notas: this.notas.toSerial(),
+				events: this.events.toSerial(),
+				horarios: this.horarios.toSerial(),
+				evaluacionEvents: this.evaluacionEvents.toSerial()
+			};
+		});
+
+		return { semestres, snapshots };
 	}
 }
 

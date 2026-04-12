@@ -14,11 +14,12 @@
 	import { db } from '$lib/state/index.svelte';
 	import { SvelteDate, SvelteMap } from 'svelte/reactivity';
 	import type { Event as CalendarEvent } from '$lib/state/events.svelte';
+	import { getNow } from '$lib/utils/date';
 
 	type StatusFilter = 'all' | 'upcoming' | 'overdue' | 'completed';
 
-	const today = new Date();
-	const todayKey = new Date().toISOString().slice(0, 10);
+	const today = getNow();
+	const todayKey = getNow().toISOString().slice(0, 10);
 	let currentMonth = new SvelteDate(today.getFullYear(), today.getMonth(), 1);
 	let selectedDate = new SvelteDate(today.getFullYear(), today.getMonth(), today.getDate());
 
@@ -241,7 +242,7 @@
 							isSameDay(day, selectedDate)
 								? 'border-calendar-100 ring-1 ring-calendar-100/50'
 								: 'border-base-400 hover:bg-base-200'
-						} ${isSameDay(day, new Date()) ? 'bg-calendar-400' : ''} ${
+						} ${isSameDay(day, getNow()) ? 'bg-calendar-400' : ''} ${
 							isCurrentMonth(day) ? 'text-content' : 'text-content/40'
 						}`}
 					>
@@ -360,14 +361,14 @@
 									class={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${
 										ev.completed
 											? 'bg-success-400 text-success-100 border border-success-300'
-											: ev.dueDate < new Date().toISOString().slice(0, 10)
+											: ev.dueDate < getNow().toISOString().slice(0, 10)
 												? 'bg-error-400 text-error-100 border border-error-300'
 												: 'bg-base-300 text-content/70 border border-base-400'
 									}`}
 								>
 									{ev.completed
 										? 'Completado'
-										: ev.dueDate < new Date().toISOString().slice(0, 10)
+										: ev.dueDate < getNow().toISOString().slice(0, 10)
 											? 'Vencido'
 											: 'Pendiente'}
 								</span>

@@ -2,6 +2,7 @@
 	import { db } from '$lib/state/index.svelte';
 	import type { HorarioDay, HorarioType } from '$lib/state/horarios.svelte';
 	import { BookOpen, FlaskConical, Users, Hammer, MapPin } from '@lucide/svelte';
+	import { getNow } from '$lib/utils/date';
 
 	// --- MAPAS Y CONSTANTES ---
 	const dayOrder: Record<HorarioDay, number> = { L: 1, M: 2, X: 3, J: 4, V: 5, S: 6 };
@@ -31,9 +32,9 @@
 
 	// --- ESTADO TEMPORAL ---
 	// Mantenemos un reloj simple por si quieres resaltar la clase actual
-	let now = $state(new Date());
+	let now = $state(getNow());
 	$effect(() => {
-		const interval = setInterval(() => (now = new Date()), 60000);
+		const interval = setInterval(() => (now = getNow()), 60000);
 		return () => clearInterval(interval);
 	});
 
@@ -81,7 +82,6 @@
 				id,
 				nombre: ramo.nombre,
 				color: ramo.color,
-				estado: ramo.estado,
 				schedules: mySchedules
 			};
 		});
@@ -111,23 +111,6 @@
 						<h3 class="text-lg font-bold text-content leading-tight mb-1">
 							{ramo.nombre}
 						</h3>
-
-						{#if ramo.estado}
-							<span
-								class="inline-flex text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md border
-                                    {ramo.estado === 'guaranteed'
-									? 'bg-success-400 text-success-100 border-success-300'
-									: ramo.estado === 'possible'
-										? 'bg-base-200 text-content/80 border-base-400'
-										: 'bg-error-400 text-error-100 border-error-300'}"
-							>
-								{ramo.estado === 'guaranteed'
-									? 'Garantizado'
-									: ramo.estado === 'possible'
-										? 'Posible'
-										: 'Imposible'}
-							</span>
-						{/if}
 					</div>
 				</div>
 

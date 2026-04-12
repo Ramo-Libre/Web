@@ -8,6 +8,12 @@ jobs:
   verify:
     name: 🛡️ Verify & Build
     runs-on: ubuntu-latest
+    env:
+        PUBLIC_SHOW_DEV_TOOLS: 'true'
+        PUBLIC_VERSION: 'vX.X.X'
+        PUBLIC_SUPABASE_URL: 'https://url.supabase.co'
+        PUBLIC_SUPABASE_PUBLISHABLE_KEY: 'sb_super_secret_key'
+        PUBLIC_CLOUD_SYNC_DEBOUNCE: 5000
 
     steps:
       - name: 📥 Checkout Code
@@ -35,3 +41,5 @@ jobs:
 
       - name: 🏗️ Build
         run: pnpm run build
+        env:
+          PUBLIC_SHOW_DEV_TOOLS: 'true'

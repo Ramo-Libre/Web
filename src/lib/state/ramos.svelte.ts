@@ -1,27 +1,14 @@
 import type { Serializable } from '$lib/types/state';
+import { generateUUID } from '$lib/utils/crypto';
 import { SvelteMap } from 'svelte/reactivity';
 
 interface Ramo {
 	nombre: string;
 	color: string;
-	estado?: 'possible' | 'impossible' | 'guaranteed';
 }
 type Key = string;
-type RamosSerial = [Key, Ramo][];
+export type RamosSerial = [Key, Ramo][];
 type Ramos = SvelteMap<Key, Ramo>;
-
-// Polyfill para crypto.randomUUID en navegadores móviles
-function generateUUID(): string {
-	if (crypto.randomUUID) {
-		return crypto.randomUUID();
-	}
-	// Fallback para navegadores que no soportan crypto.randomUUID
-	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-		const r = (Math.random() * 16) | 0;
-		const v = c === 'x' ? r : (r & 0x3) | 0x8;
-		return v.toString(16);
-	});
-}
 
 export class RamosManager implements Serializable<RamosSerial> {
 	private _ramos = $state<Ramos>(new SvelteMap<Key, Ramo>());

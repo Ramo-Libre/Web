@@ -1,6 +1,6 @@
 import type { Serializable } from '$lib/types/state';
 
-type SemestresSerial = {
+export type SemestresSerial = {
 	active: number | null;
 	list: string[];
 };
