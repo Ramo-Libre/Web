@@ -37,6 +37,10 @@ jobs:
 
       - name: Build
         run: pnpm run build
+        env:
+          PUBLIC_SHOW_DEV_TOOLS: ${{ vars.PUBLIC_SHOW_DEV_TOOLS }}
+          PUBLIC_CLOUD_SYNC_DEBOUNCE: ${{ vars.PUBLIC_CLOUD_SYNC_DEBOUNCE }}
+          PUBLIC_VERSION: ${{ vars.PUBLIC_VERSION }}
 
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
