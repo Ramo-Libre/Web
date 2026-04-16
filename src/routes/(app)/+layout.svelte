@@ -26,9 +26,9 @@
 </script>
 
 <nav
-	class="grid {!showDevTools
+	class="grid gap-2 sm:gap-4 sm:mb-6 max-sm:pt-2 {!showDevTools
 		? 'grid-cols-6 sm:grid-cols-3 lg:grid-cols-6'
-		: 'grid-cols-7 gap-2 sm:gap-4 sm:mb-6 max-sm:pt-2'}"
+		: 'grid-cols-7'}"
 >
 	<div class="bg-base-100 rounded-2xl hover:scale-105 transition-all duration-200">
 		<a
