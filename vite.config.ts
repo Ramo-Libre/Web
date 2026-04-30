@@ -2,6 +2,7 @@ import tailwindcss from '@tailwindcss/vite';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
 import { SvelteKitPWA } from '@vite-pwa/sveltekit';
+import { visualizer } from 'rollup-plugin-visualizer';
 
 export default defineConfig({
 	plugins: [
@@ -55,6 +56,10 @@ export default defineConfig({
 			devOptions: {
 				enabled: true
 			}
+        }),
+		visualizer({
+			emitFile: true,
+			filename: 'stats.html'
 		})
 	],
 	preview: {
