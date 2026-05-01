@@ -1,6 +1,6 @@
 import tailwindcss from '@tailwindcss/vite';
 import { sveltekit } from '@sveltejs/kit/vite';
-import { defineConfig } from 'vite';
+import { defineConfig, type PluginOption } from 'vite';
 import { SvelteKitPWA } from '@vite-pwa/sveltekit';
 import { visualizer } from 'rollup-plugin-visualizer';
 
@@ -59,8 +59,9 @@ export default defineConfig({
         }),
 		visualizer({
 			emitFile: true,
-			filename: 'stats.html'
-		})
+			filename: 'stats.html',
+			template: 'sunburst'
+		}) as PluginOption
 	],
 	preview: {
 		allowedHosts: true
