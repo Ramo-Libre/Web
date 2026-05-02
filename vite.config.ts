@@ -56,7 +56,7 @@ export default defineConfig({
 			devOptions: {
 				enabled: true
 			}
-        }),
+		}),
 		visualizer({
 			emitFile: true,
 			filename: 'stats.html',
