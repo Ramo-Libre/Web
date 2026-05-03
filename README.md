@@ -41,3 +41,7 @@ pnpm run dev
 ```
 
 5. Abre tu navegador en `http://localhost:5173` para ver la aplicación en acción.
+
+### Créditos y Atribuciones
+- **Logo:** Basado en [Noto Emoji](https://github.com/googlefonts/noto-emoji) de Google (Licencia [Apache 2.0](http://www.apache.org/licenses/LICENSE-2.0)).
+- **Iconografía:** [Lucide Svelte](https://lucide.dev) (Licencia [ISC](https://lucide.dev/license)).
