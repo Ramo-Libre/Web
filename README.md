@@ -8,26 +8,36 @@ Ahora integrando [GradeSolver](https://github.com/madmti/GradeSolver) como modul
 > Se recomienda revisar la [Wiki](https://github.com/madmti/Ramo-Libre-Web/wiki) para contexto y mas informacion. Tambien consultar el estado del Proyecto en el [Project Board](https://github.com/users/madmti/projects/5/views/2)
 
 ## Quick Start
+
 1. Clona el repositorio
+
 ```bash
 git clone https://github.com/madmti/Ramo-Libre-Web.git
 cd Ramo-Libre-Web
 ```
+
 2. Instala las dependencias
+
 ```bash
 pnpm install
 ```
+
 3. Inicia el servidor local de supabase
+
 ```bash
 pnpx supabase start
 ```
+
 4. Configura las variables de entorno
+
 ```bash
 cp .env.example .env
 ```
-Edita el archivo `.env` con tus credenciales de Supabase y cualquier otra configuración necesaria. Asegúrate de configurar correctamente la URL y la publishable key de Supabase.
-5. Inicia el servidor de desarrollo
+
+Edita el archivo `.env` con tus credenciales de Supabase y cualquier otra configuración necesaria. Asegúrate de configurar correctamente la URL y la publishable key de Supabase. 5. Inicia el servidor de desarrollo
+
 ```bash
 pnpm run dev
 ```
+
 5. Abre tu navegador en `http://localhost:5173` para ver la aplicación en acción.
