@@ -80,7 +80,7 @@
 			valor_actual: null
 		});
 		newEvalId = '';
-		newEvalPeso = Math.max(0, 100 - totalWeight);
+		newEvalPeso = Number(Math.max(0, 100 - totalWeight).toFixed(2));
 	}
 
 	function removeEvaluation(evaluacionId: string) {
@@ -106,10 +106,20 @@
 		}
 	}
 
+	function balancearPesos() {
+		if (!selectedRamoId || evaluacionesList.length === 0 || totalWeight === 100) return;
+		const diferencia = Math.round((100 - totalWeight) * 100) / 100;
+		const [primerId, primeraEval] = evaluacionesList[0];
+		const nuevoPeso = Math.round((primeraEval.peso + diferencia) * 100) / 100;
+		updateEvaluacionPeso(primerId, Math.max(0, nuevoPeso));
+	}
+
 	function getTag(tagId: string) {
 		if (!selectedRamoId) return null;
 		return db.notas.getTag(selectedRamoId, tagId);
 	}
+
+	const needsAutoBalance = $derived(totalWeight >= 99 && totalWeight <= 101 && totalWeight !== 100);
 </script>
 
 <div class="space-y-8 w-full max-w-4xl mx-auto pb-10">
@@ -227,23 +237,54 @@
 		{/if}
 	</div>
 
-	<div class="space-y-4">
-		<div class="flex items-center gap-3 bg-base-200 px-4 py-3 rounded-xl border border-base-400">
-			<ChartPie size={18} class="text-content/40" />
-			<div class="flex-1 h-2.5 bg-base-300 rounded-full overflow-hidden">
-				<div
-					class="h-full transition-all duration-500 ease-out {totalWeight > 100
-						? 'bg-error-100'
-						: totalWeight === 100
-							? 'bg-success-100'
-							: 'bg-primary-100'}"
-					style="width: {Math.min(totalWeight, 100)}%"
-				></div>
-			</div>
-			<span class="text-xs font-bold {totalWeight > 100 ? 'text-error-100' : 'text-content/70'}">
-				{totalWeight}%
+	<div class="space-y-4 relative">
+		{#if needsAutoBalance}
+			<span class="absolute -top-5 text-[10px] font-bold text-warning-100">
+				Presiona para cuadrar ({totalWeight < 100 ? '+' : ''}{(100 - totalWeight).toFixed(2)}% a {evaluacionesList[0][1]
+					.id || 'la primera'})
 			</span>
-		</div>
+		{/if}
+		<button
+			type="button"
+			onclick={balancearPesos}
+			disabled={!needsAutoBalance}
+			class="w-full flex items-center gap-3 bg-base-200 px-4 py-3 rounded-xl border transition-all text-left group
+                    {needsAutoBalance
+				? 'cursor-pointer border-warning-100 ring-2 ring-warning-100/50 shadow-md alert-pulse'
+				: 'border-base-400 cursor-default'}"
+		>
+			<ChartPie
+				size={18}
+				class="text-content/40 shrink-0 {needsAutoBalance
+					? 'text-warning-100 animate-spin-slow'
+					: ''}"
+			/>
+
+			<div class="flex-1 flex flex-col relative">
+				<div class="h-2.5 bg-base-300 rounded-full overflow-hidden">
+					<div
+						class="h-full transition-all duration-500 ease-out
+                                {totalWeight > 100
+							? 'bg-error-100'
+							: totalWeight === 100
+								? 'bg-success-100'
+								: 'bg-primary-100'}
+                                {needsAutoBalance ? 'animated-stripes' : ''}"
+						style="width: {Math.min(totalWeight, 100)}%"
+					></div>
+				</div>
+			</div>
+
+			<span
+				class="text-xs font-bold shrink-0 {totalWeight > 100
+					? 'text-error-100'
+					: totalWeight < 100
+						? 'text-warning-100'
+						: 'text-success-100'}"
+			>
+				{totalWeight.toFixed(2).replace(/\.00$/, '')}%
+			</span>
+		</button>
 
 		<div class="space-y-3">
 			{#each evaluacionesList as [evaluacionId, evaluacion] (evaluacionId)}
@@ -371,3 +412,48 @@
 		</div>
 	</div>
 </div>
+
+<style>
+	.alert-pulse {
+		animation: alert-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+	}
+
+	@keyframes alert-pulse {
+		0%,
+		100% {
+			box-shadow: 0 0 0 0 var(--color-warning-100);
+		}
+		50% {
+			box-shadow: 0 0 12px 2px var(--color-warning-400);
+		}
+	}
+
+	/* Animación de rayado para la barra interior */
+	.animated-stripes {
+		background-image: linear-gradient(
+			45deg,
+			var(--color-warning-300) 25%,
+			transparent 25%,
+			transparent 50%,
+			var(--color-warning-300) 50%,
+			var(--color-warning-300) 75%,
+			transparent 75%,
+			transparent
+		);
+		background-size: 1rem 1rem;
+		animation: stripes-move 1s linear infinite;
+	}
+
+	@keyframes stripes-move {
+		from {
+			background-position: 1rem 0;
+		}
+		to {
+			background-position: 0 0;
+		}
+	}
+
+	.animate-spin-slow {
+		animation: spin 3s linear infinite;
+	}
+</style>
