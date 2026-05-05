@@ -142,7 +142,7 @@
 			<div class="mt-8 flex flex-col sm:flex-row items-center gap-4">
 				<!-- Selectores de paso (Dots) -->
 				<div class="flex gap-1.5 flex-1 order-2 sm:order-1">
-					{#each features as _, i (i)}
+					{#each features as feat, i (feat.title)}
 						<div
 							class="h-1.5 rounded-full transition-all duration-300 {currentStep === i
 								? 'w-8 bg-primary-100'
@@ -179,7 +179,6 @@
 <style>
 	/* Animación de entrada para el contenido */
 	img,
-	h1,
 	p {
 		animation: contentShift 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 	}
