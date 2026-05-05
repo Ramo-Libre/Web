@@ -43,10 +43,10 @@
 			iconColor: 'text-grades-100'
 		},
 		{
-		    title: 'Prediccion de Notas',
-            description: 'Predice tus notas finales basándote en tu perfil estadistico.',
-            image: '/screenshots/notas-predicciones.png',
-            icon: TrendingUp,
+			title: 'Prediccion de Notas',
+			description: 'Predice tus notas finales basándote en tu perfil estadistico.',
+			image: '/screenshots/notas-predicciones.png',
+			icon: TrendingUp,
 			iconColor: 'text-grades-100'
 		},
 		{
@@ -57,25 +57,28 @@
 			iconColor: 'text-calendar-100'
 		},
 		{
-		    title: 'Ramos',
-			description: 'Configura los Horarios, Ecuaciones de Nota y Reglas de Aprobación para cada uno de tus ramos.',
-            image: '/screenshots/ramos.png',
-            icon: BookMarked,
-            iconColor: 'text-classes-100'
+			title: 'Ramos',
+			description:
+				'Configura los Horarios, Ecuaciones de Nota y Reglas de Aprobación para cada uno de tus ramos.',
+			image: '/screenshots/ramos.png',
+			icon: BookMarked,
+			iconColor: 'text-classes-100'
 		},
 		{
-		    title: 'Configuracion',
-			description: 'Personaliza tu experiencia, selecciona tu tema favorito y preferencias de visualización.',
-            image: '/screenshots/configuracion.png',
-            icon: Bolt,
-            iconColor: 'text-config-100'
+			title: 'Configuracion',
+			description:
+				'Personaliza tu experiencia, selecciona tu tema favorito y preferencias de visualización.',
+			image: '/screenshots/configuracion.png',
+			icon: Bolt,
+			iconColor: 'text-config-100'
 		},
 		{
-		    title: 'Sincronizacion con la Nube',
-			description: 'Mantén tus datos seguros y accesibles desde cualquier dispositivo activando la sincronización en la nube.',
-            image: '/screenshots/providers.png',
-            icon: Cloud,
-            iconColor: 'text-config-100'
+			title: 'Sincronizacion con la Nube',
+			description:
+				'Mantén tus datos seguros y accesibles desde cualquier dispositivo activando la sincronización en la nube.',
+			image: '/screenshots/providers.png',
+			icon: Cloud,
+			iconColor: 'text-config-100'
 		}
 	];
 
