@@ -31,7 +31,7 @@ const DEFAULT_PREFERENCES: Preferences = {
 		view: 'table'
 	},
 	general: {
-		theme: 'light'
+		theme: 'dark'
 	}
 };
 

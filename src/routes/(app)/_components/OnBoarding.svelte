@@ -28,12 +28,9 @@
 	class="bg-base-100 border border-base-400 rounded-xl p-8 flex flex-col justify-center shadow-sm"
 >
 	<div class="mb-6 flex justify-between items-center">
-		<div>
-			<div class="flex gap-2 items-center">
-				<img src="/favicon.webp" alt="Ramo Libre Logo" class="w-15 h-15" />
-				<h1 class="text-4xl font-bold tracking-tight mb-2 text-content">Ramo Libre</h1>
-			</div>
-			<p class="text-content/80 text-lg">Tu nueva herramienta favorita para no reprobar.</p>
+		<div class="flex gap-2 items-center">
+			<img src="/favicon.webp" alt="Ramo Libre Logo" class="w-15 h-15" />
+			<h1 class="text-4xl font-bold tracking-tight mb-2 text-content">Ramo Libre</h1>
 		</div>
 		<div>
 			<div class="text-right max-sm:hidden">
