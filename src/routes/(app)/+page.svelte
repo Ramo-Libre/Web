@@ -3,7 +3,7 @@
 	import { db } from '$lib/state/index.svelte';
 	import OnBoarding from './_components/OnBoarding.svelte';
 	import GradeSolver from './_components/GradeSolver.svelte';
-	import Offline from './_components/Offline.svelte';
+	import Resumen from './_components/Resumen.svelte';
 	import Github from './_components/Github.svelte';
 	import NextClass from './_components/NextClass.svelte';
 	import AcademicHealth from './_components/AcademicHealth.svelte';
@@ -31,7 +31,7 @@
 			<GradeSolver />
 			<Github />
 			<div class="md:col-span-2 grid">
-				<Offline />
+				<Resumen />
 			</div>
 		</div>
 	</div>
