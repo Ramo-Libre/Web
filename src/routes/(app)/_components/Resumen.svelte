@@ -17,9 +17,7 @@
 	}
 </script>
 
-<div
-	class="bg-base-100 border border-base-400 rounded-xl shadow-sm overflow-hidden h-full"
->
+<div class="bg-base-100 border border-base-400 rounded-xl shadow-sm overflow-hidden h-full">
 	<div class="flex flex-col divide-y divide-base-400 h-full">
 		<!-- 1. ITEM: VISTA RÁPIDA (ACTIVO) -->
 		<button
