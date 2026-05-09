@@ -7,6 +7,7 @@
 	import Aparicencia from './_components/Apariencia.svelte';
 	import About from './_components/About.svelte';
 	import Privacidad from './_components/Privacidad.svelte';
+	import Resumen from '../_components/Resumen.svelte';
 
 	let highlightedComponent = $state('');
 
@@ -48,6 +49,15 @@
 				: ''}"
 		>
 			<Sincronizacion />
+		</div>
+
+		<div
+			id="tutorials"
+			class="break-inside-avoid transition-all duration-500 {highlightedComponent === 'tutorials'
+				? 'shine-effect'
+				: ''}"
+		>
+			<Resumen />
 		</div>
 
 		<div
