@@ -49,6 +49,7 @@
 				<div class="flex flex-col gap-6 w-full min-w-0">
 					<div class="w-full min-w-0"><AcademicHealth /></div>
 					<div class="w-full min-w-0"><UpcomingEvents /></div>
+					<div class="w-full min-w-0"><Resumen /></div>
 				</div>
 			</div>
 		</div>
