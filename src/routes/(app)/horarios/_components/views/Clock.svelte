@@ -1,11 +1,27 @@
 <script lang="ts">
 	import { db } from '$lib/state/index.svelte';
 	import type { HorarioDay } from '$lib/state/horarios.svelte';
-	import { MapPin, Clock, BookOpen, CheckCircle2, Coffee } from '@lucide/svelte';
+	import {
+		MapPin,
+		Clock,
+		BookOpen,
+		CheckCircle2,
+		Coffee,
+		FlaskConical,
+		Users,
+		Hammer
+	} from '@lucide/svelte';
 	import { getNow } from '$lib/utils/date';
 
 	// --- MAPAS Y CONSTANTES ---
 	const dayMap: Record<number, HorarioDay> = { 1: 'L', 2: 'M', 3: 'X', 4: 'J', 5: 'V', 6: 'S' };
+
+	const typeIcons = {
+		book: BookOpen,
+		lab: FlaskConical,
+		assist: Users,
+		taller: Hammer
+	};
 
 	// --- ESTADO DEL RELOJ (Actualización cada segundo) ---
 	let now = $state(getNow());
@@ -129,6 +145,7 @@
 
 			<div class="absolute inset-0 flex flex-col items-center justify-center text-center p-8">
 				{#if currentClass}
+					{@const CurrentIcon = typeIcons[currentClass.type as keyof typeof typeIcons]}
 					<span
 						class="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-content/50 mb-2 flex items-center gap-1.5"
 					>
@@ -141,7 +158,10 @@
 					<h2 class="text-4xl sm:text-5xl font-black text-content tabular-nums tracking-tight mb-2">
 						{countdownStr}
 					</h2>
-					<p class="font-bold text-sm sm:text-base truncate w-full" style="color: {primaryColor}">
+					<p class="font-bold text-sm sm:text-base truncate w-full flex items-center justify-center gap-1.5" style="color: {primaryColor}">
+						{#if CurrentIcon}
+							<CurrentIcon class="w-4 h-4 shrink-0" style="color: {primaryColor}" />
+						{/if}
 						{currentClass.ramoNombre}
 					</p>
 					{#if currentClass.location}
@@ -153,6 +173,7 @@
 						</div>
 					{/if}
 				{:else if nextClass}
+					{@const NextIcon = typeIcons[nextClass.type as keyof typeof typeIcons]}
 					<span
 						class="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-content/50 mb-2"
 					>
@@ -163,7 +184,10 @@
 					>
 						{countdownStr}
 					</h2>
-					<p class="font-bold text-sm sm:text-base text-content/70 truncate w-full">
+					<p class="font-bold text-sm sm:text-base text-content/70 truncate w-full flex items-center justify-center gap-1.5">
+						{#if NextIcon}
+							<NextIcon class="w-4 h-4 shrink-0 text-content/70" />
+						{/if}
 						{nextClass.ramoNombre}
 					</p>
 					<div
@@ -209,6 +233,7 @@
 			{#if nextClasses.length > 0}
 				<div class="space-y-2.5">
 					{#each nextClasses.slice(0, 3) as sch, i (i)}
+						{@const SchIcon = typeIcons[sch.type as keyof typeof typeIcons]}
 						<div
 							class="flex items-center gap-4 p-3 rounded-xl bg-base-200 border border-base-400 shadow-sm transition-transform hover:scale-[1.02]"
 						>
@@ -222,7 +247,12 @@
 							></div>
 
 							<div class="flex-1 min-w-0">
-								<h4 class="text-sm font-bold text-content truncate">{sch.ramoNombre}</h4>
+								<h4 class="text-sm font-bold text-content truncate flex items-center gap-1.5">
+									{#if SchIcon}
+										<SchIcon class="w-3.5 h-3.5 shrink-0" style="color: {sch.color}" />
+									{/if}
+									{sch.ramoNombre}
+								</h4>
 								<div
 									class="flex items-center gap-2 text-[10px] text-content/60 font-medium uppercase tracking-wider"
 								>

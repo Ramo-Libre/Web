@@ -1,11 +1,27 @@
 <script lang="ts">
 	import { db } from '$lib/state/index.svelte';
 	import type { HorarioDay } from '$lib/state/horarios.svelte';
-	import { Clock, MapPin, CheckCircle2, Coffee } from '@lucide/svelte';
+	import {
+		Clock,
+		MapPin,
+		CheckCircle2,
+		Coffee,
+		BookOpen,
+		FlaskConical,
+		Users,
+		Hammer
+	} from '@lucide/svelte';
 	import { getNow } from '$lib/utils/date';
 
 	// --- MAPAS Y CONSTANTES ---
 	const dayMap: Record<number, HorarioDay> = { 1: 'L', 2: 'M', 3: 'X', 4: 'J', 5: 'V', 6: 'S' };
+
+	const typeIcons = {
+		book: BookOpen,
+		lab: FlaskConical,
+		assist: Users,
+		taller: Hammer
+	};
 
 	// --- ESTADO TEMPORAL ---
 	let now = $state(getNow());
@@ -105,6 +121,7 @@
 
 	<div class="flex-1 flex flex-col justify-center relative z-10 mt-4">
 		{#if currentClass}
+			{@const CurrentIcon = typeIcons[currentClass.type as keyof typeof typeIcons]}
 			<div class="flex gap-4 items-stretch">
 				<div
 					class="w-1.5 rounded-full shrink-0"
@@ -112,7 +129,10 @@
 				></div>
 
 				<div class="flex-1 min-w-0 flex flex-col justify-center">
-					<h2 class="text-2xl font-black text-content leading-tight mb-1 truncate">
+					<h2 class="text-2xl font-black text-content leading-tight mb-1 truncate flex items-center gap-2">
+						{#if CurrentIcon}
+							<CurrentIcon class="w-5 h-5 shrink-0" style="color: {currentClass.color}" />
+						{/if}
 						{currentClass.ramoNombre}
 					</h2>
 
@@ -145,11 +165,15 @@
 				</div>
 			</div>
 		{:else if nextClass}
+			{@const NextIcon = typeIcons[nextClass.type as keyof typeof typeIcons]}
 			<div class="flex gap-4 items-stretch">
 				<div class="w-1.5 rounded-full shrink-0" style="background-color: {nextClass.color}"></div>
 
 				<div class="flex-1 min-w-0 flex flex-col justify-center">
-					<h2 class="text-2xl font-black text-content leading-tight mb-1 truncate">
+					<h2 class="text-2xl font-black text-content leading-tight mb-1 truncate flex items-center gap-2">
+						{#if NextIcon}
+							<NextIcon class="w-5 h-5 shrink-0" style="color: {nextClass.color}" />
+						{/if}
 						{nextClass.ramoNombre}
 					</h2>
 
