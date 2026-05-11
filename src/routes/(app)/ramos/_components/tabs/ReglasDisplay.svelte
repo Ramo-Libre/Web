@@ -73,7 +73,7 @@
 						</div>
 
 						{#if index < rules.length - 1}
-							<div class="text-content/30 text-sm font-black mx-1">∧</div>
+							<div class="text-content/30 text-sm font-bold mx-1">∧</div>
 						{/if}
 					{/each}
 				</div>

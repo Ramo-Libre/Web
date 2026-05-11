@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { PUBLIC_VERSION } from '$env/static/public';
+	import { VERSION } from '$lib/utils/version';
 	import { Github, Globe, Heart, Code2, GraduationCap } from '@lucide/svelte';
 </script>
 
@@ -14,8 +14,8 @@
 		>
 			<img src="/favicon.webp" alt="Ramo Libre Logo" class="w-12 h-12" />
 		</div>
-		<h1 class="text-2xl font-black text-content uppercase tracking-tight">Ramo Libre</h1>
-		<p class="text-xs font-mono text-content/40 mt-1">{PUBLIC_VERSION} • Open Source</p>
+		<h1 class="text-2xl font-bold text-content uppercase tracking-tight">Ramo Libre</h1>
+		<p class="text-xs font-mono text-content/40 mt-1">{VERSION} • Open Source</p>
 	</div>
 
 	<div class="p-6 space-y-8">
@@ -35,7 +35,7 @@
 
 		<div class="space-y-3">
 			<h3
-				class="text-[10px] font-black text-content/30 uppercase tracking-widest flex items-center gap-2"
+				class="text-[10px] font-bold text-content/30 uppercase tracking-widest flex items-center gap-2"
 			>
 				<Code2 size={12} />
 				Powered by
@@ -56,7 +56,11 @@
 				<div
 					class="h-full w-full bg-primary-100 text-base-100 flex items-center justify-center text-sm font-bold uppercase"
 				>
-					MP
+					<img
+						src="https://avatars.githubusercontent.com/u/134110830?v=4"
+						alt="Matías Peñaloza"
+						class="h-full w-full object-cover"
+					/>
 				</div>
 			</div>
 

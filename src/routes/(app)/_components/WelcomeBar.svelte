@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
-	import { GithubIcon, RefreshCw, UserCircle } from '@lucide/svelte';
+	import { CircleUser, GithubIcon, RefreshCw } from '@lucide/svelte';
 	import { cloud } from '$lib/state/cloud.svelte';
 
 	let user = $derived(cloud.user);
@@ -98,15 +98,23 @@
 			</div>
 
 			<div
-				class="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md border border-primary-300 transform transition-transform duration-200"
+				class="w-12 h-12 bg-base-300 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md transform transition-transform duration-200"
 			>
-				{userName.charAt(0).toUpperCase()}
+				{#if user.user_metadata?.avatar_url}
+					<img
+						src={user.user_metadata?.avatar_url || '/default-avatar.png'}
+						alt="Avatar"
+						class="w-11 h-11 rounded-full object-cover"
+					/>
+				{:else}
+					<CircleUser class="w-11 h-11 text-content" />
+				{/if}
 			</div>
 		</button>
 	{:else}
 		<div class="flex items-center gap-4 w-full md:w-auto">
 			<div class="p-3 bg-base-200 rounded-full text-content/20 hidden md:block">
-				<UserCircle size={32} />
+				<CircleUser class="w-11 h-11 text-content" />
 			</div>
 			<div class="text-center md:text-left w-full md:w-auto">
 				<h1 class="text-lg font-bold text-content">Cuenta no conectada</h1>

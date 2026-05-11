@@ -49,7 +49,7 @@
 								{evaluacion.id}
 							</span>
 							<span class="text-content/30">×</span>
-							<span class="text-classes-100 font-black">
+							<span class="text-classes-100 font-bold">
 								{evaluacion.peso.toFixed(0)}%
 							</span>
 							{#if index < evaluaciones.length - 1}

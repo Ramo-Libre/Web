@@ -7,7 +7,8 @@
 		RefreshCw,
 		CheckCircle2,
 		GithubIcon,
-		AlertCircle
+		AlertCircle,
+		CircleUser
 	} from '@lucide/svelte';
 
 	// --- DERIVADOS (Estado Global) ---
@@ -85,9 +86,17 @@
 
 				<div class="flex items-center gap-4 relative z-10">
 					<div
-						class="w-14 h-14 bg-primary-400 rounded-full flex items-center justify-center text-white font-bold text-2xl shadow-md border-2 border-base-100"
+						class="w-14 h-14 bg-base-300 rounded-full flex items-center justify-center text-white font-bold text-2xl shadow-md"
 					>
-						{userName.charAt(0).toUpperCase()}
+						{#if user.user_metadata?.avatar_url}
+							<img
+								src={user.user_metadata?.avatar_url || '/default-avatar.png'}
+								alt="Avatar"
+								class="w-13 h-13 rounded-full object-cover"
+							/>
+						{:else}
+							<CircleUser class="w-13 h-13 text-content" />
+						{/if}
 					</div>
 					<div>
 						<div class="text-2xl sm:text-3xl font-bold text-content leading-tight">{userName}</div>
