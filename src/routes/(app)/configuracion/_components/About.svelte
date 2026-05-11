@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { VERSION } from '$lib/utils/version';
+	import { VERSION } from '$lib/utils/version';
 	import { Github, Globe, Heart, Code2, GraduationCap } from '@lucide/svelte';
 </script>
 
@@ -57,10 +57,10 @@
 					class="h-full w-full bg-primary-100 text-base-100 flex items-center justify-center text-sm font-bold uppercase"
 				>
 					<img
-                        src="https://avatars.githubusercontent.com/u/134110830?v=4"
-                        alt="Matías Peñaloza"
-                        class="h-full w-full object-cover"
-                    />
+						src="https://avatars.githubusercontent.com/u/134110830?v=4"
+						alt="Matías Peñaloza"
+						class="h-full w-full object-cover"
+					/>
 				</div>
 			</div>
 

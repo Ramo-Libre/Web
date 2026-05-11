@@ -107,7 +107,7 @@
 						class="w-11 h-11 rounded-full object-cover"
 					/>
 				{:else}
-					<CircleUser class="w-11 h-11 text-content"/>
+					<CircleUser class="w-11 h-11 text-content" />
 				{/if}
 			</div>
 		</button>

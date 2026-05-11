@@ -8,9 +8,7 @@
 		CheckCircle2,
 		GithubIcon,
 		AlertCircle,
-
 		CircleUser
-
 	} from '@lucide/svelte';
 
 	// --- DERIVADOS (Estado Global) ---
