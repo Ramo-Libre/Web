@@ -1,7 +1,7 @@
 {
 	"name": "ramo-libre-web",
 	"private": true,
-	"version": "1.0.1",
+	"version": "x.x.x",
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev",
