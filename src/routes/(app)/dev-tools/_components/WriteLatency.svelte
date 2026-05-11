@@ -158,7 +158,7 @@
 						<span class="text-[10px] font-bold text-content/40 uppercase block mb-1">Media (μ)</span
 						>
 						<div class="flex items-baseline gap-1">
-							<span class="text-xl font-black text-content">{results.mean.toFixed(3)}</span>
+							<span class="text-xl font-bold text-content">{results.mean.toFixed(3)}</span>
 							<span class="text-[10px] font-bold text-content/40">ms</span>
 						</div>
 					</div>
@@ -166,7 +166,7 @@
 						<span class="text-[10px] font-bold text-content/40 uppercase block mb-1"
 							>Varianza (σ²)</span
 						>
-						<span class="text-xl font-black text-content">{results.variance.toFixed(4)}</span>
+						<span class="text-xl font-bold text-content">{results.variance.toFixed(4)}</span>
 					</div>
 				</div>
 

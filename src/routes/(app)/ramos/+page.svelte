@@ -3,7 +3,6 @@
 	import { browser } from '$app/environment';
 	import { fly } from 'svelte/transition';
 	import RamosList from './_components/RamosList.svelte';
-	import RamoHeader from './_components/RamoHeader.svelte';
 	import RamoContent from './_components/RamoContent.svelte';
 	import ColorPicker from './_components/ColorPicker.svelte';
 	import { db } from '$lib/state/index.svelte';
@@ -44,11 +43,6 @@
 		<div
 			class="lg:col-span-8 xl:col-span-9 flex flex-col gap-6 sm:h-full sm:min-h-0 sm:overflow-hidden"
 		>
-			<!-- Header del Ramo Seleccionado -->
-			<div class="sm:flex-none">
-				<RamoHeader {selectedRamoId} />
-			</div>
-
 			<!-- Contenido del Ramo -->
 			<div class="sm:flex-1 sm:overflow-y-auto sm:min-h-0">
 				<RamoContent {selectedRamoId} />
