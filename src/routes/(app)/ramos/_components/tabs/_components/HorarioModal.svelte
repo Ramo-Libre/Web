@@ -137,7 +137,7 @@
 				</button>
 			</div>
 
-			<div class="space-y-6">
+			<div class="sm:space-y-6 space-y-2">
 				<div>
 					<div class="text-xs font-bold text-content/60 uppercase tracking-wider mb-3">
 						Tipo de bloque

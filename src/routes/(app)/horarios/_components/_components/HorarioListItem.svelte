@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Horario, HorarioType } from '$lib/state/horarios.svelte';
-	import { Pencil, Trash2, BookOpen, FlaskConical, Users, Hammer } from '@lucide/svelte';
+	import { Trash2, BookOpen, FlaskConical, Users, Hammer } from '@lucide/svelte';
 
 	interface Props {
 		horario: Horario;
@@ -25,7 +25,16 @@
 </script>
 
 <div
-	class="flex items-center justify-between rounded-lg border border-base-400 bg-base-100 px-4 py-3 hover:bg-base-200 transition-colors"
+	class="flex items-center justify-between rounded-lg border border-base-400 bg-base-100 px-4 py-3 hover:bg-base-200 transition-colors cursor-pointer"
+	role="button"
+	tabindex="0"
+	onclick={() => onEdit(horario)}
+	onkeydown={(event) => {
+		if (event.key === 'Enter' || event.key === ' ') {
+			event.preventDefault();
+			onEdit(horario);
+		}
+	}}
 >
 	<div class="flex items-center gap-3">
 		<div
@@ -46,16 +55,12 @@
 	</div>
 	<div class="flex items-center gap-2 text-content/40">
 		<button
-			class="p-2 rounded-lg hover:bg-base-300 hover:text-content transition-colors cursor-pointer"
-			aria-label="Editar"
-			onclick={() => onEdit(horario)}
-		>
-			<Pencil class="w-4 h-4" />
-		</button>
-		<button
 			class="hover:text-error-100 p-2 rounded-lg hover:bg-error-400 transition-colors cursor-pointer"
 			aria-label="Eliminar"
-			onclick={() => onRemove(horario.id)}
+			onclick={(event) => {
+				event.stopPropagation();
+				onRemove(horario.id);
+			}}
 		>
 			<Trash2 class="w-4 h-4" />
 		</button>

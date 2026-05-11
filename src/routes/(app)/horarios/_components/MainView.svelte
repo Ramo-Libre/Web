@@ -3,18 +3,22 @@
 	import List from './views/List.svelte';
 	import Clock from './views/Clock.svelte';
 	import Gallery from './views/Gallery.svelte';
+	import AllHorarios from './views/AllHorarios.svelte';
 
 	type ViewMode = 'table' | 'list' | 'clock' | 'gallery';
 
 	interface Props {
 		selectedView: ViewMode;
+		showAll: boolean;
 	}
 
-	let { selectedView = 'table' }: Props = $props();
+	let { selectedView = 'table', showAll = false }: Props = $props();
 </script>
 
 <div class="">
-	{#if selectedView === 'table'}
+	{#if showAll}
+		<AllHorarios />
+	{:else if selectedView === 'table'}
 		<Table />
 	{:else if selectedView === 'list'}
 		<List />
