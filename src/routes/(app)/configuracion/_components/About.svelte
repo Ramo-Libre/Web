@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { PUBLIC_VERSION } from '$env/static/public';
+    import { VERSION } from '$lib/utils/version';
 	import { Github, Globe, Heart, Code2, GraduationCap } from '@lucide/svelte';
 </script>
 
@@ -15,7 +15,7 @@
 			<img src="/favicon.webp" alt="Ramo Libre Logo" class="w-12 h-12" />
 		</div>
 		<h1 class="text-2xl font-black text-content uppercase tracking-tight">Ramo Libre</h1>
-		<p class="text-xs font-mono text-content/40 mt-1">{PUBLIC_VERSION} • Open Source</p>
+		<p class="text-xs font-mono text-content/40 mt-1">{VERSION} • Open Source</p>
 	</div>
 
 	<div class="p-6 space-y-8">
