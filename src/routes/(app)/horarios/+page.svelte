@@ -28,6 +28,6 @@
 </script>
 
 <div in:fly={{ y: 10, duration: 300, delay: 100 }} class="flex flex-col gap-6">
-	<ViewBar {selectedView} showAll={showAll} onToggleAll={handleToggleAll} onSelectView={handleSelectView} />
+	<ViewBar {selectedView} {showAll} onToggleAll={handleToggleAll} onSelectView={handleSelectView} />
 	<MainView {selectedView} {showAll} />
 </div>

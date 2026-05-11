@@ -158,7 +158,10 @@
 					<h2 class="text-4xl sm:text-5xl font-black text-content tabular-nums tracking-tight mb-2">
 						{countdownStr}
 					</h2>
-					<p class="font-bold text-sm sm:text-base truncate w-full flex items-center justify-center gap-1.5" style="color: {primaryColor}">
+					<p
+						class="font-bold text-sm sm:text-base truncate w-full flex items-center justify-center gap-1.5"
+						style="color: {primaryColor}"
+					>
 						{#if CurrentIcon}
 							<CurrentIcon class="w-4 h-4 shrink-0" style="color: {primaryColor}" />
 						{/if}
@@ -184,7 +187,9 @@
 					>
 						{countdownStr}
 					</h2>
-					<p class="font-bold text-sm sm:text-base text-content/70 truncate w-full flex items-center justify-center gap-1.5">
+					<p
+						class="font-bold text-sm sm:text-base text-content/70 truncate w-full flex items-center justify-center gap-1.5"
+					>
 						{#if NextIcon}
 							<NextIcon class="w-4 h-4 shrink-0 text-content/70" />
 						{/if}

@@ -74,7 +74,7 @@
 		{:else}
 			{#each sortedHorarios as horario (horario.id)}
 				<HorarioListItem
-					horario={horario}
+					{horario}
 					color={db.ramos.map.get(horario.ramoId ?? '')?.color ?? '#cbd5e1'}
 					onEdit={openEdit}
 					onRemove={removeHorario}

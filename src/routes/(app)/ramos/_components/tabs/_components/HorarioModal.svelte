@@ -15,8 +15,13 @@
 		lockRamo?: boolean;
 	}
 
-	let { open = false, onClose, initialHorario = null, prefill = null, lockRamo = false }: Props =
-		$props();
+	let {
+		open = false,
+		onClose,
+		initialHorario = null,
+		prefill = null,
+		lockRamo = false
+	}: Props = $props();
 
 	const isEditing = $derived.by(() => Boolean(initialHorario));
 	const isRamoLocked = $derived.by(() => Boolean(lockRamo));
@@ -150,7 +155,9 @@
 										? 'shadow-sm'
 										: 'border-base-400 bg-base-100 text-content/60 hover:bg-base-200'
 								}`}
-								style={selectedIcon === option.id ? `border-color: ${ramoColor}; background-color: ${ramoColor}1f; color: ${ramoColor};` : ''}
+								style={selectedIcon === option.id
+									? `border-color: ${ramoColor}; background-color: ${ramoColor}1f; color: ${ramoColor};`
+									: ''}
 								onclick={() => (selectedIcon = option.id)}
 							>
 								<option.Icon class="w-5 h-5" />
