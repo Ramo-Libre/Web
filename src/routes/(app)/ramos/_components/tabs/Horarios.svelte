@@ -1,17 +1,9 @@
 <script lang="ts">
-	import {
-		Plus,
-		Pencil,
-		Trash2,
-		BookOpen,
-		FlaskConical,
-		Users,
-		Hammer,
-		CalendarX2
-	} from '@lucide/svelte';
+	import { Plus, CalendarX2 } from '@lucide/svelte';
 	import HorarioModal from './_components/HorarioModal.svelte';
 	import { db } from '$lib/state/index.svelte';
-	import type { Horario, HorarioDay, HorarioType } from '$lib/state/horarios.svelte';
+	import type { Horario, HorarioDay } from '$lib/state/horarios.svelte';
+	import HorarioListItem from '../../../horarios/_components/_components/HorarioListItem.svelte';
 
 	interface Props {
 		selectedRamoId?: string;
@@ -21,13 +13,6 @@
 
 	let isModalOpen = $state(false);
 	let editingHorario: Horario | null = $state(null);
-
-	const iconOptions = [
-		{ id: 'book', label: 'Clase', Icon: BookOpen },
-		{ id: 'lab', label: 'Lab', Icon: FlaskConical },
-		{ id: 'assist', label: 'Ayudantía', Icon: Users },
-		{ id: 'taller', label: 'Taller', Icon: Hammer }
-	] as const;
 
 	const dayOrder: HorarioDay[] = ['L', 'M', 'X', 'J', 'V', 'S'];
 
@@ -64,12 +49,6 @@
 	function removeHorario(id: string) {
 		db.horarios.remove(id);
 	}
-
-
-
-	function iconFor(type: HorarioType) {
-		return iconOptions.find((o) => o.id === type)?.Icon ?? BookOpen;
-	}
 </script>
 
 <div class="space-y-6 w-full max-w-4xl mx-auto pb-10">
@@ -94,45 +73,12 @@
 			</div>
 		{:else}
 			{#each sortedHorarios as horario (horario.id)}
-				{@const TypeIcon = iconFor(horario.type)}
-				<div
-					class="flex items-center justify-between rounded-lg border border-base-400 bg-base-100 px-4 py-3 hover:bg-base-200 transition-colors"
-				>
-					<div class="flex items-center gap-3">
-						<div
-							class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-classes-400 text-classes-100 font-bold border border-classes-300"
-						>
-							{horario.day}
-						</div>
-						<div class="flex max-sm:flex-col sm:items-center max-sm:justify-center gap-1 sm:gap-4">
-							<div class="text-sm font-black text-content">
-								{horario.start} - {horario.end}
-							</div>
-							<div class="inline-flex items-center gap-1 text-xs text-content/60">
-								<TypeIcon class="w-3.5 h-3.5 text-content/40" />
-								{#if horario.location}
-									<div class="text-xs">{horario.location}</div>
-								{/if}
-							</div>
-						</div>
-					</div>
-					<div class="flex items-center gap-2 text-content/40">
-						<button
-							class="p-2 rounded-lg hover:bg-base-300 hover:text-content transition-colors cursor-pointer"
-							aria-label="Editar"
-							onclick={() => openEdit(horario)}
-						>
-							<Pencil class="w-4 h-4" />
-						</button>
-						<button
-							class="hover:text-error-100 p-2 rounded-lg hover:bg-error-400 transition-colors cursor-pointer"
-							aria-label="Eliminar"
-							onclick={() => removeHorario(horario.id)}
-						>
-							<Trash2 class="w-4 h-4" />
-						</button>
-					</div>
-				</div>
+				<HorarioListItem
+					horario={horario}
+					color={db.ramos.map.get(horario.ramoId ?? '')?.color ?? '#cbd5e1'}
+					onEdit={openEdit}
+					onRemove={removeHorario}
+				/>
 			{/each}
 		{/if}
 	</div>

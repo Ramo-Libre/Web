@@ -22,6 +22,7 @@
 	const isRamoLocked = $derived.by(() => Boolean(lockRamo));
 
 	const ramos = $derived.by(() => db.ramos.list);
+	const ramoColor = $derived.by(() => db.ramos.map.get(ramoId)?.color ?? '#cbd5e1');
 
 	let formDay: HorarioDay = $state('L');
 	let formStart = $state('');
@@ -146,9 +147,10 @@
 							<button
 								class={`inline-flex flex-col items-center gap-2 rounded-xl border p-3 text-xs font-bold transition-all cursor-pointer ${
 									selectedIcon === option.id
-										? 'border-classes-300 bg-classes-400 text-classes-100 shadow-sm'
+										? 'shadow-sm'
 										: 'border-base-400 bg-base-100 text-content/60 hover:bg-base-200'
 								}`}
+								style={selectedIcon === option.id ? `border-color: ${ramoColor}; background-color: ${ramoColor}1f; color: ${ramoColor};` : ''}
 								onclick={() => (selectedIcon = option.id)}
 							>
 								<option.Icon class="w-5 h-5" />
