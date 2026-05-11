@@ -56,7 +56,11 @@
 				<div
 					class="h-full w-full bg-primary-100 text-base-100 flex items-center justify-center text-sm font-bold uppercase"
 				>
-					MP
+					<img
+                        src="https://avatars.githubusercontent.com/u/134110830?v=4"
+                        alt="Matías Peñaloza"
+                        class="h-full w-full object-cover"
+                    />
 				</div>
 			</div>
 
