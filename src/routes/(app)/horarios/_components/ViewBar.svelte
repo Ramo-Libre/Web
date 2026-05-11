@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { Table2, List, ClockFading, GalleryHorizontalEnd } from '@lucide/svelte';
+	import { Table2, List, ClockFading, GalleryHorizontalEnd, ListChecks } from '@lucide/svelte';
+	import AllHorariosModal from './_components/AllHorariosModal.svelte';
 	type ViewMode = 'table' | 'list' | 'clock' | 'gallery';
 
 	interface Props {
@@ -8,6 +9,16 @@
 	}
 
 	let { selectedView = 'table', onSelectView = () => {} }: Props = $props();
+
+	let isAllHorariosOpen = $state(false);
+
+	function openAllHorarios() {
+		isAllHorariosOpen = true;
+	}
+
+	function closeAllHorarios() {
+		isAllHorariosOpen = false;
+	}
 </script>
 
 <div class="space-y-4">
@@ -60,5 +71,14 @@
 				Galería
 			</button>
 		</div>
+		<button
+			onclick={openAllHorarios}
+			class="cursor-pointer inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium border border-base-400 text-content/70 hover:bg-base-200 hover:text-content transition-colors w-full sm:w-auto"
+		>
+			<ListChecks class="w-4 h-4" />
+			Todos los horarios
+		</button>
 	</div>
 </div>
+
+<AllHorariosModal open={isAllHorariosOpen} onClose={closeAllHorarios} />
