@@ -147,7 +147,7 @@
 				{#if currentClass}
 					{@const CurrentIcon = typeIcons[currentClass.type as keyof typeof typeIcons]}
 					<span
-						class="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-content/50 mb-2 flex items-center gap-1.5"
+						class="text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] text-content/50 mb-2 flex items-center gap-1.5"
 					>
 						<div
 							class="w-2 h-2 rounded-full animate-pulse"
@@ -155,7 +155,7 @@
 						></div>
 						Termina en
 					</span>
-					<h2 class="text-4xl sm:text-5xl font-black text-content tabular-nums tracking-tight mb-2">
+					<h2 class="text-4xl sm:text-5xl font-bold text-content tabular-nums tracking-tight mb-2">
 						{countdownStr}
 					</h2>
 					<p
@@ -178,12 +178,12 @@
 				{:else if nextClass}
 					{@const NextIcon = typeIcons[nextClass.type as keyof typeof typeIcons]}
 					<span
-						class="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-content/50 mb-2"
+						class="text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] text-content/50 mb-2"
 					>
 						Próxima en
 					</span>
 					<h2
-						class="text-4xl sm:text-5xl font-black text-content tabular-nums tracking-tight mb-2 opacity-80"
+						class="text-4xl sm:text-5xl font-bold text-content tabular-nums tracking-tight mb-2 opacity-80"
 					>
 						{countdownStr}
 					</h2>
@@ -210,13 +210,13 @@
 					</div>
 				{:else if isDayFinished}
 					<CheckCircle2 class="w-10 h-10 text-success-100 mb-3" />
-					<h2 class="text-3xl sm:text-4xl font-black text-content tracking-tight mb-1">
+					<h2 class="text-3xl sm:text-4xl font-bold text-content tracking-tight mb-1">
 						{countdownStr}
 					</h2>
 					<p class="text-sm font-bold text-content/60 uppercase tracking-wide">Día completado</p>
 				{:else}
 					<Coffee class="w-10 h-10 text-content/30 mb-3" />
-					<h2 class="text-3xl sm:text-4xl font-black text-content tracking-tight mb-1">
+					<h2 class="text-3xl sm:text-4xl font-bold text-content tracking-tight mb-1">
 						{countdownStr}
 					</h2>
 					<p class="text-sm font-bold text-content/60 uppercase tracking-wide">Día libre</p>
@@ -243,7 +243,7 @@
 							class="flex items-center gap-4 p-3 rounded-xl bg-base-200 border border-base-400 shadow-sm transition-transform hover:scale-[1.02]"
 						>
 							<div class="flex flex-col items-center justify-center w-12 shrink-0">
-								<span class="text-xs font-black text-content/90">{sch.start}</span>
+								<span class="text-xs font-bold text-content/90">{sch.start}</span>
 							</div>
 
 							<div

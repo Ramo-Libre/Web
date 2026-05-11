@@ -234,7 +234,7 @@
 							<div class="hidden sm:flex sm:items-center sm:space-x-4">
 								<div class="text-center min-w-[85px] pt-1">
 									<div
-										class="text-sm font-black {ev.inProgress
+										class="text-sm font-bold {ev.inProgress
 											? 'text-success-100'
 											: ev.isPast
 												? 'text-content/40'

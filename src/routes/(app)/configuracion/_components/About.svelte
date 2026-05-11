@@ -14,7 +14,7 @@
 		>
 			<img src="/favicon.webp" alt="Ramo Libre Logo" class="w-12 h-12" />
 		</div>
-		<h1 class="text-2xl font-black text-content uppercase tracking-tight">Ramo Libre</h1>
+		<h1 class="text-2xl font-bold text-content uppercase tracking-tight">Ramo Libre</h1>
 		<p class="text-xs font-mono text-content/40 mt-1">{VERSION} • Open Source</p>
 	</div>
 
@@ -35,7 +35,7 @@
 
 		<div class="space-y-3">
 			<h3
-				class="text-[10px] font-black text-content/30 uppercase tracking-widest flex items-center gap-2"
+				class="text-[10px] font-bold text-content/30 uppercase tracking-widest flex items-center gap-2"
 			>
 				<Code2 size={12} />
 				Powered by

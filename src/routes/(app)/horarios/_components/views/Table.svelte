@@ -189,7 +189,7 @@
 		<div class="grid grid-cols-6">
 			{#each weekDays as day, i (i)}
 				<div
-					class="h-10 flex items-center justify-center text-[10px] font-black text-content/50 uppercase tracking-widest border-r border-base-300 last:border-r-0 {day.dow ===
+					class="h-10 flex items-center justify-center text-[10px] font-bold text-content/50 uppercase tracking-widest border-r border-base-300 last:border-r-0 {day.dow ===
 					currentDowNum
 						? 'bg-schedule-400' /* Resalte de día actual usando schedule */
 						: ''}"
@@ -253,7 +253,7 @@
 									<div class="flex flex-col h-full">
 										<div class="flex items-center gap-1.5 mb-1 min-w-0">
 											<Icon class="w-3.5 h-3.5 shrink-0" style="color: {ev.color}" />
-											<span class="text-[10px] font-black uppercase truncate text-content">
+											<span class="text-[10px] font-bold uppercase truncate text-content">
 												{ev.ramoName}
 											</span>
 										</div>

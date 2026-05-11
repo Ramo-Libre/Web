@@ -85,7 +85,7 @@
 		class="bg-base-200 border border-base-300 rounded-xl p-4 flex flex-col items-center justify-center"
 	>
 		<span class="text-xs font-bold text-content/40 uppercase tracking-wider">Peso Total</span>
-		<span class="text-3xl font-black text-content">{formatBytes(totalSize)}</span>
+		<span class="text-3xl font-bold text-content">{formatBytes(totalSize)}</span>
 		<p class="text-[10px] text-content/30 mt-1 italic text-center">
 			Límite estimado: ~5MB por dominio
 		</p>

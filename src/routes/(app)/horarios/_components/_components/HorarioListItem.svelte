@@ -44,7 +44,7 @@
 			{horario.day}
 		</div>
 		<div class="flex max-sm:flex-col sm:items-center max-sm:justify-center gap-1 sm:gap-4">
-			<div class="text-sm font-black text-content">{horario.start} - {horario.end}</div>
+			<div class="text-sm font-bold text-content">{horario.start} - {horario.end}</div>
 			<div class="inline-flex items-center gap-1 text-xs text-content/60">
 				<TypeIcon class="w-3.5 h-3.5 text-content/40" />
 				{#if horario.location}

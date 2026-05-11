@@ -130,7 +130,7 @@
 
 				<div class="flex-1 min-w-0 flex flex-col justify-center">
 					<h2
-						class="text-2xl font-black text-content leading-tight mb-1 truncate flex items-center gap-2"
+						class="text-2xl font-bold text-content leading-tight mb-1 truncate flex items-center gap-2"
 					>
 						{#if CurrentIcon}
 							<CurrentIcon class="w-5 h-5 shrink-0" style="color: {currentClass.color}" />
@@ -173,7 +173,7 @@
 
 				<div class="flex-1 min-w-0 flex flex-col justify-center">
 					<h2
-						class="text-2xl font-black text-content leading-tight mb-1 truncate flex items-center gap-2"
+						class="text-2xl font-bold text-content leading-tight mb-1 truncate flex items-center gap-2"
 					>
 						{#if NextIcon}
 							<NextIcon class="w-5 h-5 shrink-0" style="color: {nextClass.color}" />

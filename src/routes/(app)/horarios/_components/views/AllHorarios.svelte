@@ -102,7 +102,7 @@
 					<div class="space-y-2">
 						<div class="flex items-center gap-2">
 							<div class="w-2 h-2 rounded-full" style="background-color: {group.color}"></div>
-							<h4 class="text-sm font-black text-content uppercase tracking-widest">
+							<h4 class="text-sm font-bold text-content uppercase tracking-widest">
 								{group.name}
 							</h4>
 							<span class="text-xs font-bold text-content/40">({group.horarios.length})</span>
