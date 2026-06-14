@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { db } from '$lib';
-	import { themes, type Theme } from '$lib/utils/themes';
+	import { themes, type Theme } from '@ramo-libre/ui-themes';
 	import { Check } from '@lucide/svelte';
 
 	let currentTheme = $derived<Theme>(db.preferences.theme);

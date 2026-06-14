@@ -1,8 +1,6 @@
+name: Deploy to Cloudflare Pages
+
 on:
-  push:
-    tags:
-      # - 'v[0-9]+.[0-9]+.[0-9]+'
-      - 'latest'
   workflow_dispatch:
 
 concurrency:
@@ -16,7 +14,6 @@ jobs:
     permissions:
       contents: read
       deployments: write
-    name: Deploy to Cloudflare Pages
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -31,32 +28,24 @@ jobs:
           echo "VERSION_NO_V=${VERSION_NO_V}" >> "$GITHUB_ENV"
           echo "Resolved version tag: $VERSION_TAG"
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: 10
+      - name: 🍞 Setup Bun
+        uses: oven-sh/setup-bun@v2
 
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'pnpm'
+      - name: 🏷️ Update version files
+        run: bun scripts/update-version.js ${{ env.VERSION_NO_V }}
 
-      - name: Update version files
-        run: node scripts/update-version.js ${{ env.VERSION_NO_V }}
+      - name: 🧶 Install Dependencies
+        run: bun install --frozen-lockfile
 
-      - name: Install Dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Build
-        run: pnpm run build
+      - name: 🏗️ Build
+        run: bun run build
         env:
           PUBLIC_SHOW_DEV_TOOLS: ${{ vars.PUBLIC_SHOW_DEV_TOOLS }}
           PUBLIC_CLOUD_SYNC_DEBOUNCE: ${{ vars.PUBLIC_CLOUD_SYNC_DEBOUNCE }}
           PUBLIC_SUPABASE_URL: ${{ secrets.PUBLIC_SUPABASE_URL }}
           PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
 
-      - name: Deploy to Cloudflare Pages
+      - name: 🚀 Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}

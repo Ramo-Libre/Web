@@ -1,0 +1,4 @@
+[install]
+nodeLinker = "pnpm"
+
+trustedDependencies = []

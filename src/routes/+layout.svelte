@@ -1,8 +1,9 @@
 <script lang="ts">
-	import './layout.css';
+    import '@ramo-libre/ui-themes/tailwind.css';
 	import './custom.css';
 	import { onMount } from 'svelte';
 	import { pwaInfo } from 'virtual:pwa-info';
+	import { SuiteFavicons } from '@ramo-libre/ui-themes';
 
 	onMount(async () => {
 		if (pwaInfo) {
@@ -45,6 +46,7 @@
 	{@html webManifest}
 	<title>Ramo Libre</title>
 	<meta name="theme-color" content="#ffffff" id="theme-meta" />
+	<link rel="icon" href={SuiteFavicons.web} />
 </svelte:head>
 
 <div

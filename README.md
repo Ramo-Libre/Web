@@ -1,18 +1,18 @@
-# Ramo Libre Web ![](https://img.shields.io/github/license/madmti/ramo-libre-web)
+# Web ![](https://img.shields.io/github/license/Ramo-Libre/Web)
 
-Este repo es para el remake de la aplicacion RamoLibre (una aplicacion para gestionar cosas de la vida universitaria), el proceso de analisis y diseño se esta documentando en la [Wiki del Proyecto](https://github.com/madmti/Ramo-Libre-Web/wiki). **Este proyecto esta abierto a ideas, sugerencias y contribuciones**.
+Este repo es para el remake de la aplicacion RamoLibre (una aplicacion para gestionar cosas de la vida universitaria), el proceso de analisis y diseño se esta documentando en la [Wiki del Proyecto](https://github.com/Ramo-Libre/Web/wiki). **Este proyecto esta abierto a ideas, sugerencias y contribuciones**.
 
 Ahora integrando [GradeSolver](https://github.com/madmti/GradeSolver) como modulo **WASM** para las predicciones y evaluacion del estado de las reglas de aprobacion. La principal idea de este remake es dar una "interfaz mas facil" y un uso simple, mientras se mejora el performance.
 
 > [!TIP]
-> Se recomienda revisar la [Wiki](https://github.com/madmti/Ramo-Libre-Web/wiki) para contexto y mas informacion. Tambien consultar el estado del Proyecto en el [Project Board](https://github.com/users/madmti/projects/5/views/2)
+> Se recomienda revisar la [Wiki](https://github.com/Ramo-Libre/Web/wiki) para contexto y mas informacion.
 
 ## Quick Start
 
 1. Clona el repositorio
 
 ```bash
-git clone https://github.com/madmti/Ramo-Libre-Web.git
+git clone https://github.com/Ramo-Libre/Web.git
 cd Ramo-Libre-Web
 ```
 

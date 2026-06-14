@@ -1,5 +1,5 @@
 import type { Serializable } from '$lib/types/state';
-import { themes, type Theme } from '$lib/utils/themes';
+import { themes, type Theme } from '@ramo-libre/ui-themes';
 
 export type CalendarView = 'calendar' | 'list' | 'kanban' | 'timeline';
 export type CalendarStatusFilter = 'all' | 'upcoming' | 'overdue' | 'completed';

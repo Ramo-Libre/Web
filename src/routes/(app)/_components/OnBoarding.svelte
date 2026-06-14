@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Rocket, BookOpen, Calendar, Target, Zap } from '@lucide/svelte';
+	import { SuiteFavicons } from '@ramo-libre/ui-themes';
 
 	// Migración a Svelte 5 (Runes)
 	let {
@@ -29,7 +30,7 @@
 >
 	<div class="mb-6 flex justify-between items-center">
 		<div class="flex gap-2 items-center">
-			<img src="/favicon.webp" alt="Ramo Libre Logo" class="w-15 h-15" />
+			<img src={SuiteFavicons.web} alt="Ramo Libre Logo" class="w-15 h-15" />
 			<h1 class="text-4xl font-bold tracking-tight mb-2 text-content">Ramo Libre</h1>
 		</div>
 		<div>
