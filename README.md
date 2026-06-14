@@ -12,20 +12,20 @@ Ahora integrando [GradeSolver](https://github.com/madmti/GradeSolver) como modul
 1. Clona el repositorio
 
 ```bash
-git clone https://github.com/Ramo-Libre/Web.git
+git clone https://github.com/Ramo-Libre/Web.git Ramo-Libre-Web
 cd Ramo-Libre-Web
 ```
 
 2. Instala las dependencias
 
 ```bash
-pnpm install
+bun install
 ```
 
 3. Inicia el servidor local de supabase
 
 ```bash
-pnpx supabase start
+bunx supabase start
 ```
 
 4. Configura las variables de entorno
@@ -37,7 +37,7 @@ cp .env.example .env
 Edita el archivo `.env` con tus credenciales de Supabase y cualquier otra configuración necesaria. Asegúrate de configurar correctamente la URL y la publishable key de Supabase. 5. Inicia el servidor de desarrollo
 
 ```bash
-pnpm run dev
+bun run dev
 ```
 
 5. Abre tu navegador en `http://localhost:5173` para ver la aplicación en acción.

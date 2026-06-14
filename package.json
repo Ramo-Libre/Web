@@ -9,6 +9,7 @@
 	},
 	"scripts": {
 		"dev": "vite dev",
+		"build:icons": "bunx pwa-asset-generator node_modules/@ramo-libre/ui-themes/src/assets/web.svg static --icon-only --opaque=false --name pwa && bunx pwa-asset-generator node_modules/@ramo-libre/ui-themes/src/assets/web.svg static --icon-only --type=png --background=#ffffff --name maskable-icon",
 		"build": "vite build",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",

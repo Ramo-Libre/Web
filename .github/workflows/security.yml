@@ -22,14 +22,6 @@ jobs:
       - name: 📥 Checkout Repository
         uses: actions/checkout@v4
 
-      - name: 🍞 Setup Bun
-        uses: oven-sh/setup-bun@v2
-
-      - name: 🧶 Install Dependencies
-        run: bun install --frozen-lockfile
-        env:
-            GH_PAT: ${{ secrets.GH_PAT }}
-
       - name: 🚀 Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
