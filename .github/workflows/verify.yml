@@ -24,6 +24,8 @@ jobs:
 
       - name: 🧶 Install Dependencies
         run: bun install --frozen-lockfile
+        env:
+            GH_PAT: ${{ secrets.GH_PAT }}
 
       - name: 🔍 Lint
         run: bun run lint
