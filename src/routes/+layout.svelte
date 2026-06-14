@@ -1,5 +1,5 @@
 <script lang="ts">
-    import '@ramo-libre/ui-themes/tailwind.css';
+	import '@ramo-libre/ui-themes/tailwind.css';
 	import './custom.css';
 	import { onMount } from 'svelte';
 	import { pwaInfo } from 'virtual:pwa-info';

@@ -21,45 +21,45 @@ export default defineConfig({
 				background_color: '#ffffff',
 				display_override: ['window-controls-overlay'],
 				icons: [
-                    {
-                        src: 'apple-icon-180.png',
-                        sizes: '180x180',
-                        type: 'image/png'
-                    },
-                    {
-                        src: 'favicon-196.png',
-                        sizes: '196x196',
-                        type: 'image/png'
-                    },
-                    {
-                        src: 'manifest-icon-192.maskable.png',
-                        sizes: '192x192',
-                        type: 'image/png',
-                        purpose: 'maskable'
-                    },
-                    {
-                        src: 'manifest-icon-192.png',
-                        sizes: '192x192',
-                        type: 'image/png',
-                        purpose: 'any'
-                    },
-                    {
-                        src: 'manifest-icon-512.maskable.png',
-                        sizes: '512x512',
-                        type: 'image/png',
-                        purpose: 'maskable'
-                    },
-                    {
-                        src: 'manifest-icon-512.png',
-                        sizes: '512x512',
-                        type: 'image/png',
-                        purpose: 'any'
-                    }
-                ]
+					{
+						src: 'apple-icon-180.png',
+						sizes: '180x180',
+						type: 'image/png'
+					},
+					{
+						src: 'favicon-196.png',
+						sizes: '196x196',
+						type: 'image/png'
+					},
+					{
+						src: 'manifest-icon-192.maskable.png',
+						sizes: '192x192',
+						type: 'image/png',
+						purpose: 'maskable'
+					},
+					{
+						src: 'manifest-icon-192.png',
+						sizes: '192x192',
+						type: 'image/png',
+						purpose: 'any'
+					},
+					{
+						src: 'manifest-icon-512.maskable.png',
+						sizes: '512x512',
+						type: 'image/png',
+						purpose: 'maskable'
+					},
+					{
+						src: 'manifest-icon-512.png',
+						sizes: '512x512',
+						type: 'image/png',
+						purpose: 'any'
+					}
+				]
 			},
 			workbox: {
-                globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
-                globIgnores: ['**/stats.html']
+				globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+				globIgnores: ['**/stats.html']
 			},
 			devOptions: {
 				enabled: true
