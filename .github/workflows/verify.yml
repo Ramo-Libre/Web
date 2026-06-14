@@ -33,6 +33,9 @@ jobs:
       - name: 🛡️ Type Check
         run: bun run check
 
+      - name: 🎨 Build Icons
+        run: bun run build:icons
+
       - name: 🏗️ Build
         run: bun run build
         env:

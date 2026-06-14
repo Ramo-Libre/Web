@@ -39,6 +39,9 @@ jobs:
         env:
             GH_PAT: ${{ secrets.GH_PAT }}
 
+      - name: 🎨 Build Icons
+        run: bun run build:icons
+
       - name: 🏗️ Build
         run: bun run build
         env:

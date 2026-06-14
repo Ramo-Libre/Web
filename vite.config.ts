@@ -21,34 +21,41 @@ export default defineConfig({
 				background_color: '#ffffff',
 				display_override: ['window-controls-overlay'],
 				icons: [
-					{
-						src: 'pwa-64x64.png',
-						sizes: '64x64',
-						type: 'image/png'
-					},
-					{
-						src: 'pwa-192x192.png',
-						sizes: '192x192',
-						type: 'image/png'
-					},
-					{
-						src: 'pwa-512x512.png',
-						sizes: '512x512',
-						type: 'image/png',
-						purpose: 'any'
-					},
-					{
-						src: 'maskable-icon-512x512.png',
-						sizes: '512x512',
-						type: 'image/png',
-						purpose: 'maskable'
-					},
-					{
-						src: 'apple-touch-icon-180x180.png',
-						sizes: '180x180',
-						type: 'image/png'
-					}
-				]
+                    {
+                        src: 'apple-icon-180.png',
+                        sizes: '180x180',
+                        type: 'image/png'
+                    },
+                    {
+                        src: 'favicon-196.png',
+                        sizes: '196x196',
+                        type: 'image/png'
+                    },
+                    {
+                        src: 'manifest-icon-192.maskable.png',
+                        sizes: '192x192',
+                        type: 'image/png',
+                        purpose: 'maskable'
+                    },
+                    {
+                        src: 'manifest-icon-192.png',
+                        sizes: '192x192',
+                        type: 'image/png',
+                        purpose: 'any'
+                    },
+                    {
+                        src: 'manifest-icon-512.maskable.png',
+                        sizes: '512x512',
+                        type: 'image/png',
+                        purpose: 'maskable'
+                    },
+                    {
+                        src: 'manifest-icon-512.png',
+                        sizes: '512x512',
+                        type: 'image/png',
+                        purpose: 'any'
+                    }
+                ]
 			},
 			workbox: {
                 globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
