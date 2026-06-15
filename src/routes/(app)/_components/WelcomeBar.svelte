@@ -21,7 +21,7 @@
 	};
 
 	function handleAccountNavigation() {
-		goto(resolve('/configuracion#sync' as '/configuracion'));
+		goto(resolve('/configuracion/#sync'));
 	}
 </script>
 

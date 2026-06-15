@@ -18,7 +18,7 @@
 	function handleStart() {
 		if (!semesterName) return;
 		db.semestres.add(semesterName);
-		goto(resolve('/configuracion#semesters' as '/configuracion'));
+		goto(resolve('/configuracion/#semesters'));
 	}
 </script>
 
