@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
-	import { CircleUser, GithubIcon, RefreshCw } from '@lucide/svelte';
+	import Icon from '@iconify/svelte';
+	import { CircleUser, RefreshCw } from '@lucide/svelte';
 	import { cloud } from '$lib/state/cloud.svelte';
 
 	let user = $derived(cloud.user);
@@ -68,7 +69,7 @@
 							currentProvider
 						] || providerColors.github} gap-1 capitalize shadow-sm"
 					>
-						{#if currentProvider === 'github'}<GithubIcon size={10} />
+						{#if currentProvider === 'github'}<Icon icon="mdi:github" width={10} />
 						{:else if currentProvider === 'google'}<svg class="w-2.5 h-2.5" viewBox="0 0 512 512"
 								><path
 									d="M501.8 261.8c0-18.2-1.6-35.6-4.7-52.4H256v99.1h137.8c-6.1 31.9-24.2 58.9-51.4 77V450h83.1c48.3-44.6 76.3-110.2 76.3-188.2"
@@ -127,7 +128,7 @@
 				onclick={() => cloud.loginWith('github')}
 				class="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-base-100 border border-base-400 text-content rounded-lg text-xs font-semibold hover:bg-base-200 transition-all active:scale-95 shadow-sm"
 			>
-				<GithubIcon size={16} /> GitHub
+				<Icon icon="mdi:github" width={16} /> GitHub
 			</button>
 			<button
 				onclick={() => cloud.loginWith('google')}
