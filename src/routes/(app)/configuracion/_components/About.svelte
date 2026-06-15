@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { VERSION } from '$lib/utils/version';
-	import { Github, Globe, Heart, Code2, GraduationCap } from '@lucide/svelte';
+	import Icon from '@iconify/svelte';
+	import { Globe, Heart, Code2, GraduationCap } from '@lucide/svelte';
 	import { SuiteFavicons } from '@ramo-libre/ui-themes';
 </script>
 
@@ -80,7 +81,7 @@
 				class="p-2.5 rounded-lg text-content/40 hover:text-content hover:bg-base-300 transition-all active:scale-90 cursor-pointer"
 				title="Ver perfil de GitHub"
 			>
-				<Github size={18} />
+				<Icon icon="mdi:github" width={18} />
 			</a>
 		</div>
 
@@ -90,7 +91,7 @@
 				target="_blank"
 				class="flex items-center justify-center gap-2 py-2.5 bg-base-100 text-content border border-base-400 rounded-xl text-xs font-bold hover:bg-base-200 transition-colors"
 			>
-				<Github size={14} />
+				<Icon icon="mdi:github" width={14} />
 				Source Code
 			</a>
 			<a

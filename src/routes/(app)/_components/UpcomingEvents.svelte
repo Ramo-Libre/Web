@@ -7,7 +7,7 @@
 	import { getNow } from '$lib/utils/date';
 
 	const todayKey = getNow().toISOString().slice(0, 10);
-	const calendarPath = resolve('/calendario' as const);
+	const calendarPath = resolve('/calendario/');
 
 	function keyToDate(key: string): Date {
 		const [y, m, d] = key.split('-').map(Number);

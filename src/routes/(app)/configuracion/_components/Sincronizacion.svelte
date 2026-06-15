@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { cloud } from '$lib/state/cloud.svelte';
+	import Icon from '@iconify/svelte';
 	import {
 		Cloud,
 		CloudOff,
 		LogOut,
 		RefreshCw,
 		CheckCircle2,
-		GithubIcon,
 		AlertCircle,
 		CircleUser
 	} from '@lucide/svelte';
@@ -208,7 +208,7 @@
 						onclick={() => cloud.loginWith('github')}
 						class="cursor-pointer w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-base-200 border border-base-400 text-content rounded-lg text-sm font-semibold hover:bg-base-300 transition-all shadow-sm"
 					>
-						<GithubIcon size={18} /> Continuar con GitHub
+						<Icon icon="mdi:github" width={18} /> Continuar con GitHub
 					</button>
 
 					<button

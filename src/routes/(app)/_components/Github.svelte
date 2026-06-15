@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { Github, Heart } from '@lucide/svelte';
+	import Icon from '@iconify/svelte';
+	import { Heart } from '@lucide/svelte';
 </script>
 
 <div
@@ -18,7 +19,7 @@
 			rel="noopener noreferrer"
 			class="bg-white/20 hover:bg-white/30 px-6 py-3 rounded-lg transition-all duration-200 flex items-center gap-3 font-semibold"
 		>
-			<Github size={24} />
+			<Icon icon="mdi:github" width={24} />
 			Contribuir en GitHub
 		</a>
 	</div>

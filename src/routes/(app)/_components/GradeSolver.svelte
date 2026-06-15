@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Github } from '@lucide/svelte';
+	import Icon from '@iconify/svelte';
 </script>
 
 <div
@@ -27,7 +27,7 @@
 			rel="noopener noreferrer"
 			class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg transition-colors font-medium flex items-center gap-2"
 		>
-			<Github size={28} />
+			<Icon icon="mdi:github" width={28} />
 			Ver código fuente
 		</a>
 	</div>

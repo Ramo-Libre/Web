@@ -264,7 +264,7 @@
 			{#each ramos as ramo (ramo.id)}
 				{@const StatusIcon = getStatusIcon(ramo.estado)}
 				<a
-					href={resolve(`/notas#${ramo.id}` as '/notas')}
+					href={resolve('/notas/') + '#' + ramo.id}
 					class="flex items-center gap-2 px-2 py-1.5 rounded-lg {getBadgeStyle(
 						ramo.estado
 					)} hover:scale-105 hover:shadow-md transition-all duration-200 cursor-pointer"

@@ -8,7 +8,7 @@ import { EvaluacionEventsManager } from './evaluacion-events.svelte';
 import { HorariosManager } from './horarios.svelte';
 import { DevManager } from './dev.svelte';
 import { PUBLIC_SHOW_DEV_TOOLS } from '$env/static/public';
-import type { MockDataOutput } from '$lib/dev-tools/gen';
+import type { MockDataOutput } from '$lib/dev-tools/types';
 import { untrack } from 'svelte';
 
 export const RAMOLIBE_KEY_PREFIX = 'RAMOLIBRE_';
