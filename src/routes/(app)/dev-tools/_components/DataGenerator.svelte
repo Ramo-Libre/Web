@@ -1,5 +1,5 @@
 <script lang="ts">
-	import MockDataGenerator, { type MockDataOutput } from '$lib/dev-tools/gen';
+	import type { MockDataOutput } from '$lib/dev-tools/types';
 	import {
 		Database,
 		Check,
@@ -27,7 +27,8 @@
 	let isCopied = $state(false);
 	let isApplied = $state(false); // Estado para el feedback de inyección
 
-	function handleGenerate() {
+	async function handleGenerate() {
+		const { default: MockDataGenerator } = await import('$lib/dev-tools/gen');
 		generatedData = MockDataGenerator.generate({ ...params });
 		jsonString = JSON.stringify(generatedData, null, 2);
 		isValidJson = true;

@@ -6,32 +6,7 @@ import type { RamosSerial } from '$lib/state/ramos.svelte';
 import type { SemestresSerial } from '$lib/state/semestres.svelte';
 import { generateUUID } from '$lib/utils/crypto';
 import { ColorUtils } from '$lib/utils/colors';
-
-export interface MockDataInput {
-	// Semestres a generar
-	semestres: number;
-	// Ramos por semestre
-	ramos: number;
-	// Eventos por semestre
-	eventos: number;
-	// Horarios por semestre
-	horarios: number;
-	// Notas por semestre
-	notas: number;
-}
-
-export type MockDataOutput = {
-	semestres: SemestresSerial;
-	semestres_data: Record<
-		string,
-		{
-			ramos: RamosSerial;
-			notas: NotasSerial;
-			eventos: EventsSerial;
-			horarios: HorariosSerial;
-		}
-	>;
-};
+import type { MockDataInput, MockDataOutput } from './types';
 
 class MockDataGenerator {
 	public static generate(input: MockDataInput): MockDataOutput {
