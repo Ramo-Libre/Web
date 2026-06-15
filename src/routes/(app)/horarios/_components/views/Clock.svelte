@@ -85,7 +85,7 @@
 	});
 
 	const countdownStr = $derived.by(() => {
-		let remainingMins = 0;
+		let remainingMins;
 		let remainingSecs = 59 - currentSec;
 
 		if (currentClass) {
