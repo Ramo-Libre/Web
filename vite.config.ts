@@ -7,6 +7,7 @@ import { visualizer } from 'rollup-plugin-visualizer';
 export default defineConfig(({ mode }) => {
 	const env = loadEnv(mode, process.cwd(), '');
 	const excludeDevTools = env.PUBLIC_SHOW_DEV_TOOLS !== 'true';
+	const useRollupVisualizer = env.PUBLIC_ROLLUP_VISUALIZER === 'true';
 
 	return {
 		plugins: [
@@ -69,11 +70,12 @@ export default defineConfig(({ mode }) => {
 					enabled: true
 				}
 			}),
-			visualizer({
-				emitFile: true,
-				filename: 'stats.html',
-				template: 'sunburst'
-			}) as PluginOption,
+			useRollupVisualizer &&
+				(visualizer({
+					emitFile: true,
+					filename: 'stats.html',
+					template: 'sunburst'
+				}) as PluginOption),
 			excludeDevTools &&
 				({
 					name: 'exclude-dev-tools',

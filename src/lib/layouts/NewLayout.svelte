@@ -68,13 +68,13 @@
 			icon: BookMarked,
 			path: `${prefix}/ramos/`
 		},
-		// {
-		// 	id: 'config',
-		// 	label: 'Config',
-		// 	color: 'var(--color-config-100)',
-		// 	icon: Bolt,
-		// 	path: `${prefix}/configuracion/`
-		// },
+		{
+			id: 'config',
+			label: 'Config',
+			color: 'var(--color-config-100)',
+			icon: Bolt,
+			path: `${prefix}/configuracion/`
+		},
 		...(showDevTools
 			? [
 					{
@@ -144,7 +144,7 @@
 		</div>
 
 		<nav class="flex-1 flex flex-col gap-0.5 p-1 px-2">
-			{#each sections as section (section.id)}
+			{#each sections.filter((s) => s.id !== 'config') as section (section.id)}
 				<button
 					class="flex items-center rounded-[10px] border-0 bg-transparent cursor-pointer text-content/60 whitespace-nowrap w-full relative transition-[background,opacity] duration-100 hover:bg-base-300 hover:opacity-90 {sidebarCollapsed
 						? 'justify-center p-2 px-0'
