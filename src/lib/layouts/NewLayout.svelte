@@ -15,9 +15,11 @@
 	import type { LucideIcon } from '@lucide/svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { onMount } from 'svelte';
-	import { db } from '$lib';
+	import { semestre } from '$lib/infra/semestres.svelte';
+	import { ramoDrawer } from '$lib/features/ramosDrawer.svelte';
+	import RamoDrawer from '$lib/pages/RamoDrawer.svelte';
 	import { PUBLIC_SHOW_DEV_TOOLS } from '$env/static/public';
+	import { onMount } from 'svelte';
 
 	const showDevTools = PUBLIC_SHOW_DEV_TOOLS === 'true';
 	let { children } = $props();
@@ -101,7 +103,9 @@
 		return page.url.pathname === path;
 	}
 
-	const sheetActive = $derived(sheetSections.find((s) => isActive(s.path)));
+	const sheetActive = $derived(
+		sheetSections.find((s) => isActive(s.path) || (s.id === 'ramos' && page.url.pathname.startsWith(`${prefix}/ramos/`)))
+	);
 
 	function navigate(path: string) {
 		goto(path);
@@ -109,7 +113,7 @@
 	}
 
 	onMount(() => {
-		db.preferences.applyTheme();
+		semestre.preferences.applyTheme();
 	});
 </script>
 
@@ -145,13 +149,14 @@
 
 		<nav class="flex-1 flex flex-col gap-0.5 p-1 px-2">
 			{#each sections.filter((s) => s.id !== 'config') as section (section.id)}
+				{@const active = isActive(section.path) || (section.id === 'ramos' && page.url.pathname.startsWith(`${prefix}/ramos/`))}
 				<button
 					class="flex items-center rounded-[10px] border-0 bg-transparent cursor-pointer text-content/60 whitespace-nowrap w-full relative transition-[background,opacity] duration-100 hover:bg-base-300 hover:opacity-90 {sidebarCollapsed
 						? 'justify-center p-2 px-0'
-						: 'gap-2.5 p-2 px-2.5 text-left'} {isActive(section.path) ? 'opacity-100' : ''}"
+						: 'gap-2.5 p-2 px-2.5 text-left'} {active ? 'opacity-100' : ''}"
 					onclick={() => navigate(section.path)}
 				>
-					{#if isActive(section.path)}
+					{#if active}
 						<span
 							class="absolute -left-2 w-[3px] h-[18px] rounded-r-[3px]"
 							style="background: {section.color}"
@@ -168,6 +173,36 @@
 					{/if}
 				</button>
 			{/each}
+
+			{#if semestre.ramos.list.length > 0}
+				{#if !sidebarCollapsed}
+					<span class="text-xs font-semibold tracking-widest uppercase text-content/35 px-2.5 pt-3 pb-1"
+						>Tus Ramos</span
+					>
+				{/if}
+				{#each semestre.ramos.list as [id, ramo] (id)}
+					<button
+						class="flex items-center rounded-[10px] border-0 bg-transparent cursor-pointer text-content/60 whitespace-nowrap w-full relative transition-[background,opacity] duration-100 hover:bg-base-300 hover:opacity-90 {sidebarCollapsed
+							? 'justify-center p-2 px-0'
+							: 'gap-2.5 p-2 px-2.5 text-left'} {ramoDrawer.id === id ? 'opacity-100' : ''}"
+						onclick={() => ramoDrawer.open(id)}
+					>
+						{#if ramoDrawer.id === id}
+							<span
+								class="absolute -left-2 w-[3px] h-[18px] rounded-r-[3px]"
+								style="background: {ramo.color}"
+							></span>
+						{/if}
+						<span
+							class="w-2.5 h-2.5 rounded-full shrink-0"
+							style="background: {ramo.color}"
+						></span>
+						{#if !sidebarCollapsed}
+							<span class="text-sm font-medium">{ramo.name}</span>
+						{/if}
+					</button>
+				{/each}
+			{/if}
 		</nav>
 
 		<div class="p-2 border-t border-base-400">
@@ -276,6 +311,30 @@
 					</button>
 				{/each}
 			</div>
+
+			{#if semestre.ramos.list.length > 0}
+				<div class="mt-4">
+					<span class="text-xs font-semibold tracking-wider uppercase text-content/40"
+						>Tus Ramos</span
+					>
+					<div class="grid grid-cols-2 gap-2 mt-2">
+						{#each semestre.ramos.list as [id, ramo] (id)}
+							<button
+								class="flex items-center gap-2.5 p-3 rounded-[10px] border border-base-400 bg-base-100 cursor-pointer text-sm font-medium text-content hover:bg-base-300 transition-colors duration-100"
+								onclick={() => { ramoDrawer.open(id); sheetOpen = false; }}
+							>
+								<span
+									class="w-3 h-3 rounded-full shrink-0"
+									style="background: {ramo.color}"
+								></span>
+								<span>{ramo.name}</span>
+							</button>
+						{/each}
+					</div>
+				</div>
+			{/if}
 		</div>
 	</div>
 {/if}
+
+<RamoDrawer />
