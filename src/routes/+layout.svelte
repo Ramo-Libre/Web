@@ -49,8 +49,6 @@
 	<link rel="icon" href={SuiteFavicons.web} />
 </svelte:head>
 
-<div
-	class=""
->
+<div class="">
 	{@render children()}
 </div>

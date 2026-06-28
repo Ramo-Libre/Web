@@ -59,8 +59,12 @@
 					<LayoutDashboard class="w-6 h-6" />
 				</div>
 				<div>
-					<h3 class="text-content font-bold text-lg leading-tight">{isNewLayout ? 'Diseño clásico' : 'Nuevo diseño'}</h3>
-					<p class="text-content/60 text-sm mt-0.5">{isNewLayout ? 'Navegación en cuadrícula' : 'Sidebar con navegación inferior'}</p>
+					<h3 class="text-content font-bold text-lg leading-tight">
+						{isNewLayout ? 'Diseño clásico' : 'Nuevo diseño'}
+					</h3>
+					<p class="text-content/60 text-sm mt-0.5">
+						{isNewLayout ? 'Navegación en cuadrícula' : 'Sidebar con navegación inferior'}
+					</p>
 				</div>
 			</div>
 			<div
