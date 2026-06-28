@@ -1,5 +1,8 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import { db } from '$lib/state/index.svelte.js';
+
+	const prefix = $derived(page.url.pathname.startsWith('/new') ? '/new' : '');
 
 	interface Props {
 		selectedRamoId: string;
@@ -80,7 +83,7 @@
 					Agrega ramos desde la página de Ramos para gestionar tus notas
 				</p>
 				<a
-					href="/ramos"
+					href={prefix + '/ramos'}
 					class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-base-100 bg-primary-100 hover:opacity-90 transition-opacity"
 				>
 					Ir a Ramos
@@ -217,7 +220,7 @@
 					<p class="text-sm font-medium text-content/80 mb-2">No tienes ramos</p>
 					<p class="text-xs mb-3 text-content/60">Agrega ramos para gestionar tus notas</p>
 					<a
-						href="/ramos"
+						href={prefix + '/ramos'}
 						onclick={closeMobileDropdown}
 						class="inline-flex items-center px-3 py-2 text-xs font-medium rounded-lg text-base-100 bg-primary-100 hover:opacity-90 transition-opacity"
 					>

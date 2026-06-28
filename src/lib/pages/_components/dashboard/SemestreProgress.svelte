@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { CalendarClock, BookOpen, CircleCheck, CircleX, Circle } from '@lucide/svelte';
-	import { resolve } from '$app/paths';
+	import { page } from '$app/state';
 	import { db } from '$lib/state/index.svelte.js';
+
+	const prefix = $derived(page.url.pathname.startsWith('/new') ? '/new' : '');
 	import solve from '@madmti/gradesolver';
 
 	type RamoEstado = 'possible' | 'impossible' | 'guaranteed';
@@ -264,7 +266,7 @@
 			{#each ramos as ramo (ramo.id)}
 				{@const StatusIcon = getStatusIcon(ramo.estado)}
 				<a
-					href={resolve('/notas/') + '#' + ramo.id}
+					href={prefix + '/notas/#' + ramo.id}
 					class="flex items-center gap-2 px-2 py-1.5 rounded-lg {getBadgeStyle(
 						ramo.estado
 					)} hover:scale-105 hover:shadow-md transition-all duration-200 cursor-pointer"

@@ -3,7 +3,7 @@
 	import HorarioModal from './_components/HorarioModal.svelte';
 	import { db } from '$lib/state/index.svelte';
 	import type { Horario, HorarioDay } from '$lib/state/horarios.svelte';
-	import HorarioListItem from '../../../horarios/_components/_components/HorarioListItem.svelte';
+	import HorarioListItem from '../../shared/HorarioListItem.svelte';
 
 	interface Props {
 		selectedRamoId?: string;

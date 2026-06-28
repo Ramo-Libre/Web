@@ -2,8 +2,8 @@
 	import { db } from '$lib/state/index.svelte';
 	import type { Horario, HorarioDay } from '$lib/state/horarios.svelte';
 	import { CalendarX2, Plus } from '@lucide/svelte';
-	import HorarioModal from '../../../ramos/_components/tabs/_components/HorarioModal.svelte';
-	import HorarioListItem from '../_components/HorarioListItem.svelte';
+	import HorarioModal from '../../shared/HorarioModal.svelte';
+	import HorarioListItem from '../../shared/HorarioListItem.svelte';
 	import { SvelteMap } from 'svelte/reactivity';
 
 	const dayOrder: HorarioDay[] = ['L', 'M', 'X', 'J', 'V', 'S'];

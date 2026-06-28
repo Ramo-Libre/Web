@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { resolve } from '$app/paths';
+	import { page } from '$app/state';
+
+	const prefix = $derived(page.url.pathname.startsWith('/new') ? '/new' : '');
 	import Icon from '@iconify/svelte';
 	import { CircleUser, RefreshCw } from '@lucide/svelte';
 	import { cloud } from '$lib/state/cloud.svelte';
@@ -21,7 +23,7 @@
 	};
 
 	function handleAccountNavigation() {
-		goto(resolve('/configuracion/#sync'));
+		goto(prefix + '/configuracion/#sync');
 	}
 </script>
 

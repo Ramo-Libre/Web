@@ -50,7 +50,7 @@
 </svelte:head>
 
 <div
-	class="h-[calc(100dvh-4rem)] max-sm:h-dvh w-full flex flex-col max-sm:flex-col-reverse max-sm:p-4"
+	class=""
 >
 	{@render children()}
 </div>
