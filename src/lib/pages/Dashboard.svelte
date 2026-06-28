@@ -15,7 +15,7 @@
 
 	const prefix = $derived(page.url.pathname.startsWith('/new') ? '/new' : '');
 
-	let semesterName = '';
+	let semesterName = $state('');
 
 	function handleStart() {
 		if (!semesterName) return;

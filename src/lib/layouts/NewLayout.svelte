@@ -12,6 +12,7 @@
 		X,
 		Bone
 	} from '@lucide/svelte';
+	import type { LucideIcon } from '@lucide/svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
@@ -25,7 +26,7 @@
 		id: string;
 		label: string;
 		color: string;
-		icon: any;
+		icon: LucideIcon;
 		path: string;
 	};
 
@@ -231,15 +232,19 @@
 
 <!-- ── BOTTOM SHEET ── -->
 {#if sheetOpen}
-	<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
 	<div
+		role="button"
+		tabindex="0"
 		class="fixed inset-0 bg-black/50 z-50 flex items-end text-content"
-		onclick={() => (sheetOpen = false)}
+		onclick={(e) => {
+			if (e.target === e.currentTarget) sheetOpen = false;
+		}}
+		onkeydown={(e) => {
+			if (e.key === 'Enter' || e.key === ' ' || e.key === 'Escape') sheetOpen = false;
+		}}
 	>
-		<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
 		<div
 			class="w-full bg-base-200 rounded-t-2xl px-4 pt-3 pb-[max(20px,env(safe-area-inset-bottom))] border border-base-400 border-b-0"
-			onclick={(e) => e.stopPropagation()}
 		>
 			<div class="w-9 h-1 rounded-full bg-base-400 mx-auto mb-4"></div>
 
