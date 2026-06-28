@@ -1,6 +1,11 @@
 <script lang="ts">
-	import { Sparkles, Play, Map, Database, Lock } from '@lucide/svelte';
-	import FeatureModal from './_components/FeatureModal.svelte';
+	import { Sparkles, Play, Database, LayoutDashboard, Lock } from '@lucide/svelte';
+	import { page } from '$app/state';
+	import { goto } from '$app/navigation';
+	import FeatureModal from './FeatureModal.svelte';
+
+	const prefix = $derived(page.url.pathname.startsWith('/new') ? '/new' : '');
+	const isNewLayout = $derived(prefix === '/new');
 
 	let isModalOpen = $state(false);
 
@@ -8,8 +13,8 @@
 		isModalOpen = true;
 	}
 
-	function startGuidedTour() {
-		console.log('Iniciando Tour Guiado...');
+	function toggleLayout() {
+		goto(isNewLayout ? '/' : '/new/');
 	}
 
 	function loadSampleData() {
@@ -42,25 +47,29 @@
 			</div>
 		</button>
 
-		<!-- 2. ITEM: TUTORIAL GUIADO (DESHABILITADO) -->
+		<!-- 2. ITEM: CAMBIO DE VISTA -->
 		<button
-			onclick={startGuidedTour}
-			disabled
-			class="disabled-tour-item flex-1 w-full p-5 flex items-center justify-between text-left"
+			onclick={toggleLayout}
+			class="cursor-pointer flex-1 w-full p-5 flex items-center justify-between group hover:bg-schedule-400/5 transition-colors text-left"
 		>
 			<div class="flex items-center gap-4">
-				<div class="p-3 bg-base-300 text-content/40 rounded-xl shrink-0">
-					<Map class="w-6 h-6" />
+				<div
+					class="p-3 bg-schedule-400/20 text-schedule-100 rounded-xl group-hover:scale-110 transition-transform shrink-0"
+				>
+					<LayoutDashboard class="w-6 h-6" />
 				</div>
 				<div>
-					<div class="flex items-center gap-2">
-						<h3 class="text-content/50 font-bold text-lg leading-tight">Tutorial Guiado</h3>
-						<Lock class="w-3.5 h-3.5 text-content/30" />
-					</div>
-					<p class="text-content/40 text-sm mt-0.5">Próximamente...</p>
+					<h3 class="text-content font-bold text-lg leading-tight">
+						{isNewLayout ? 'Diseño clásico' : 'Nuevo diseño'}
+					</h3>
+					<p class="text-content/60 text-sm mt-0.5">
+						{isNewLayout ? 'Navegación en cuadrícula' : 'Sidebar con navegación inferior'}
+					</p>
 				</div>
 			</div>
-			<div class="p-2 bg-base-200 text-content/20 rounded-lg border border-base-400/50">
+			<div
+				class="p-2 bg-base-200 group-hover:bg-schedule-100 group-hover:text-white text-content rounded-lg transition-all border border-base-400 group-hover:border-transparent"
+			>
 				<Play class="w-4 h-4 fill-current" />
 			</div>
 		</button>

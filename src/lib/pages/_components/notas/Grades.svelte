@@ -1,7 +1,9 @@
 <script lang="ts">
-	import { resolve } from '$app/paths';
+	import { page } from '$app/state';
 	import { db } from '$lib/state/index.svelte';
 	import { CalendarCheck, CalendarPlus, CircleCheck, CircleX } from '@lucide/svelte';
+
+	const prefix = $derived(page.url.pathname.startsWith('/new') ? '/new' : '');
 
 	export interface Props {
 		selectedRamoId: string;
@@ -133,7 +135,7 @@
 				<div class="flex items-center gap-2">
 					{#if eventId}
 						<a
-							href={resolve('/calendario/') + '#' + eventId}
+							href={prefix + '/calendario/#' + eventId}
 							class="inline-flex items-center gap-1 rounded-md border border-calendar-300 bg-calendar-400 px-2 py-1 text-[11px] font-semibold text-calendar-100 hover:bg-calendar-300 transition-colors cursor-pointer"
 						>
 							<CalendarCheck class="w-3.5 h-3.5" />
@@ -191,7 +193,7 @@
 		<div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
 			{#each ramosSummary as ramo (ramo.id)}
 				<a
-					href={`/notas#${ramo.id}`}
+					href={prefix + `/notas#${ramo.id}`}
 					class="flex items-center gap-3 p-3 border rounded-lg transition-colors {ramoStatuses[
 						ramo.id
 					] === 'guaranteed'

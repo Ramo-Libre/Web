@@ -1,13 +1,15 @@
 <script lang="ts">
 	import { CalendarDays, MapPin, CheckCircle2, Circle } from '@lucide/svelte';
-	import { resolve } from '$app/paths';
+	import { page } from '$app/state';
 	import { SvelteMap } from 'svelte/reactivity';
 	import { db } from '$lib/state/index.svelte';
 	import type { Event as CalendarEvent } from '$lib/state/events.svelte';
 	import { getNow } from '$lib/utils/date';
 
+	const prefix = $derived(page.url.pathname.startsWith('/new') ? '/new' : '');
+	const calendarPath = $derived(prefix + '/calendario/');
+
 	const todayKey = getNow().toISOString().slice(0, 10);
-	const calendarPath = resolve('/calendario/');
 
 	function keyToDate(key: string): Date {
 		const [y, m, d] = key.split('-').map(Number);

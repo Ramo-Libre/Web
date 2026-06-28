@@ -26,7 +26,7 @@ export default defineConfig(({ mode }) => {
 					display_override: ['window-controls-overlay'],
 					icons: [
 						{
-							src: 'apple-icon-180.png',
+							src: 'apple-touch-icon-180x180.png',
 							sizes: '180x180',
 							type: 'image/png'
 						},
@@ -36,25 +36,25 @@ export default defineConfig(({ mode }) => {
 							type: 'image/png'
 						},
 						{
-							src: 'manifest-icon-192.maskable.png',
+							src: 'maskable-icon-192x192.png',
 							sizes: '192x192',
 							type: 'image/png',
 							purpose: 'maskable'
 						},
 						{
-							src: 'manifest-icon-192.png',
+							src: 'pwa-192x192.png',
 							sizes: '192x192',
 							type: 'image/png',
 							purpose: 'any'
 						},
 						{
-							src: 'manifest-icon-512.maskable.png',
+							src: 'maskable-icon-512x512.png',
 							sizes: '512x512',
 							type: 'image/png',
 							purpose: 'maskable'
 						},
 						{
-							src: 'manifest-icon-512.png',
+							src: 'pwa-512x512.png',
 							sizes: '512x512',
 							type: 'image/png',
 							purpose: 'any'
