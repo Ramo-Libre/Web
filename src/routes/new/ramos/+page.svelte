@@ -3,22 +3,10 @@
 	import { Plus, X } from '@lucide/svelte';
 	import SemestreManager from './_components/SemestreManager.svelte';
 	import RamoListManager from './_components/RamoListManager.svelte';
-	import RamoDetail from './_components/RamoDetail.svelte';
 	import { semestre } from '$lib/infra/semestres.svelte';
-	import { ramoDrawer } from '$lib/features/ramosDrawer.svelte';
 	import { ColorUtils } from '$lib/utils/colors';
 
 	let showCreateModal = $state(false);
-
-	const selectedRamoId = $derived(ramoDrawer.id ?? '');
-
-	function handleSelectRamo(id: string) {
-		if (ramoDrawer.id === id) {
-			ramoDrawer.close();
-		} else {
-			ramoDrawer.open(id);
-		}
-	}
 
 	let createName = $state('');
 	let createColor = $state(ColorUtils.getRandomColor());
@@ -37,39 +25,12 @@
 </script>
 
 <div in:fly={{ y: 10, duration: 300, delay: 100 }}>
-	<div class="flex flex-col lg:grid grid-cols-1 lg:grid-cols-12 gap-6">
-		<div class="lg:col-span-5 xl:col-span-4 flex flex-col gap-6">
-			<div>
-				<SemestreManager />
-			</div>
-			<div>
-				<RamoListManager {selectedRamoId} onSelectRamo={handleSelectRamo} onRequestAdd={openCreateModal} />
-			</div>
+	<div class="flex flex-col lg:grid lg:grid-cols-12 gap-6">
+		<div class="lg:col-span-5 xl:col-span-4">
+			<SemestreManager />
 		</div>
-
-		<!-- Desktop: inline detail -->
-		<div class="hidden lg:block lg:col-span-7 xl:col-span-8">
-			{#if selectedRamoId}
-				<div class="relative">
-					<button
-						onclick={() => ramoDrawer.close()}
-						class="absolute top-4 right-4 z-10 p-2 rounded-lg text-content/30 hover:text-content hover:bg-base-200 transition-colors cursor-pointer"
-						aria-label="Cerrar detalle"
-					>
-						<X size={20} />
-					</button>
-					<RamoDetail {selectedRamoId} />
-				</div>
-			{:else}
-				<div
-					class="bg-base-200 border border-base-400 shadow-inner rounded-xl p-6 h-full flex items-center justify-center"
-				>
-					<div class="text-center text-content/40">
-						<p class="text-lg font-medium text-content/60">Detalle del Ramo</p>
-						<p class="text-sm mt-2">Selecciona un ramo para ver y editar sus propiedades</p>
-					</div>
-				</div>
-			{/if}
+		<div class="lg:col-span-7 xl:col-span-8">
+			<RamoListManager onRequestAdd={openCreateModal} />
 		</div>
 	</div>
 </div>

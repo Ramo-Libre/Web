@@ -1,15 +1,14 @@
 <script lang="ts">
 	import { Trash, Plus } from '@lucide/svelte';
 	import { semestre } from '$lib/infra/semestres.svelte';
+	import { ramoDrawer } from '$lib/features/ramosDrawer.svelte';
 	import { ColorUtils } from '$lib/utils/colors';
 
 	interface Props {
-		selectedRamoId?: string;
-		onSelectRamo?: (id: string) => void;
 		onRequestAdd?: () => void;
 	}
 
-	let { selectedRamoId = '', onSelectRamo = () => {}, onRequestAdd }: Props = $props();
+	let { onRequestAdd }: Props = $props();
 
 	let ramoInput = $state('');
 	let deleteConfirmData = $state<{ id: string; name: string } | null>(null);
@@ -19,7 +18,7 @@
 
 	function handleAdd() {
 		if (!ramoInput.trim()) return;
-		const id = semestre.ramos.add({ name: ramoInput.trim(), color: ColorUtils.getRandomColor() });
+		semestre.ramos.add({ name: ramoInput.trim(), color: ColorUtils.getRandomColor() });
 		ramoInput = '';
 	}
 
@@ -55,14 +54,14 @@
 	<div class="space-y-3 flex-1 overflow-y-auto min-h-0 pr-1">
 		{#each ramos as [id, ramo] (id)}
 			<div
-				class="group flex items-center gap-3 p-3 rounded-lg border transition-all duration-200 cursor-pointer {selectedRamoId ===
+				class="group flex items-center gap-3 p-3 rounded-lg border transition-all duration-200 cursor-pointer {ramoDrawer.id ===
 				id
 					? 'bg-classes-400 border-classes-300 shadow-sm'
 					: 'bg-base-100 border-base-400 hover:border-classes-300 hover:bg-classes-400/50'}"
-				onclick={() => onSelectRamo(id)}
+				onclick={() => ramoDrawer.open(id)}
 				role="button"
 				tabindex="0"
-				onkeydown={(e) => e.key === 'Enter' && onSelectRamo(id)}
+				onkeydown={(e) => e.key === 'Enter' && ramoDrawer.open(id)}
 			>
 				<div
 					class="h-10 w-10 rounded-lg text-base-100 shadow-sm border border-base-100/20 flex items-center justify-center font-bold text-sm transition-all shrink-0"

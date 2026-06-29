@@ -1,7 +1,5 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
 	import { beforeNavigate } from '$app/navigation';
-	import { page } from '$app/state';
 	import { X } from '@lucide/svelte';
 	import { fly } from 'svelte/transition';
 	import { semestre } from '$lib/infra/semestres.svelte';
@@ -9,19 +7,6 @@
 	import { ColorUtils } from '$lib/utils/colors';
 
 	const selectedRamo = $derived(ramoDrawer.id ? semestre.ramos.get(ramoDrawer.id) : null);
-
-	let isDesktop = $state(false);
-
-	$effect(() => {
-		if (!browser) return;
-		const mq = window.matchMedia('(min-width: 1024px)');
-		isDesktop = mq.matches;
-		const handler = (e: MediaQueryListEvent) => {
-			isDesktop = e.matches;
-		};
-		mq.addEventListener('change', handler);
-		return () => mq.removeEventListener('change', handler);
-	});
 
 	beforeNavigate(() => {
 		ramoDrawer.close();
@@ -85,7 +70,7 @@
 	{/if}
 {/snippet}
 
-{#if ramoDrawer.id !== null && !(page.url.pathname.startsWith('/new/ramos/') && isDesktop)}
+{#if ramoDrawer.id !== null}
 	<!-- svelte-ignore a11y_click_events_have_key_events a11y_interactive_supports_focus -->
 	<div
 		class="fixed inset-0 z-50"
@@ -101,7 +86,7 @@
 
 		<!-- Desktop: right panel -->
 		<div
-			class="hidden sm:block absolute top-0 right-0 bottom-0 w-[380px] bg-base-100 border-l border-base-400 shadow-2xl overflow-y-auto"
+			class="hidden sm:block absolute top-0 right-0 bottom-0 w-[500px] bg-base-100 border-l border-base-400 shadow-2xl overflow-y-auto"
 			in:fly={{ x: 380, duration: 250 }}
 			out:fly={{ x: 380, duration: 200 }}
 		>

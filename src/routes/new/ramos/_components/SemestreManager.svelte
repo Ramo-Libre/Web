@@ -126,7 +126,7 @@
 			</div>
 		{/if}
 
-		<div class="max-h-56 overflow-y-auto">
+		<div class="max-sm:max-h-56 overflow-y-auto">
 			{#each semestreList as [id, data] (id)}
 				{#if id !== activeSemestreId}
 					<div
