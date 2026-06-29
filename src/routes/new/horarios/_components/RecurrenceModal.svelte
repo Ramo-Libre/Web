@@ -4,6 +4,7 @@
 		X, ChevronDown, ChevronRight, Clock,
 		Presentation, CircleAlert, Book, FlaskConical, Users, Wrench, Ellipsis
 	} from '@lucide/svelte';
+	import { fly } from 'svelte/transition';
 	import type { ScheduleEvent, ScheduleCategory } from '$lib/features/schedule.svelte';
 
 	const CATEGORIES: { value: ScheduleCategory; label: string; icon: typeof Book }[] = [
@@ -16,6 +17,9 @@
 		{ value: 'event', label: 'Evento', icon: Clock },
 		{ value: 'other', label: 'Otro', icon: Ellipsis }
 	];
+
+	const CATEGORY_ICONS: Record<string, typeof Book> = {};
+	for (const c of CATEGORIES) CATEGORY_ICONS[c.value] = c.icon;
 
 	const DOW_LABELS = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
 
@@ -49,13 +53,13 @@
 	let description = $state(event?.description ?? '');
 	let recurrenceStart = $state(event?.recurrenceStart ?? '');
 	let recurrenceEnd = $state(event?.recurrenceEnd ?? '');
-	let showRamoDropdown = $state(false);
 	let showRecurrence = $state(!!(event?.recurrenceStart || event?.recurrenceEnd));
 
 	const ramos = $derived(semestre.ramos.list);
-	const ramoName = $derived(ramoId ? semestre.ramos.get(ramoId)?.name : '');
 
-	const selectedRamo = $derived(ramos.find(([id]) => id === ramoId));
+	const selectedRamo = $derived(ramoId ? semestre.ramos.get(ramoId) : null);
+	const badgeColor = $derived(selectedRamo?.color ?? 'var(--color-primary-100)');
+	const BadgeIcon = $derived(CATEGORY_ICONS[category] ?? Ellipsis);
 
 	function toggleDow(dow: number) {
 		if (daysOfWeek.includes(dow)) {
@@ -80,180 +84,403 @@
 			...(showRecurrence ? { recurrenceStart: recurrenceStart || undefined, recurrenceEnd: recurrenceEnd || undefined } : {})
 		});
 	}
-
-	function handleWindowClick(e: MouseEvent) {
-		const target = e.target as HTMLElement;
-		if (!target.closest('[data-hb-ramo]')) showRamoDropdown = false;
-	}
 </script>
 
-<svelte:window onclick={handleWindowClick} />
-
-<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
+<!-- svelte-ignore a11y_click_events_have_key_events a11y_interactive_supports_focus -->
 <div
-	class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
-	onclick={() => onClose()}
+	class="fixed inset-0 z-50"
+	role="dialog"
+	aria-modal="true"
 >
-	<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
+	<button
+		class="absolute inset-0 bg-black/40 backdrop-blur-sm cursor-pointer"
+		onclick={onClose}
+		aria-label="Cerrar"
+	></button>
+
+	<!-- Desktop: right panel -->
 	<div
-		class="bg-base-100 w-full max-w-md mx-4 rounded-xl shadow-xl border border-base-400 max-h-[90vh] overflow-y-auto"
-		onclick={(e) => e.stopPropagation()}
+		class="max-sm:hidden absolute top-0 right-0 bottom-0 w-[500px] bg-base-100 border-l border-base-400 shadow-2xl overflow-y-auto"
+		in:fly={{ x: 380, duration: 250 }}
+		out:fly={{ x: 380, duration: 200 }}
 	>
-		<div class="flex items-center justify-between p-4 border-b border-base-300">
-			<h2 class="text-base font-bold text-content">{event ? 'Editar Horario' : 'Nuevo Horario'}</h2>
-			<button onclick={onClose} class="p-1 rounded-lg hover:bg-base-200 transition-colors cursor-pointer text-content/40">
-				<X class="w-5 h-5" />
+		<div
+			class="sticky top-0 bg-base-100 z-10 flex items-center justify-between px-6 pt-4 pb-3 border-b border-base-300"
+		>
+			<h3 class="text-lg font-bold text-content">{event ? 'Editar Horario' : 'Nuevo Horario'}</h3>
+			<button
+				onclick={onClose}
+				class="p-2 rounded-lg text-content/50 hover:text-content hover:bg-base-200 transition-colors cursor-pointer"
+				aria-label="Cerrar"
+			>
+				<X size={20} />
 			</button>
 		</div>
 
-		<form onsubmit={handleSubmit} class="p-4 space-y-4">
-			<div>
-				<label class="text-sm font-semibold text-content/70 block mb-1">Título</label>
-				<input
-					type="text"
-					placeholder="Ej: Clase 1"
-					bind:value={title}
-					class="w-full px-3 py-2 rounded-lg border border-base-400 bg-base-100 text-sm text-content outline-none focus:border-primary-100 transition-colors"
-				/>
-			</div>
-
-			<div>
-				<label class="text-sm font-semibold text-content/70 block mb-2">Categoría</label>
-				<div class="flex flex-wrap gap-2">
-					{#each CATEGORIES as cat}
-						<button
-							type="button"
-							onclick={() => (category = cat.value)}
-							class="p-2.5 rounded-lg border transition-all cursor-pointer {category === cat.value
-								? 'bg-primary-100 text-base-100 border-primary-100'
-								: 'bg-base-100 text-content/40 border-base-400 hover:border-primary-100 hover:text-content'}"
-							title={cat.label}
-						>
-							<cat.icon class="w-5 h-5" />
-						</button>
-					{/each}
+		<form onsubmit={handleSubmit}>
+			<div class="p-6 space-y-6">
+				<div class="flex items-center gap-4">
+					<div
+						class="w-14 h-14 rounded-xl flex items-center justify-center shrink-0 text-lg font-bold"
+						style="background: {badgeColor}15; color: {badgeColor}"
+					>
+						<BadgeIcon class="w-6 h-6" />
+					</div>
+					<div class="flex-1 min-w-0">
+						<div class="text-xs font-semibold text-content/50 uppercase tracking-wider mb-1">
+							Título
+						</div>
+						<input
+							type="text"
+							bind:value={title}
+							placeholder="Nombre de la clase"
+							class="w-full bg-transparent border-none outline-none text-2xl font-bold text-content placeholder-content/20 p-0"
+						/>
+					</div>
 				</div>
-			</div>
 
-			<div>
-				<label class="text-sm font-semibold text-content/70 block mb-1">Ramo</label>
-				<div class="relative" data-hb-ramo>
+				<div class="border-t border-base-300 pt-4">
+					<div class="text-xs font-semibold text-content/50 mb-3 uppercase tracking-wider">
+						Días
+					</div>
+					<div class="flex gap-1.5">
+						{#each DOW_LABELS as label, i}
+							<button
+								type="button"
+								onclick={() => toggleDow(i + 1)}
+								class="w-10 h-10 rounded-lg text-sm font-semibold transition-all cursor-pointer {daysOfWeek.includes(i + 1)
+									? 'bg-primary-100 text-base-100'
+									: 'text-content/30 hover:text-content/70'}"
+							>
+								{label}
+							</button>
+						{/each}
+					</div>
+				</div>
+
+				<div class="border-t border-base-300 pt-4">
+					<div class="text-xs font-semibold text-content/50 mb-3 uppercase tracking-wider">
+						Horario
+					</div>
+					<div class="flex items-center gap-2">
+						<span class="text-sm text-content/40">de</span>
+						<input
+							type="time"
+							bind:value={startTime}
+							class="bg-transparent text-sm text-content outline-none border-b border-dashed border-content/20 focus:border-content/50 w-28"
+						/>
+						<span class="text-sm text-content/40">a</span>
+						<input
+							type="time"
+							bind:value={endTime}
+							class="bg-transparent text-sm text-content outline-none border-b border-dashed border-content/20 focus:border-content/50 w-28"
+						/>
+					</div>
+				</div>
+
+				<div class="border-t border-base-300 pt-4">
+					<div class="text-xs font-semibold text-content/50 mb-3 uppercase tracking-wider">
+						Categoría
+					</div>
+					<div class="flex flex-wrap gap-2">
+						{#each CATEGORIES as cat (cat.label)}
+							<button
+								type="button"
+								onclick={() => (category = cat.value)}
+								title={cat.label}
+								class="p-2 rounded-lg transition-all cursor-pointer {category ===
+								cat.value
+									? 'bg-primary-100/10 text-primary-100'
+									: 'text-content/20 hover:text-content/50'}"
+							>
+								<cat.icon class="w-5 h-5" />
+							</button>
+						{/each}
+					</div>
+				</div>
+
+				<div class="border-t border-base-300 pt-4">
+					<div class="text-xs font-semibold text-content/50 mb-3 uppercase tracking-wider">
+						Ramo
+					</div>
+					<div class="flex flex-wrap gap-2">
+						{#each ramos as [id, ramo]}
+							<button
+								type="button"
+								onclick={() => (ramoId = ramoId === id ? '' : id)}
+								class="flex items-center gap-2 px-3 py-2 rounded-lg border transition-all cursor-pointer text-sm {ramoId ===
+								id
+									? 'bg-primary-100/10 text-primary-100 border-primary-100/30'
+									: 'text-content/40 border-transparent hover:text-content/70'}"
+							>
+								<span class="w-2.5 h-2.5 rounded-full shrink-0" style="background: {ramo.color}"></span>
+								<span>{ramo.name}</span>
+							</button>
+						{/each}
+					</div>
+				</div>
+
+				<div class="border-t border-base-300 pt-4">
+					<div class="text-xs font-semibold text-content/50 mb-3 uppercase tracking-wider">
+						Recurrencia
+					</div>
 					<button
 						type="button"
-						onclick={() => (showRamoDropdown = !showRamoDropdown)}
-						class="flex items-center gap-2 px-3 py-2 rounded-lg border border-base-400 bg-base-100 text-sm text-content outline-none focus:border-primary-100 transition-colors cursor-pointer w-full"
+						onclick={() => { if (showRecurrence) { recurrenceStart = ''; recurrenceEnd = ''; } showRecurrence = !showRecurrence; }}
+						class="flex items-center gap-2 text-sm transition-colors cursor-pointer {showRecurrence
+							? 'text-primary-100'
+							: 'text-content/30 hover:text-content/60'}"
 					>
-						{#if selectedRamo}
-							{@const r = selectedRamo[1]}
-							<span class="w-2.5 h-2.5 rounded-full shrink-0" style="background: {r.color}"></span>
-							<span class="text-left truncate">{r.name}</span>
+						{#if showRecurrence}
+							<ChevronDown class="w-4 h-4" />
 						{:else}
-							<span class="text-content/40">Seleccionar ramo</span>
+							<ChevronRight class="w-4 h-4" />
 						{/if}
-						<ChevronDown class="w-4 h-4 text-content/30 shrink-0 ml-auto" />
+						Rango de fechas
 					</button>
-					{#if showRamoDropdown}
-						<div class="absolute top-full left-0 right-0 mt-1 bg-base-100 border border-base-400 rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto">
-							{#each ramos as [id, ramo]}
-								<button
-									type="button"
-									onclick={() => { ramoId = id; showRamoDropdown = false; }}
-									class="w-full flex items-center gap-2 px-3 py-2 text-sm text-content hover:bg-base-200 transition-colors text-left cursor-pointer {ramoId === id ? 'bg-base-200' : ''}"
-								>
-									<span class="w-2.5 h-2.5 rounded-full shrink-0" style="background: {ramo.color}"></span>
-									<span>{ramo.name}</span>
-								</button>
-							{/each}
-						</div>
-					{/if}
-				</div>
-			</div>
-
-			<div>
-				<label class="text-sm font-semibold text-content/70 block mb-2">Días</label>
-				<div class="flex gap-1.5">
-					{#each DOW_LABELS as label, i}
-						<button
-							type="button"
-							onclick={() => toggleDow(i + 1)}
-							class="w-10 h-10 rounded-lg border text-sm font-semibold transition-all cursor-pointer {daysOfWeek.includes(i + 1)
-								? 'bg-primary-100 text-base-100 border-primary-100'
-								: 'bg-base-100 text-content/40 border-base-400 hover:border-primary-100 hover:text-content'}"
-						>
-							{label}
-						</button>
-					{/each}
-				</div>
-			</div>
-
-			<div class="flex gap-3">
-				<div class="flex-1">
-					<label class="text-sm font-semibold text-content/70 block mb-1">Inicio</label>
-					<input
-						type="time"
-						bind:value={startTime}
-						class="w-full px-3 py-2 rounded-lg border border-base-400 bg-base-100 text-sm text-content outline-none focus:border-primary-100 transition-colors"
-					/>
-				</div>
-				<div class="flex-1">
-					<label class="text-sm font-semibold text-content/70 block mb-1">Fin</label>
-					<input
-						type="time"
-						bind:value={endTime}
-						class="w-full px-3 py-2 rounded-lg border border-base-400 bg-base-100 text-sm text-content outline-none focus:border-primary-100 transition-colors"
-					/>
-				</div>
-			</div>
-
-			<div>
-				<button
-					type="button"
-					onclick={() => { if (showRecurrence) { recurrenceStart = ''; recurrenceEnd = ''; } showRecurrence = !showRecurrence; }}
-					class="flex items-center gap-2 text-sm font-semibold text-content/60 hover:text-content transition-colors cursor-pointer"
-				>
 					{#if showRecurrence}
-						<ChevronDown class="w-4 h-4" />
-					{:else}
-						<ChevronRight class="w-4 h-4" />
-					{/if}
-					Rango de recurrencia
-				</button>
-				{#if showRecurrence}
-					<div class="flex gap-3 mt-2">
-						<div class="flex-1">
-							<label class="text-sm font-semibold text-content/70 block mb-1">Inicio</label>
+						<div class="flex items-center gap-3 mt-3 flex-wrap">
+							<span class="text-sm text-content/40">desde</span>
 							<input
 								type="date"
 								bind:value={recurrenceStart}
-								class="w-full px-3 py-2 rounded-lg border border-base-400 bg-base-100 text-sm text-content outline-none focus:border-primary-100 transition-colors"
+								class="bg-base-100 border border-base-400 rounded-lg px-3 py-2 text-sm text-content outline-none focus:border-primary-100 transition-colors"
 							/>
-						</div>
-						<div class="flex-1">
-							<label class="text-sm font-semibold text-content/70 block mb-1">Fin</label>
+							<span class="text-sm text-content/40">hasta</span>
 							<input
 								type="date"
 								bind:value={recurrenceEnd}
-								class="w-full px-3 py-2 rounded-lg border border-base-400 bg-base-100 text-sm text-content outline-none focus:border-primary-100 transition-colors"
+								class="bg-base-100 border border-base-400 rounded-lg px-3 py-2 text-sm text-content outline-none focus:border-primary-100 transition-colors"
 							/>
 						</div>
-					</div>
-				{/if}
-			</div>
+					{/if}
+				</div>
 
-			<div>
-				<label class="text-sm font-semibold text-content/70 block mb-1">Descripción</label>
-				<div class="relative">
+				<div class="border-t border-base-300 pt-4">
+					<div class="text-xs font-semibold text-content/50 mb-3 uppercase tracking-wider">
+						Notas
+					</div>
 					<textarea
-						placeholder="Opcional"
 						bind:value={description}
+						placeholder="Descripción opcional..."
+						rows="2"
 						maxlength="150"
-						class="w-full px-3 py-2 rounded-lg border border-base-400 bg-base-100 text-sm text-content outline-none focus:border-primary-100 transition-colors resize-none h-20"
+						class="w-full bg-transparent text-sm text-content outline-none resize-none placeholder-content/20"
 					></textarea>
-					<span class="absolute bottom-1.5 right-2 text-[10px] text-content/30">{description.length}/150</span>
+					<span class="text-[10px] text-content/20 block text-right">{description.length}/150</span>
 				</div>
 			</div>
 
-			<div class="flex items-center justify-between pt-2">
+			<div class="flex items-center justify-between px-6 py-4 border-t border-base-300">
+				<div>
+					{#if event}
+						<button
+							type="button"
+							onclick={() => onDelete?.(event.id)}
+							class="px-3 py-2 rounded-lg text-error-100 text-sm font-semibold hover:bg-error-400 transition-colors cursor-pointer"
+						>
+							Eliminar
+						</button>
+					{/if}
+				</div>
+				<div class="flex items-center gap-3">
+					<button
+						type="button"
+						onclick={onClose}
+						class="px-4 py-2 rounded-lg border border-base-400 text-content/70 font-semibold hover:bg-base-200 transition-colors cursor-pointer text-sm"
+					>
+						Cancelar
+					</button>
+					<button
+						type="submit"
+						disabled={daysOfWeek.length === 0}
+						class="px-4 py-2 rounded-lg bg-primary-100 text-base-100 font-semibold hover:opacity-90 transition-opacity cursor-pointer text-sm disabled:opacity-40 disabled:cursor-not-allowed"
+					>
+						{event ? 'Guardar' : 'Crear'}
+					</button>
+				</div>
+			</div>
+		</form>
+	</div>
+
+	<!-- Mobile: bottom sheet -->
+	<div
+		class="sm:hidden absolute bottom-0 left-0 right-0 bg-base-100 rounded-t-2xl shadow-xl border border-base-400 max-h-[85vh] overflow-y-auto"
+		in:fly={{ y: 100, duration: 250 }}
+		out:fly={{ y: 100, duration: 200 }}
+	>
+		<div
+			class="sticky top-0 bg-base-100 z-10 flex items-center justify-between px-6 pt-4 pb-2 border-b border-base-300"
+		>
+			<h3 class="text-lg font-bold text-content">{event ? 'Editar Horario' : 'Nuevo Horario'}</h3>
+			<button
+				onclick={onClose}
+				class="p-2 rounded-lg text-content/50 hover:text-content hover:bg-base-200 transition-colors cursor-pointer"
+				aria-label="Cerrar"
+			>
+				<X size={20} />
+			</button>
+		</div>
+
+		<form onsubmit={handleSubmit}>
+			<div class="p-6 space-y-6">
+				<div class="flex items-center gap-4">
+					<div
+						class="w-14 h-14 rounded-xl flex items-center justify-center shrink-0 text-lg font-bold"
+						style="background: {badgeColor}15; color: {badgeColor}"
+					>
+						<BadgeIcon class="w-6 h-6" />
+					</div>
+					<div class="flex-1 min-w-0">
+						<div class="text-xs font-semibold text-content/50 uppercase tracking-wider mb-1">
+							Título
+						</div>
+						<input
+							type="text"
+							bind:value={title}
+							placeholder="Nombre de la clase"
+							class="w-full bg-transparent border-none outline-none text-2xl font-bold text-content placeholder-content/20 p-0"
+						/>
+					</div>
+				</div>
+
+				<div class="border-t border-base-300 pt-4">
+					<div class="text-xs font-semibold text-content/50 mb-3 uppercase tracking-wider">
+						Días
+					</div>
+					<div class="flex gap-1.5">
+						{#each DOW_LABELS as label, i}
+							<button
+								type="button"
+								onclick={() => toggleDow(i + 1)}
+								class="w-10 h-10 rounded-lg text-sm font-semibold transition-all cursor-pointer {daysOfWeek.includes(i + 1)
+									? 'bg-primary-100 text-base-100'
+									: 'text-content/30 hover:text-content/70'}"
+							>
+								{label}
+							</button>
+						{/each}
+					</div>
+				</div>
+
+				<div class="border-t border-base-300 pt-4">
+					<div class="text-xs font-semibold text-content/50 mb-3 uppercase tracking-wider">
+						Horario
+					</div>
+					<div class="flex items-center gap-2">
+						<span class="text-sm text-content/40">de</span>
+						<input
+							type="time"
+							bind:value={startTime}
+							class="bg-transparent text-sm text-content outline-none border-b border-dashed border-content/20 focus:border-content/50 w-28"
+						/>
+						<span class="text-sm text-content/40">a</span>
+						<input
+							type="time"
+							bind:value={endTime}
+							class="bg-transparent text-sm text-content outline-none border-b border-dashed border-content/20 focus:border-content/50 w-28"
+						/>
+					</div>
+				</div>
+
+				<div class="border-t border-base-300 pt-4">
+					<div class="text-xs font-semibold text-content/50 mb-3 uppercase tracking-wider">
+						Categoría
+					</div>
+					<div class="flex flex-wrap gap-2">
+						{#each CATEGORIES as cat (cat.label)}
+							<button
+								type="button"
+								onclick={() => (category = cat.value)}
+								title={cat.label}
+								class="p-2 rounded-lg transition-all cursor-pointer {category ===
+								cat.value
+									? 'bg-primary-100/10 text-primary-100'
+									: 'text-content/20 hover:text-content/50'}"
+							>
+								<cat.icon class="w-5 h-5" />
+							</button>
+						{/each}
+					</div>
+				</div>
+
+				<div class="border-t border-base-300 pt-4">
+					<div class="text-xs font-semibold text-content/50 mb-3 uppercase tracking-wider">
+						Ramo
+					</div>
+					<div class="flex flex-wrap gap-2">
+						{#each ramos as [id, ramo]}
+							<button
+								type="button"
+								onclick={() => (ramoId = ramoId === id ? '' : id)}
+								class="flex items-center gap-2 px-3 py-2 rounded-lg border transition-all cursor-pointer text-sm {ramoId ===
+								id
+									? 'bg-primary-100/10 text-primary-100 border-primary-100/30'
+									: 'text-content/40 border-transparent hover:text-content/70'}"
+							>
+								<span class="w-2.5 h-2.5 rounded-full shrink-0" style="background: {ramo.color}"></span>
+								<span>{ramo.name}</span>
+							</button>
+						{/each}
+					</div>
+				</div>
+
+				<div class="border-t border-base-300 pt-4">
+					<div class="text-xs font-semibold text-content/50 mb-3 uppercase tracking-wider">
+						Recurrencia
+					</div>
+					<button
+						type="button"
+						onclick={() => { if (showRecurrence) { recurrenceStart = ''; recurrenceEnd = ''; } showRecurrence = !showRecurrence; }}
+						class="flex items-center gap-2 text-sm transition-colors cursor-pointer {showRecurrence
+							? 'text-primary-100'
+							: 'text-content/30 hover:text-content/60'}"
+					>
+						{#if showRecurrence}
+							<ChevronDown class="w-4 h-4" />
+						{:else}
+							<ChevronRight class="w-4 h-4" />
+						{/if}
+						Rango de fechas
+					</button>
+					{#if showRecurrence}
+						<div class="flex flex-col gap-3 mt-3">
+							<div class="flex items-center gap-3">
+								<span class="text-sm text-content/40 shrink-0">desde</span>
+								<input
+									type="date"
+									bind:value={recurrenceStart}
+									class="flex-1 bg-base-100 border border-base-400 rounded-lg px-3 py-2 text-sm text-content outline-none focus:border-primary-100 transition-colors"
+								/>
+							</div>
+							<div class="flex items-center gap-3">
+								<span class="text-sm text-content/40 shrink-0">hasta</span>
+								<input
+									type="date"
+									bind:value={recurrenceEnd}
+									class="flex-1 bg-base-100 border border-base-400 rounded-lg px-3 py-2 text-sm text-content outline-none focus:border-primary-100 transition-colors"
+								/>
+							</div>
+						</div>
+					{/if}
+				</div>
+
+				<div class="border-t border-base-300 pt-4">
+					<div class="text-xs font-semibold text-content/50 mb-3 uppercase tracking-wider">
+						Notas
+					</div>
+					<textarea
+						bind:value={description}
+						placeholder="Descripción opcional..."
+						rows="2"
+						maxlength="150"
+						class="w-full bg-transparent text-sm text-content outline-none resize-none placeholder-content/20"
+					></textarea>
+					<span class="text-[10px] text-content/20 block text-right">{description.length}/150</span>
+				</div>
+			</div>
+
+			<div class="flex items-center justify-between px-6 py-4 border-t border-base-300">
 				<div>
 					{#if event}
 						<button
