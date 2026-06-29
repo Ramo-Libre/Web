@@ -1,3 +1,114 @@
 <script lang="ts">
+	import { fly } from 'svelte/transition';
+	import { semestre } from '$lib/infra/semestres.svelte';
+	import type { ScheduleEvent, ScheduleCategory } from '$lib/features/schedule.svelte';
+	import CalendarGrid from './_components/CalendarGrid.svelte';
+	import ViewBar from './_components/ViewBar.svelte';
+	import EventModal from './_components/EventModal.svelte';
+	import DayList from './_components/DayList.svelte';
+	import DayTimeline from './_components/DayTimeline.svelte';
 
+	let selectedRamo = $state<string | null>(null);
+	let selectedCategories = $state<Set<ScheduleCategory>>(new Set());
+	let selectedDate = $state<string | null>((() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; })());
+	let editingEvent = $state<ScheduleEvent | null>(null);
+	let showModal = $state(false);
+	let modalDate = $state<string | undefined>(undefined);
+
+	const filteredEvents = $derived(
+		semestre.schedule.list
+			.map(([, e]) => e)
+			.filter((e) => !selectedRamo || e.ramoId === selectedRamo)
+			.filter((e) => selectedCategories.size === 0 || (e.category && selectedCategories.has(e.category)))
+	);
+
+	const dayEvents = $derived(
+		selectedDate
+			? semestre.schedule.getByDate(selectedDate).filter((e) => !selectedRamo || e.ramoId === selectedRamo).filter((e) => selectedCategories.size === 0 || (e.category && selectedCategories.has(e.category)))
+			: []
+	);
+
+	function openCreate(dateStr?: string) {
+		editingEvent = null;
+		modalDate = dateStr;
+		showModal = true;
+	}
+
+	function openEdit(event: ScheduleEvent) {
+		editingEvent = event;
+		modalDate = undefined;
+		showModal = true;
+	}
+
+	function handleSave(data: {
+		id?: string;
+		title?: string;
+		description?: string;
+		category: ScheduleCategory;
+		ramoId?: string;
+		date?: string;
+		startTime?: string;
+		endTime?: string;
+	}) {
+		if (data.id) {
+			const existing = semestre.schedule.get(data.id);
+			if (existing) {
+				semestre.schedule.update(data.id, { ...existing, ...data });
+			}
+		} else {
+			semestre.schedule.add({
+				category: data.category,
+				title: data.title,
+				description: data.description,
+				ramoId: data.ramoId,
+				date: data.date,
+				startTime: data.startTime,
+				endTime: data.endTime
+			});
+		}
+		showModal = false;
+	}
+
+	function handleDelete(id: string) {
+		semestre.schedule.remove(id);
+		showModal = false;
+	}
 </script>
+
+<div in:fly={{ y: 10, duration: 300, delay: 100 }} class="flex flex-col gap-4">
+	<ViewBar
+		{selectedRamo}
+		{selectedCategories}
+		onRamoChange={(v) => (selectedRamo = v)}
+		onCategoriesChange={(v) => (selectedCategories = v)}
+		onAddEvent={() => openCreate(selectedDate ?? undefined)}
+	/>
+
+	<CalendarGrid
+		events={filteredEvents}
+		{selectedDate}
+		onDaySelect={(d) => (selectedDate = d)}
+	/>
+
+	<div class="flex flex-col lg:grid lg:grid-cols-2 gap-4">
+		<DayList
+			dateStr={selectedDate}
+			events={dayEvents}
+			onEventClick={(e) => openEdit(e)}
+		/>
+		<DayTimeline
+			events={dayEvents}
+			onEventClick={(e) => openEdit(e)}
+		/>
+	</div>
+</div>
+
+{#if showModal}
+	<EventModal
+		event={editingEvent}
+		prefillDate={modalDate}
+		onClose={() => (showModal = false)}
+		onSave={handleSave}
+		onDelete={handleDelete}
+	/>
+{/if}

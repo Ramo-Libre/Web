@@ -120,6 +120,10 @@ class SemestresManager {
 	get ramos() {
 		return this._ramos;
 	}
+
+	get schedule() {
+		return this._schedule;
+	}
 }
 
 export const semestre = new SemestresManager();

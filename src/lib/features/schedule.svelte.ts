@@ -2,7 +2,7 @@ import type { Serializable } from '$lib/types/state';
 import { generateUUID } from '$lib/utils/crypto';
 import { SvelteDate, SvelteMap } from 'svelte/reactivity';
 
-export type ScheduleCategory = 'book' | 'lab' | 'assist' | 'taller' | 'exam' | 'assignment' | 'other';
+export type ScheduleCategory = 'book' | 'lab' | 'assist' | 'taller' | 'exam' | 'urgent' | 'event' | 'other';
 
 export interface ScheduleEvent {
 	id: string;
