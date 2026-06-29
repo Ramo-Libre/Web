@@ -87,9 +87,9 @@
 	></button>
 
 	<div
-		class="relative bg-base-100 border border-base-400 rounded-2xl shadow-xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto"
+		class="relative bg-base-100 border border-base-400 rounded-2xl shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto"
 	>
-		<div class="flex items-center justify-between mb-6">
+		<div class="flex items-center justify-between px-6 py-4 border-b border-base-300">
 			<h3 class="text-lg font-bold text-content">
 				{isEdit ? 'Editar evento' : 'Nuevo evento'}
 			</h3>
@@ -102,7 +102,7 @@
 			</button>
 		</div>
 
-		<form onsubmit={(e) => { e.preventDefault(); handleSubmit(); }} class="space-y-4">
+		<form onsubmit={(e) => { e.preventDefault(); handleSubmit(); }} class="p-6 space-y-4">
 			<div>
 				<label class="text-sm font-semibold text-content/70 block mb-1">Título</label>
 				<input
@@ -116,7 +116,7 @@
 			<div>
 				<label class="text-sm font-semibold text-content/70 block mb-2">Categoría</label>
 				<div class="flex flex-wrap gap-2">
-					{#each CATEGORIES as cat}
+					{#each CATEGORIES as cat (cat.label)}
 						<button
 							type="button"
 							onclick={() => (category = cat.value)}
@@ -183,7 +183,7 @@
 					/>
 					<button
 						type="button"
-						onclick={() => (showTime = !showTime)}
+						onclick={() => { if (showTime) { startTime = ''; endTime = ''; } showTime = !showTime; }}
 						class="flex items-center gap-1.5 px-3 py-2 rounded-lg border text-sm font-medium transition-all cursor-pointer shrink-0 {showTime
 							? 'bg-primary-100 text-base-100 border-primary-100 hover:opacity-90'
 							: 'border-base-400 text-content/50 hover:text-content hover:border-primary-100'}"

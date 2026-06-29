@@ -55,7 +55,7 @@
 			<div class="flex flex-wrap gap-2">
 				{#each ColorUtils.COLORS as color (color)}
 					<button
-						class="w-7 h-7 rounded-lg border border-base-100/20 shadow-sm transition-all hover:scale-110 cursor-pointer {selectedRamo.color ===
+						class="w-6 h-6 rounded-sm border border-base-100/20 shadow-sm transition-all hover:scale-110 cursor-pointer {selectedRamo.color ===
 						color
 							? 'ring-2 ring-content/80 scale-110'
 							: ''}"

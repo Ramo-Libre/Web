@@ -7,10 +7,6 @@
 		exam: Presentation, urgent: CircleAlert, book: Book, lab: FlaskConical,
 		assist: Users, taller: Wrench, event: Clock, other: Ellipsis
 	};
-	const categoryLabels: Record<string, string> = {
-		exam: 'Examen', urgent: 'Urgente', book: 'Libro', lab: 'Lab',
-		assist: 'Asistencia', taller: 'Taller', event: 'Evento', other: 'Otro'
-	};
 
 	interface Props {
 		dateStr: string | null;
@@ -63,7 +59,7 @@
 							</span>
 							<div class="flex-1 min-w-0 flex items-center gap-2">
 								<span class="text-sm font-medium text-content truncate">
-									{event.title || categoryLabels[event.category] || 'Evento'}
+									{event.title || (event.ramoId ? semestre.ramos.get(event.ramoId)?.name : null) || 'Evento'}
 								</span>
 							</div>
 							{#if time}

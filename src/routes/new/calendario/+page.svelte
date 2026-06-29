@@ -1,30 +1,44 @@
 <script lang="ts">
 	import { fly } from 'svelte/transition';
+	import { SvelteSet } from 'svelte/reactivity';
 	import { semestre } from '$lib/infra/semestres.svelte';
 	import type { ScheduleEvent, ScheduleCategory } from '$lib/features/schedule.svelte';
 	import CalendarGrid from './_components/CalendarGrid.svelte';
 	import ViewBar from './_components/ViewBar.svelte';
 	import EventModal from './_components/EventModal.svelte';
+	import RecurrenceModal from '../horarios/_components/RecurrenceModal.svelte';
 	import DayList from './_components/DayList.svelte';
 	import DayTimeline from './_components/DayTimeline.svelte';
 
 	let selectedRamo = $state<string | null>(null);
-	let selectedCategories = $state<Set<ScheduleCategory>>(new Set());
+	let selectedCategories = $state<Set<ScheduleCategory>>(new SvelteSet());
 	let selectedDate = $state<string | null>((() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; })());
 	let editingEvent = $state<ScheduleEvent | null>(null);
 	let showModal = $state(false);
 	let modalDate = $state<string | undefined>(undefined);
+	let showHorarios = $state(false);
+	let editingRecurring = $state<ScheduleEvent | null>(null);
+	let showRecurringModal = $state(false);
 
-	const filteredEvents = $derived(
+	const baseEvents = $derived(
 		semestre.schedule.list
 			.map(([, e]) => e)
 			.filter((e) => !selectedRamo || e.ramoId === selectedRamo)
 			.filter((e) => selectedCategories.size === 0 || (e.category && selectedCategories.has(e.category)))
 	);
 
+	const filteredEvents = $derived(
+		showHorarios
+			? baseEvents
+			: baseEvents.filter((e) => e.date)
+	);
+
 	const dayEvents = $derived(
 		selectedDate
-			? semestre.schedule.getByDate(selectedDate).filter((e) => !selectedRamo || e.ramoId === selectedRamo).filter((e) => selectedCategories.size === 0 || (e.category && selectedCategories.has(e.category)))
+			? semestre.schedule.getByDate(selectedDate)
+				.filter((e) => !selectedRamo || e.ramoId === selectedRamo)
+				.filter((e) => selectedCategories.size === 0 || (e.category && selectedCategories.has(e.category)))
+				.filter((e) => showHorarios || e.date)
 			: []
 	);
 
@@ -35,9 +49,14 @@
 	}
 
 	function openEdit(event: ScheduleEvent) {
-		editingEvent = event;
-		modalDate = undefined;
-		showModal = true;
+		if (event.daysOfWeek && event.daysOfWeek.length > 0) {
+			editingRecurring = event;
+			showRecurringModal = true;
+		} else {
+			editingEvent = event;
+			modalDate = undefined;
+			showModal = true;
+		}
 	}
 
 	function handleSave(data: {
@@ -73,14 +92,36 @@
 		semestre.schedule.remove(id);
 		showModal = false;
 	}
+
+	function handleRecurringSave(data: {
+		id?: string; title?: string; description?: string;
+		category: ScheduleCategory; ramoId?: string;
+		daysOfWeek: number[]; startTime: string; endTime: string;
+		recurrenceStart?: string; recurrenceEnd?: string;
+	}) {
+		if (data.id) {
+			const existing = semestre.schedule.get(data.id);
+			if (existing) {
+				semestre.schedule.update(data.id, { ...existing, ...data });
+			}
+		}
+		showRecurringModal = false;
+	}
+
+	function handleRecurringDelete(id: string) {
+		semestre.schedule.remove(id);
+		showRecurringModal = false;
+	}
 </script>
 
 <div in:fly={{ y: 10, duration: 300, delay: 100 }} class="flex flex-col gap-4">
 	<ViewBar
 		{selectedRamo}
 		{selectedCategories}
+		{showHorarios}
 		onRamoChange={(v) => (selectedRamo = v)}
 		onCategoriesChange={(v) => (selectedCategories = v)}
+		onToggleHorarios={() => (showHorarios = !showHorarios)}
 		onAddEvent={() => openCreate(selectedDate ?? undefined)}
 	/>
 
@@ -110,5 +151,14 @@
 		onClose={() => (showModal = false)}
 		onSave={handleSave}
 		onDelete={handleDelete}
+	/>
+{/if}
+
+{#if showRecurringModal}
+	<RecurrenceModal
+		event={editingRecurring}
+		onClose={() => (showRecurringModal = false)}
+		onSave={handleRecurringSave}
+		onDelete={handleRecurringDelete}
 	/>
 {/if}

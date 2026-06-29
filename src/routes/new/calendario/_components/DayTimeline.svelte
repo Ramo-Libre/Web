@@ -54,7 +54,7 @@
 						>
 							<span class="w-1 h-full min-h-[14px] rounded-sm shrink-0" style="background: {rc(event.ramoId)}"></span>
 							<span class="text-[10px] font-mono text-content/40 shrink-0">{timeLabel}</span>
-							<span class="text-[11px] font-medium text-content truncate">{event.title || 'Evento'}</span>
+							<span class="text-[11px] font-medium text-content truncate">{event.title || (event.ramoId ? semestre.ramos.get(event.ramoId)?.name : null) || 'Evento'}</span>
 						</button>
 					{/each}
 				</div>
