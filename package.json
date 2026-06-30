@@ -24,6 +24,8 @@
 		"@faker-js/faker": "^10.4.0",
 		"@iconify/svelte": "^5.2.2",
 		"@lucide/svelte": "1.18.0",
+		"@ramo-libre/dsl-parser": "^1.0.0",
+		"@ramo-libre/solver": "^0.1.0",
 		"@ramo-libre/ui-themes": "^1.0.0",
 		"@sveltejs/adapter-static": "^3.0.10",
 		"@sveltejs/kit": "2.65.1",
