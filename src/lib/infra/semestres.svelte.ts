@@ -5,6 +5,7 @@ import { generateUUID } from '$lib/utils/crypto';
 import { SvelteMap } from 'svelte/reactivity';
 import { local } from './persistence.svelte';
 import { ScheduleManager, type ScheduleSerial } from '$lib/features/schedule.svelte';
+import { NotasManager, type NotasSerial } from '$lib/features/notas.svelte';
 
 export interface SemestreData {
 	name: string;
@@ -14,7 +15,8 @@ const enum KEYS {
 	ACTIVE_SEM = 'ACT',
 	SEMESTRES = 'SEM',
 	RAMOS = 'RMS',
-	SCHEDULE = 'SCH'
+	SCHEDULE = 'SCH',
+	NOTAS = 'NTS'
 }
 
 type SemestresSerial = [string, SemestreData][];
@@ -26,6 +28,7 @@ class SemestresManager {
 	private _preferences = new PreferencesManager();
 	private _ramos = new RamosManager();
 	private _schedule = new ScheduleManager();
+	private _notas = new NotasManager();
 
 	constructor() {
 		if (browser) this.load();
@@ -56,6 +59,9 @@ class SemestresManager {
 
 		const schedule = local.get<ScheduleSerial>(this.prefix(KEYS.SCHEDULE)) || [];
 		this._schedule.fromSerial(schedule);
+
+		const notas = local.get<NotasSerial>(this.prefix(KEYS.NOTAS)) || [];
+		this._notas.fromSerial(notas);
 	}
 
 	private persist() {
@@ -65,7 +71,8 @@ class SemestresManager {
 
 		const toSave = {
 			[KEYS.RAMOS]: this._ramos.toSerial(),
-			[KEYS.SCHEDULE]: this._schedule.toSerial()
+			[KEYS.SCHEDULE]: this._schedule.toSerial(),
+			[KEYS.NOTAS]: this._notas.toSerial()
 		};
 
 		for (const [id_key, val] of Object.entries(toSave)) {
@@ -123,6 +130,10 @@ class SemestresManager {
 
 	get schedule() {
 		return this._schedule;
+	}
+
+	get notas() {
+		return this._notas;
 	}
 }
 
