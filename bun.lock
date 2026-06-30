@@ -29,6 +29,7 @@
         "eslint-config-prettier": "10.1.8",
         "eslint-plugin-svelte": "3.19.0",
         "globals": "17.6.0",
+        "katex": "^0.17.0",
         "prettier": "3.8.4",
         "prettier-plugin-svelte": "4.1.1",
         "prettier-plugin-tailwindcss": "0.8.0",
@@ -337,7 +338,7 @@
 
     "@ramo-libre/dsl-parser": ["@ramo-libre/dsl-parser@1.0.0", "https://npm.pkg.github.com/download/@ramo-libre/dsl-parser/1.0.0/951426ab708a2e4f78506d954367d6c947ea2bdc", { "dependencies": { "decimal.js": "^10.6.0" }, "peerDependencies": { "typescript": "^5" } }, "sha512-iSFBonhoV33ueVpEEgVwhxHKlzCm5wl0iyLRPrY3QTlOhfzCj8kSiJLhILTdcbsqb9CYmKb3dIWAuH+PgiSbgQ=="],
 
-    "@ramo-libre/solver": ["@ramo-libre/solver@0.1.0", "https://npm.pkg.github.com/download/@ramo-libre/solver/0.1.0/9930c46d447a486b2a8ba366fd196e405f02db08", {}, "sha512-YPgxQ0Ipm5LZXQT9eMdi/zfDkxAvxHqjqltPwc8n1E2F6TmvNMcaaxKf9uYPC7lc25OmDmfod98oEulshOyNfQ=="],
+    "@ramo-libre/solver": ["@ramo-libre/solver@0.1.0", "https://npm.pkg.github.com/download/@ramo-libre/solver/0.1.0/679d9b5ca928fd6e71ad55856279db77a8485061", {}, "sha512-dZ6RNVFY+7MM+dG1ZXxs84+CDhvkfskHBb4B9XdoYeEKh4NaY9aMyAJaIf39V+ow/JZpqPxxNldKkDM5NJid1w=="],
 
     "@ramo-libre/ui-themes": ["@ramo-libre/ui-themes@1.0.0", "https://npm.pkg.github.com/download/@ramo-libre/ui-themes/1.0.0/f03dbac5a72e6a8e94d3b9f3bb216f5834df85cf", { "dependencies": { "@lucide/svelte": "^1.17.0" }, "peerDependencies": { "typescript": "^5" } }, "sha512-wNfJk6v/uHvcYijIYjUuv3IkiGwZRYF8bqnLIrPMQ4NKr8MqzJf16wlZsG4uIDTEZkhNhZTYhbql58353rkyqQ=="],
 
@@ -603,7 +604,7 @@
 
     "colorette": ["colorette@2.0.20", "", {}, "sha512-IfEDxwoWIjkeXL1eXcDiow4UbKjhLdq6/EuSVR9GMN7KVH3r9gQ83e73hsz1Nd1T3ijd5xv1wcWRYO+D6kCI2w=="],
 
-    "commander": ["commander@2.20.3", "", {}, "sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ=="],
+    "commander": ["commander@8.3.0", "", {}, "sha512-OkTL9umf+He2DZkUq8f8J9of7yL6RJKI24dVITBmNfZBmri9zYZQrKkuXiKhyfPSu8tUhnVBB1iKXevvnlR4Ww=="],
 
     "common-tags": ["common-tags@1.8.2", "", {}, "sha512-gk/Z852D2Wtb//0I+kRFNKKE9dIIVirjoqPoA1wJU+XePVXZfGeBpk45+A1rKO4Q43prqWBNY/MiIeRLbPWUaA=="],
 
@@ -890,6 +891,8 @@
     "jsonfile": ["jsonfile@6.2.1", "", { "dependencies": { "universalify": "^2.0.0" }, "optionalDependencies": { "graceful-fs": "^4.1.6" } }, "sha512-zwOTdL3rFQ/lRdBnntKVOX6k5cKJwEc1HdilT71BWEu7J41gXIB2MRp+vxduPSwZJPWBxEzv4yH1wYLJGUHX4Q=="],
 
     "jsonpointer": ["jsonpointer@5.0.1", "", {}, "sha512-p/nXbhSEcu3pZRdkW1OfJhpsVtW1gd4Wa1fnQc9YLiTfAjn0312eMKimbdIQzuZl9aa9xUGaRlP9T/CJE/ditQ=="],
+
+    "katex": ["katex@0.17.0", "", { "dependencies": { "commander": "^8.3.0" }, "bin": { "katex": "cli.js" } }, "sha512-Vdw0ATsQ9V+LuegM/BTwQqV/6cTl5lbGcIrU+BCgLxyf6bo38ybOr372tuSIxir3CN720flu1meYR6XzNMwQnw=="],
 
     "keyv": ["keyv@4.5.4", "", { "dependencies": { "json-buffer": "3.0.1" } }, "sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw=="],
 
@@ -1322,6 +1325,8 @@
     "svelte-eslint-parser/eslint-visitor-keys": ["eslint-visitor-keys@4.2.1", "", {}, "sha512-Uhdk5sfqcee/9H/rCOJikYz67o0a2Tw2hGRPOG2Y1R2dg7brRe1uG0yaNQDHu+TO/uQPF/5eCapvYSmHUjt7JQ=="],
 
     "svelte-eslint-parser/espree": ["espree@10.4.0", "", { "dependencies": { "acorn": "^8.15.0", "acorn-jsx": "^5.3.2", "eslint-visitor-keys": "^4.2.1" } }, "sha512-j6PAQ2uUr79PZhBjP5C5fhl8e39FmRnOjsD5lGnWrFU8i2G776tBK7+nP8KuQUTTyAZUwfQqXAgrVH5MbH9CYQ=="],
+
+    "terser/commander": ["commander@2.20.3", "", {}, "sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ=="],
 
     "workbox-build/ajv": ["ajv@8.20.0", "", { "dependencies": { "fast-deep-equal": "^3.1.3", "fast-uri": "^3.0.1", "json-schema-traverse": "^1.0.0", "require-from-string": "^2.0.2" } }, "sha512-Thbli+OlOj+iMPYFBVBfJ3OmCAnaSyNn4M1vz9T6Gka5Jt9ba/HIR56joy65tY6kx/FCF5VXNB819Y7/GUrBGA=="],
 
