@@ -199,12 +199,12 @@
 				<span class="text-sm tabular-nums text-content/50">{total} ramos</span>
 			</div>
 			<div class="h-3 bg-base-300 rounded-full overflow-hidden flex">
-				{#each segments as seg}
+				{#each segments as seg (seg.label)}
 					<div class="{seg.color} h-full transition-all duration-500" style="width: {(seg.count / total) * 100}%"></div>
 				{/each}
 			</div>
 			<div class="flex flex-wrap gap-x-4 gap-y-1 mt-2 text-xs text-content/50">
-				{#each segments as seg}
+				{#each segments as seg (seg.label)}
 					<span class="flex items-center gap-1.5">
 						<span class="w-2 h-2 rounded-full {seg.color.replace('animate-pulse', '').trim()}"></span>
 						{seg.count} {seg.label.toLowerCase()}{seg.count !== 1 ? 's' : ''}

@@ -67,7 +67,7 @@ export default defineConfig(({ mode }) => {
 					globIgnores: ['**/stats.html']
 				},
 				devOptions: {
-					enabled: true
+					enabled: false
 				}
 			}),
 			useRollupVisualizer &&
