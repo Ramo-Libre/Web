@@ -1,32 +1,32 @@
 <script lang="ts">
 	import { X } from '@lucide/svelte';
-	import { fly } from 'svelte/transition';
+	import { fly, fade } from 'svelte/transition';
 	import { semestre } from '$lib/infra/semestres.svelte';
 	import { DEFAULT_SCRIPT } from '$lib/features/notas.svelte';
 	import type { RenderType } from '$lib/features/notas.svelte';
 
 	interface Props {
-		ramoId: string | null;
+		escenarioId: string | null;
 		show: boolean;
 		onClose: () => void;
 	}
 
-	let { ramoId, show, onClose }: Props = $props();
+	let { escenarioId, show, onClose }: Props = $props();
 
 	let inputScript = $state('');
 	let renderTypes = $state<RenderType[]>(['constraint']);
 
 	$effect(() => {
-		if (!show || !ramoId) return;
-		const data = semestre.notas.get(ramoId);
+		if (!show || !escenarioId) return;
+		const data = semestre.escenarios.get(escenarioId);
 		inputScript = data?.scriptRaw || DEFAULT_SCRIPT;
 		renderTypes = data?.renderTypes ?? ['constraint'];
 	});
 
 	function save() {
-		if (!ramoId) return;
-		semestre.notas.setScript(ramoId, inputScript);
-		semestre.notas.setRenderTypes(ramoId, renderTypes);
+		if (!escenarioId) return;
+		semestre.escenarios.setScript(escenarioId, inputScript);
+		semestre.escenarios.setRenderTypes(escenarioId, renderTypes);
 		onClose();
 	}
 
@@ -163,7 +163,7 @@
 				</div>
 			</div>
 
-			<div class="sticky bottom-0 flex items-center justify-end gap-3 px-6 py-4 border-t border-base-300 bg-base-100">
+			<div class="sticky bottom-0 flex items-center justify-end gap-3 px-6 py-4 border border-base-400 bg-base-100">
 				<button
 					onclick={onClose}
 					class="px-4 py-1.5 rounded-lg border border-base-400 text-sm font-medium text-content/60 hover:text-content transition-colors cursor-pointer"

@@ -3,11 +3,11 @@ import init, { solve } from '@ramo-libre/solver';
 let ready = init();
 
 self.onmessage = async (
-	e: MessageEvent<{ fs: string; strategy: string; requestId: number; ramoId?: string }>
+	e: MessageEvent<{ fs: string; strategy: string; requestId: number; escenarioId?: string }>
 ) => {
-	const { fs, strategy, requestId, ramoId } = e.data;
+	const { fs, strategy, requestId, escenarioId } = e.data;
 	await ready;
-	console.log(fs, strategy, requestId, ramoId);
+	console.log(fs, strategy, requestId, escenarioId);
 	try {
 		const jsResult = solve(fs, {
 			strategy,
@@ -29,14 +29,14 @@ self.onmessage = async (
 				libertad: jsResult.libertad,
 				elapsed_ms: jsResult.elapsed_ms
 			},
-			ramoId
+			escenarioId
 		});
 	} catch (err) {
 		console.log(err);
 		self.postMessage({
 			requestId,
 			error: err instanceof Error ? err.message : 'Error al resolver',
-			ramoId
+			escenarioId
 		});
 	}
 };

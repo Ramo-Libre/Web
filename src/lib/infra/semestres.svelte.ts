@@ -5,7 +5,7 @@ import { generateUUID } from '$lib/utils/crypto';
 import { SvelteMap } from 'svelte/reactivity';
 import { local } from './persistence.svelte';
 import { ScheduleManager, type ScheduleSerial } from '$lib/features/schedule.svelte';
-import { NotasManager, type NotasSerial } from '$lib/features/notas.svelte';
+import { EscenariosManager, type EscenariosSerial } from '$lib/features/notas.svelte';
 
 export interface SemestreData {
 	name: string;
@@ -16,7 +16,8 @@ const enum KEYS {
 	SEMESTRES = 'SEM',
 	RAMOS = 'RMS',
 	SCHEDULE = 'SCH',
-	NOTAS = 'NTS'
+	NOTAS = 'NTS',
+	ESCENARIOS = 'ESC'
 }
 
 type SemestresSerial = [string, SemestreData][];
@@ -28,7 +29,7 @@ class SemestresManager {
 	private _preferences = new PreferencesManager();
 	private _ramos = new RamosManager();
 	private _schedule = new ScheduleManager();
-	private _notas = new NotasManager();
+	private _escenarios = new EscenariosManager();
 
 	constructor() {
 		if (browser) this.load();
@@ -54,14 +55,34 @@ class SemestresManager {
 
 	loadCurrentSemester() {
 		console.log('semestres:loadCurrentSemester');
+
 		const ramos = local.get<RamosSerial>(this.prefix(KEYS.RAMOS)) || DEFAULT_RAMOS;
 		this._ramos.fromSerial(ramos);
 
 		const schedule = local.get<ScheduleSerial>(this.prefix(KEYS.SCHEDULE)) || [];
 		this._schedule.fromSerial(schedule);
 
-		const notas = local.get<NotasSerial>(this.prefix(KEYS.NOTAS)) || [];
-		this._notas.fromSerial(notas);
+		// Migrate from old NTS (NotasManager) to ESC (EscenariosManager)
+		type OldNotasEntry = { scriptRaw: string; variableEntries: Record<string, number | null>; renderTypes: string[] };
+		const notasRaw = local.get<[string, OldNotasEntry][]>(this.prefix(KEYS.NOTAS));
+		if (notasRaw && notasRaw.length > 0) {
+			const entries: EscenariosSerial = notasRaw.map(([ramoId, n]) => [
+				generateUUID(),
+				{
+					ramoId,
+					name: 'Default',
+					scriptRaw: n.scriptRaw,
+					variableEntries: n.variableEntries,
+					renderTypes: n.renderTypes as any,
+					lastResult: null
+				}
+			]);
+			this._escenarios.fromSerial(entries);
+			local.save(this.prefix(KEYS.NOTAS), []);
+		} else {
+			const escenarios = local.get<EscenariosSerial>(this.prefix(KEYS.ESCENARIOS)) || [];
+			this._escenarios.fromSerial(escenarios);
+		}
 	}
 
 	private persist() {
@@ -72,7 +93,7 @@ class SemestresManager {
 		const toSave = {
 			[KEYS.RAMOS]: this._ramos.toSerial(),
 			[KEYS.SCHEDULE]: this._schedule.toSerial(),
-			[KEYS.NOTAS]: this._notas.toSerial()
+			[KEYS.ESCENARIOS]: this._escenarios.toSerial()
 		};
 
 		for (const [id_key, val] of Object.entries(toSave)) {
@@ -132,8 +153,8 @@ class SemestresManager {
 		return this._schedule;
 	}
 
-	get notas() {
-		return this._notas;
+	get escenarios() {
+		return this._escenarios;
 	}
 }
 

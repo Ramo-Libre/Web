@@ -8,7 +8,7 @@
 		freeVariables: string[];
 		domains: Record<string, { min: number; max: number }>;
 		variableEntries: Record<string, number | null>;
-		plan: Record<string, number> | null;
+		plan: Map<string, number> | Record<string, number> | null;
 		onChange: (variable: string, value: number | null) => void;
 	}
 
