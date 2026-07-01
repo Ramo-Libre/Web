@@ -566,7 +566,7 @@
 					<div class="flex flex-col divide-y divide-base-300 relative">
 						{#if isWorkDay && currentTimeX > 0 && currentTimeX < rotatedTimelineWidth}
 							<div
-								class="absolute top-0 bottom-0 border-l-2 border-error-300 z-30 pointer-events-none flex flex-col items-center"
+								class="absolute top-0 bottom-0 border-l-2 border-error-300 z-0 pointer-events-none flex flex-col items-center"
 								style="left: {DAY_LABEL_PX + currentTimeX}px;"
 							>
 								<div
