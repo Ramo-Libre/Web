@@ -91,10 +91,10 @@
 	let editingEvent = $state<ScheduleEvent | null>(null);
 	let showModal = $state(false);
 	let modalDay = $state<number | undefined>(undefined);
-	let showCalendarEvents = $state(false);
+	let showCalendarEvents = $state(semestre.preferences.scheduleShowCalendarEvents);
 	let editingOneOff = $state<ScheduleEvent | null>(null);
 	let showEventModal = $state(false);
-	let orientation = $state<Orientation>('normal');
+	let orientation = $state<Orientation>(semestre.preferences.scheduleOrientation);
 
 	// --- NOW ---
 	let now = $state(getNow());
@@ -404,11 +404,18 @@
 		{weekStart}
 		{showCalendarEvents}
 		{orientation}
-		onToggleCalendar={() => (showCalendarEvents = !showCalendarEvents)}
+		onToggleCalendar={() => {
+			showCalendarEvents = !showCalendarEvents;
+			semestre.preferences.setScheduleShowCalendarEvents(showCalendarEvents);
+		}}
 		onPrevWeek={prevWeek}
 		onNextWeek={nextWeek}
 		onAddClass={() => openCreate()}
-		onToggleOrientation={() => (orientation = orientation === 'normal' ? 'rotated' : 'normal')}
+		onToggleOrientation={() => {
+			const next = orientation === 'normal' ? 'rotated' : 'normal';
+			orientation = next;
+			semestre.preferences.setScheduleOrientation(next);
+		}}
 	/>
 
 	<div

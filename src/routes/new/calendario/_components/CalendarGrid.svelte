@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { semestre } from '$lib/infra/semestres.svelte';
+	import { getNow } from '$lib/utils/date';
 	import type { ScheduleEvent } from '$lib/features/schedule.svelte';
 	import { ChevronLeft, ChevronRight, Presentation, CircleAlert, Book, FlaskConical, Users, Wrench, Clock, Ellipsis } from '@lucide/svelte';
 
@@ -22,11 +23,21 @@
 
 	let { events, selectedDate, onDaySelect }: Props = $props();
 
-	let year = $state(new Date().getFullYear());
-	let month = $state(new Date().getMonth() + 1);
-
-	const today = new Date();
+	const today = getNow();
 	const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
+	let year = $state(today.getFullYear());
+	let month = $state(today.getMonth() + 1);
+
+	$effect(() => {
+		if (selectedDate) {
+			const d = new Date(selectedDate + 'T12:00:00');
+			if (!isNaN(d.getTime())) {
+				year = d.getFullYear();
+				month = d.getMonth() + 1;
+			}
+		}
+	});
 
 	const dayHeaders = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
 

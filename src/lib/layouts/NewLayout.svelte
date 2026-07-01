@@ -19,6 +19,7 @@
 	import { ramoDrawer } from '$lib/features/ramosDrawer.svelte';
 	import RamoDrawer from '$lib/pages/RamoDrawer.svelte';
 	import { PUBLIC_SHOW_DEV_TOOLS } from '$env/static/public';
+	import { db } from '$lib';
 	import { onMount } from 'svelte';
 
 	const showDevTools = PUBLIC_SHOW_DEV_TOOLS === 'true';
@@ -91,12 +92,12 @@
 	];
 
 	const bottomNavIds = ['ramolibre', 'horarios', 'notas', 'calendario'];
-	const sheetIds = ['ramos', 'config'];
+	const sheetIds = showDevTools ? ['ramos', 'config', 'dev-tools'] : ['ramos', 'config'];
 
 	const bottomNav = sections.filter((s) => bottomNavIds.includes(s.id));
 	const sheetSections = sections.filter((s) => sheetIds.includes(s.id));
 
-	let sidebarCollapsed = $state(false);
+	let sidebarCollapsed = $state(semestre.preferences.sidebarCollapsed);
 	let sheetOpen = $state(false);
 
 	function isActive(path: string) {
@@ -110,6 +111,52 @@
 	function navigate(path: string) {
 		goto(path);
 		sheetOpen = false;
+	}
+
+	let ttActive = $derived(!!db.dev?.timeTravelEnabled && !!db.dev?.timeTravelDate);
+	let ttLabel = $derived(
+		db.dev?.timeTravelDate
+			? (() => {
+					const d = new Date(db.dev.timeTravelDate);
+					const dd = String(d.getDate()).padStart(2, '0');
+					const mm = String(d.getMonth() + 1).padStart(2, '0');
+					const yyyy = d.getFullYear();
+					const hh = String(d.getHours()).padStart(2, '0');
+					const mi = String(d.getMinutes()).padStart(2, '0');
+					return `${dd}/${mm}/${yyyy} - ${hh}:${mi}`;
+			  })()
+			: ''
+	);
+
+	function disableTT() {
+		if (!db.dev) return;
+		db.dev.timeTravelEnabled = false;
+		db.dev.timeTravelDate = null;
+	}
+
+	type Unit = 'minutos' | 'horas' | 'dias';
+	let ttUnit = $state<Unit>('horas');
+
+	function stepTT(dir: -1 | 1) {
+		if (!db.dev?.timeTravelDate) return;
+		const d = new Date(db.dev.timeTravelDate);
+		switch (ttUnit) {
+			case 'minutos': d.setMinutes(d.getMinutes() + dir * 15); break;
+			case 'horas':   d.setHours(d.getHours() + dir); break;
+			case 'dias':    d.setDate(d.getDate() + dir); break;
+		}
+		db.dev.timeTravelDate = d.toISOString();
+	}
+
+	function stepBigTT(dir: -1 | 1) {
+		if (!db.dev?.timeTravelDate) return;
+		const d = new Date(db.dev.timeTravelDate);
+		switch (ttUnit) {
+			case 'minutos': d.setMinutes(d.getMinutes() + dir * 60); break;
+			case 'horas':   d.setHours(d.getHours() + dir * 6); break;
+			case 'dias':    d.setDate(d.getDate() + dir * 7); break;
+		}
+		db.dev.timeTravelDate = d.toISOString();
 	}
 
 	onMount(() => {
@@ -136,7 +183,10 @@
 			{/if}
 			<button
 				class="bg-transparent border-0 cursor-pointer text-content/50 p-1 rounded-md hover:bg-base-300"
-				onclick={() => (sidebarCollapsed = !sidebarCollapsed)}
+				onclick={() => {
+					sidebarCollapsed = !sidebarCollapsed;
+					semestre.preferences.setSidebarCollapsed(sidebarCollapsed);
+				}}
 				aria-label={sidebarCollapsed ? 'Expandir sidebar' : 'Colapsar sidebar'}
 			>
 				{#if sidebarCollapsed}
@@ -202,6 +252,31 @@
 						{/if}
 					</button>
 				{/each}
+			{/if}
+
+			{#if showDevTools && ttActive}
+				<div class="mt-auto bg-base-300/60 border border-base-400 rounded-lg p-2 {sidebarCollapsed ? 'flex justify-center' : 'space-y-1.5'}">
+					{#if sidebarCollapsed}
+						<div class="w-2 h-2 bg-primary-100 rounded-full animate-pulse"></div>
+					{:else}
+						<div class="flex items-center gap-1.5">
+							<div class="w-2 h-2 bg-primary-100 rounded-full animate-pulse shrink-0"></div>
+							<span class="text-[10px] font-mono font-bold text-primary-100 tracking-[0.05em] flex-1 truncate">{ttLabel}</span>
+							<button onclick={disableTT} class="h-5 w-5 flex items-center justify-center rounded border border-base-400 bg-base-200 text-[9px] font-bold text-content/30 hover:text-error-100 cursor-pointer transition-colors" title="Desactivar">X</button>
+						</div>
+						<div class="flex gap-1">
+							<button onclick={() => stepBigTT(-1)} class="flex-1 h-6 flex items-center justify-center rounded border border-base-400 bg-base-200 text-[10px] text-content/40 hover:text-content cursor-pointer transition-colors">◄◄</button>
+							<button onclick={() => stepTT(-1)} class="flex-1 h-6 flex items-center justify-center rounded border border-base-400 bg-base-200 text-[10px] text-content/40 hover:text-content cursor-pointer transition-colors">◄</button>
+							<button onclick={() => stepTT(1)} class="flex-1 h-6 flex items-center justify-center rounded border border-base-400 bg-base-200 text-[10px] text-content/40 hover:text-content cursor-pointer transition-colors">►</button>
+							<button onclick={() => stepBigTT(1)} class="flex-1 h-6 flex items-center justify-center rounded border border-base-400 bg-base-200 text-[10px] text-content/40 hover:text-content cursor-pointer transition-colors">►►</button>
+						</div>
+						<div class="flex gap-1">
+							<button onclick={() => ttUnit = 'minutos'} class="flex-1 h-6 text-[9px] font-bold uppercase tracking-wider rounded border cursor-pointer transition-colors {ttUnit === 'minutos' ? 'bg-primary-100/15 border-primary-200/30 text-primary-100' : 'bg-base-200 border-base-400 text-content/30 hover:text-content/50'}">Min</button>
+							<button onclick={() => ttUnit = 'horas'} class="flex-1 h-6 text-[9px] font-bold uppercase tracking-wider rounded border cursor-pointer transition-colors {ttUnit === 'horas' ? 'bg-primary-100/15 border-primary-200/30 text-primary-100' : 'bg-base-200 border-base-400 text-content/30 hover:text-content/50'}">Hrs</button>
+							<button onclick={() => ttUnit = 'dias'} class="flex-1 h-6 text-[9px] font-bold uppercase tracking-wider rounded border cursor-pointer transition-colors {ttUnit === 'dias' ? 'bg-primary-100/15 border-primary-200/30 text-primary-100' : 'bg-base-200 border-base-400 text-content/30 hover:text-content/50'}">Días</button>
+						</div>
+					{/if}
+				</div>
 			{/if}
 		</nav>
 

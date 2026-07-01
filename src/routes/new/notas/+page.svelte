@@ -408,7 +408,7 @@
 					<div class="w-2.5 h-2.5 rounded-full bg-base-300 shrink-0"></div>
 					Ninguno
 				</button>
-				{#each semestre.ramos.list as [id, ramo]}
+				{#each semestre.ramos.list as [id, ramo] (id)}
 					<button
 						onclick={() => {
 							if (!selectedEscenarioId) return;
@@ -447,8 +447,6 @@
 			plan={solverResult?.plan ?? null}
 			onChange={handleGradeChange}
 		/>
-
-		<ComputedVariables plan={solverResult?.plan ?? null} {assignedVarNames} />
 
 		<ComputedVariables plan={solverResult?.plan ?? null} {assignedVarNames} />
 	{/if}

@@ -21,7 +21,7 @@
 	const CATEGORY_ICONS: Record<string, typeof Book> = {};
 	for (const c of CATEGORIES) CATEGORY_ICONS[c.value] = c.icon;
 
-	const DOW_LABELS = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
+	const DOW_LABELS = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
 
 	interface Props {
 		event: ScheduleEvent | null;

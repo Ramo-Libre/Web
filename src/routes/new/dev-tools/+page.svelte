@@ -1,9 +1,5 @@
 <script lang="ts">
-	import { fly } from "svelte/transition";
-
-
+	import DevTools from '$lib/pages/DevTools.svelte';
 </script>
 
-<div in:fly={{ y: 10, duration: 300, delay: 100 }}>
-
-</div>
+<DevTools />

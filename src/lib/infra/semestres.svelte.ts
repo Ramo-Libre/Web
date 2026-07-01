@@ -1,11 +1,12 @@
 import { browser } from '$app/environment';
-import { PreferencesManager } from '$lib/features/preferences.svelte';
+import { PreferencesManager, type PreferencesSerial } from '$lib/features/preferences.svelte';
 import { DEFAULT_RAMOS, RamosManager, type RamosSerial } from '$lib/features/ramos.svelte';
 import { generateUUID } from '$lib/utils/crypto';
 import { SvelteMap } from 'svelte/reactivity';
 import { local } from './persistence.svelte';
 import { ScheduleManager, type ScheduleSerial } from '$lib/features/schedule.svelte';
 import { EscenariosManager, type EscenariosSerial } from '$lib/features/notas.svelte';
+import type { MockDataOutputV2 } from '$lib/dev-tools/types-v2';
 
 export interface SemestreData {
 	name: string;
@@ -16,8 +17,8 @@ const enum KEYS {
 	SEMESTRES = 'SEM',
 	RAMOS = 'RMS',
 	SCHEDULE = 'SCH',
-	NOTAS = 'NTS',
-	ESCENARIOS = 'ESC'
+	ESCENARIOS = 'ESC',
+	PREFERENCES = 'PRE'
 }
 
 type SemestresSerial = [string, SemestreData][];
@@ -56,33 +57,17 @@ class SemestresManager {
 	loadCurrentSemester() {
 		console.log('semestres:loadCurrentSemester');
 
+		const prefs = local.get<PreferencesSerial>(this.prefix(KEYS.PREFERENCES));
+		if (prefs) this._preferences.fromSerial(prefs);
+
 		const ramos = local.get<RamosSerial>(this.prefix(KEYS.RAMOS)) || DEFAULT_RAMOS;
 		this._ramos.fromSerial(ramos);
 
 		const schedule = local.get<ScheduleSerial>(this.prefix(KEYS.SCHEDULE)) || [];
 		this._schedule.fromSerial(schedule);
 
-		// Migrate from old NTS (NotasManager) to ESC (EscenariosManager)
-		type OldNotasEntry = { scriptRaw: string; variableEntries: Record<string, number | null>; renderTypes: string[] };
-		const notasRaw = local.get<[string, OldNotasEntry][]>(this.prefix(KEYS.NOTAS));
-		if (notasRaw && notasRaw.length > 0) {
-			const entries: EscenariosSerial = notasRaw.map(([ramoId, n]) => [
-				generateUUID(),
-				{
-					ramoId,
-					name: 'Default',
-					scriptRaw: n.scriptRaw,
-					variableEntries: n.variableEntries,
-					renderTypes: n.renderTypes as any,
-					lastResult: null
-				}
-			]);
-			this._escenarios.fromSerial(entries);
-			local.save(this.prefix(KEYS.NOTAS), []);
-		} else {
-			const escenarios = local.get<EscenariosSerial>(this.prefix(KEYS.ESCENARIOS)) || [];
-			this._escenarios.fromSerial(escenarios);
-		}
+		const escenarios = local.get<EscenariosSerial>(this.prefix(KEYS.ESCENARIOS)) || [];
+		this._escenarios.fromSerial(escenarios);
 	}
 
 	private persist() {
@@ -93,7 +78,8 @@ class SemestresManager {
 		const toSave = {
 			[KEYS.RAMOS]: this._ramos.toSerial(),
 			[KEYS.SCHEDULE]: this._schedule.toSerial(),
-			[KEYS.ESCENARIOS]: this._escenarios.toSerial()
+			[KEYS.ESCENARIOS]: this._escenarios.toSerial(),
+			[KEYS.PREFERENCES]: this._preferences.toSerial()
 		};
 
 		for (const [id_key, val] of Object.entries(toSave)) {
@@ -155,6 +141,20 @@ class SemestresManager {
 
 	get escenarios() {
 		return this._escenarios;
+	}
+
+	applyMock(data: MockDataOutputV2) {
+		this._semestres = new SvelteMap(data.semestres.map((s) => [s.id, { name: s.name }]));
+		this._active = data.active;
+
+		const entry = data.data[this._active];
+		if (entry) {
+			this._ramos.fromSerial(entry.ramos);
+			this._schedule.fromSerial(entry.schedule);
+			this._escenarios.fromSerial(entry.escenarios);
+		}
+
+		this.persist();
 	}
 }
 

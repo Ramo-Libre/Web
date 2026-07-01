@@ -1,7 +1,10 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { fly } from 'svelte/transition';
+	import { page } from '$app/state';
 	import { SvelteSet } from 'svelte/reactivity';
 	import { semestre } from '$lib/infra/semestres.svelte';
+	import { getNow } from '$lib/utils/date';
 	import type { ScheduleEvent, ScheduleCategory } from '$lib/features/schedule.svelte';
 	import CalendarGrid from './_components/CalendarGrid.svelte';
 	import ViewBar from './_components/ViewBar.svelte';
@@ -12,11 +15,11 @@
 
 	let selectedRamo = $state<string | null>(null);
 	let selectedCategories = $state<Set<ScheduleCategory>>(new SvelteSet());
-	let selectedDate = $state<string | null>((() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; })());
+	let selectedDate = $state<string | null>((() => { const d = getNow(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; })());
 	let editingEvent = $state<ScheduleEvent | null>(null);
 	let showModal = $state(false);
 	let modalDate = $state<string | undefined>(undefined);
-	let showHorarios = $state(false);
+	let showHorarios = $state(semestre.preferences.calendarShowHorarios);
 	let editingRecurring = $state<ScheduleEvent | null>(null);
 	let showRecurringModal = $state(false);
 
@@ -41,6 +44,49 @@
 				.filter((e) => showHorarios || e.date)
 			: []
 	);
+
+	function getNextDateForDow(dows: number[]): string {
+		const today = getNow();
+		for (let i = 0; i < 60; i++) {
+			const d = new Date(today);
+			d.setDate(d.getDate() + i);
+			const dow = d.getDay() === 0 ? 7 : d.getDay();
+			if (dows.includes(dow)) {
+				return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+			}
+		}
+		const d = new Date(today);
+		return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+	}
+
+	function findEventById(id: string): ScheduleEvent | undefined {
+		const byKey = semestre.schedule.get(id);
+		if (byKey) return byKey;
+		for (const [, e] of semestre.schedule.list) {
+			if (e.id === id) return e;
+		}
+		return undefined;
+	}
+
+	function handleHash(hash: string) {
+		if (!hash || hash === '#') return;
+		const eventId = hash.slice(1);
+		const event = findEventById(eventId);
+		if (!event) return;
+		if (event.date) {
+			selectedDate = event.date;
+		} else if (event.daysOfWeek && event.daysOfWeek.length > 0) {
+			selectedDate = getNextDateForDow(event.daysOfWeek);
+		}
+		history.replaceState(null, '', '/new/calendario');
+	}
+
+	onMount(() => {
+		handleHash(page.url.hash);
+		const onHashChange = () => handleHash(window.location.hash);
+		window.addEventListener('hashchange', onHashChange);
+		return () => window.removeEventListener('hashchange', onHashChange);
+	});
 
 	function openCreate(dateStr?: string) {
 		editingEvent = null;
@@ -121,7 +167,10 @@
 		{showHorarios}
 		onRamoChange={(v) => (selectedRamo = v)}
 		onCategoriesChange={(v) => (selectedCategories = v)}
-		onToggleHorarios={() => (showHorarios = !showHorarios)}
+		onToggleHorarios={() => {
+			showHorarios = !showHorarios;
+			semestre.preferences.setCalendarShowHorarios(showHorarios);
+		}}
 		onAddEvent={() => openCreate(selectedDate ?? undefined)}
 	/>
 
