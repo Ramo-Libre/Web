@@ -1,8 +1,18 @@
 <script lang="ts">
 	import { Trash2, Plus, Calendar, CircleCheck, History } from '@lucide/svelte';
 	import { semestre } from '$lib/infra/semestres.svelte';
+	import { page } from '$app/state';
+	import { onMount } from 'svelte';
 
 	let newSemesterName = $state('');
+	let highlighted = $state(false);
+
+	onMount(() => {
+		if (page.url.hash === '#semesters') {
+			highlighted = true;
+			setTimeout(() => (highlighted = false), 1500);
+		}
+	});
 	let deleteConfirmData = $state<{ id: string; name: string } | null>(null);
 
 	const semestreList = $derived(Array.from(semestre.semestres.entries()));
@@ -74,7 +84,9 @@
 	}
 </script>
 
-<div class="bg-base-100 border border-base-400 rounded-xl overflow-hidden flex flex-col">
+<div
+	class="bg-base-100 border border-base-400 rounded-xl overflow-hidden flex flex-col {highlighted ? 'shine-effect' : ''}"
+>
 	<div
 		class="relative bg-linear-to-r from-primary-100 to-primary-100/90 p-6 text-base-100 transition-colors"
 	>

@@ -143,6 +143,10 @@ class SemestresManager {
 		return this._escenarios;
 	}
 
+	get hasData() {
+		return this._semestres.size > 0 || !this._ramos.empty() || !this._schedule.empty() || !this._escenarios.empty();
+	}
+
 	applyMock(data: MockDataOutputV2) {
 		this._semestres = new SvelteMap(data.semestres.map((s) => [s.id, { name: s.name }]));
 		this._active = data.active;
