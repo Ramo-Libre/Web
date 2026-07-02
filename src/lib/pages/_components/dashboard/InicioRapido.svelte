@@ -9,33 +9,34 @@
 	const now = getNow();
 	const year = now.getFullYear();
 	const sem = now.getMonth() < 6 ? 1 : 2;
-	const placeholder = `Nombre del Semestre (Ej: ${year}-${sem})`;
+	const recomendado = `${year}-${sem}`;
 
 	function handleKeydown(event: KeyboardEvent) {
 		if (event.key === 'Enter') start();
 	}
 
 	function start() {
-		if (!semesterName.trim()) return;
-		semestre.add(semesterName.trim());
+		const name = semesterName.trim() || recomendado;
+		semestre.add(name);
 		goto('/new/ramos#semesters');
 	}
 </script>
 
-<div class="bg-base-100 border border-base-400 rounded-xl p-6 shadow-sm">
-	<h2 class="text-sm lg:text-base font-bold text-content mb-4">Inicio Rápido</h2>
-	<div class="flex flex-col sm:flex-row gap-3">
-		<input
-			bind:value={semesterName}
-			onkeydown={handleKeydown}
-			placeholder={placeholder}
-			class="flex-1 h-12 px-4 max-sm:py-2 text-base bg-base-100 text-content placeholder-content/40 border border-base-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-100 focus:border-transparent"
-		/>
-		<button
-			onclick={start}
-			class="h-12 cursor-pointer px-8 text-base bg-primary-100 text-white rounded-lg hover:opacity-90 transition-opacity font-medium shrink-0"
-		>
-			Empezar <Rocket class="inline-block w-5 h-5 ml-2" />
-		</button>
+<div class="bg-base-100 border border-base-400 rounded-xl p-4 shadow-sm flex flex-col sm:flex-row sm:items-center gap-3">
+	<div class="flex items-center gap-2 shrink-0">
+		<Rocket class="w-5 h-5 text-primary-100 shrink-0" />
+		<span class="text-sm lg:text-base font-bold text-content whitespace-nowrap">Inicio Rápido</span>
 	</div>
+	<input
+		bind:value={semesterName}
+		onkeydown={handleKeydown}
+		placeholder={recomendado}
+		class="w-full sm:flex-1 h-11 px-4 text-sm bg-base-100 text-content placeholder-content/40 border border-base-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-100 focus:border-transparent"
+	/>
+	<button
+		onclick={start}
+		class="w-full sm:w-auto h-11 cursor-pointer px-6 text-sm bg-primary-100 text-white rounded-lg hover:opacity-90 transition-opacity font-medium shrink-0"
+	>
+		Empezar
+	</button>
 </div>

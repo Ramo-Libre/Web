@@ -5,14 +5,14 @@
 	const apps = [
 		{
 			icon: SuiteFavicons.lab,
-			name: 'Ramo Libre LAB',
+			name: 'Ramo Libre Lab',
 			desc: 'Para probar combinaciones de notas.',
 			href: 'https://lab.ramolibre.app',
 			id: 'lab'
 		},
 		{
 			icon: SuiteFavicons.hub,
-			name: 'Ramo Libre HUB',
+			name: 'Ramo Libre Hub',
 			desc: 'Busca en tu comunidad informacion de ramos.',
 			href: 'https://hub.ramolibre.app',
 			id: 'hub'
@@ -20,7 +20,7 @@
 	];
 </script>
 
-<div class="grid grid-cols-2 gap-3">
+<div class="grid lg:grid-cols-2 gap-3">
 	{#each apps as app (app.id)}
 		<a
 			href={app.href}
