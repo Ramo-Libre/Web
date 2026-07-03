@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Copy, Check } from '@lucide/svelte';
+	import { copyToClipboard } from '$lib/utils/clipboard';
 	import { buildGlobalContext } from '$lib/ai/context-global';
 	import { buildSemestresRamosContext } from '$lib/ai/context-semestres-ramos';
 	import { buildHorariosContext } from '$lib/ai/context-horarios';
@@ -55,15 +56,12 @@
 	let copied = $state<Record<string, boolean>>({});
 
 	async function copy(id: string, build: () => string) {
-		const text = build();
-		try {
-			await navigator.clipboard.writeText(text);
+		const ok = await copyToClipboard(build());
+		if (ok) {
 			copied = { ...copied, [id]: true };
 			setTimeout(() => {
 				copied = { ...copied, [id]: false };
 			}, 2000);
-		} catch {
-			// fallback
 		}
 	}
 </script>

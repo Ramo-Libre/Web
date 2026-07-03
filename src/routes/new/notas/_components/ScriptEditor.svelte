@@ -4,6 +4,7 @@
 	import { semestre } from '$lib/infra/semestres.svelte';
 	import type { RenderType } from '$lib/features/notas.svelte';
 	import { buildAIContextPrompt } from '@ramo-libre/dsl-parser';
+	import { copyToClipboard } from '$lib/utils/clipboard';
 
 	interface Props {
 		escenarioId: string | null;
@@ -55,14 +56,9 @@
 	let copied = $state(false);
 
 	async function copyContext() {
-		const prompt = buildAIContextPrompt();
-		try {
-			await navigator.clipboard.writeText(prompt);
-			copied = true;
-			setTimeout(() => (copied = false), 2000);
-		} catch {
-			// fallback
-		}
+		await copyToClipboard(buildAIContextPrompt());
+		copied = true;
+		setTimeout(() => (copied = false), 2000);
 	}
 </script>
 
