@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { X } from '@lucide/svelte';
+	import { X, Copy } from '@lucide/svelte';
 	import { fly, fade } from 'svelte/transition';
 	import { semestre } from '$lib/infra/semestres.svelte';
-	import { DEFAULT_SCRIPT } from '$lib/features/notas.svelte';
 	import type { RenderType } from '$lib/features/notas.svelte';
+	import { buildAIContextPrompt } from '@ramo-libre/dsl-parser';
 
 	interface Props {
 		escenarioId: string | null;
@@ -19,8 +19,10 @@
 	$effect(() => {
 		if (!show || !escenarioId) return;
 		const data = semestre.escenarios.get(escenarioId);
-		inputScript = data?.scriptRaw || DEFAULT_SCRIPT;
-		renderTypes = data?.renderTypes ?? ['constraint'];
+		if (data) {
+			inputScript = data.scriptRaw;
+			renderTypes = data.renderTypes ?? ['constraint'];
+		}
 	});
 
 	function save() {
@@ -48,6 +50,19 @@
 
 	function handleKeydown(e: KeyboardEvent) {
 		if (e.key === 'Escape') onClose();
+	}
+
+	let copied = $state(false);
+
+	async function copyContext() {
+		const prompt = buildAIContextPrompt();
+		try {
+			await navigator.clipboard.writeText(prompt);
+			copied = true;
+			setTimeout(() => (copied = false), 2000);
+		} catch {
+			// fallback
+		}
 	}
 </script>
 
@@ -85,8 +100,26 @@
 			</div>
 
 			<div class="p-6 space-y-4">
+				<div class="flex items-center gap-2">
+					<span class="text-xs font-semibold text-content/50">¿Necesitas Ayuda?</span>
+					<button
+						onclick={copyContext}
+						class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-medium transition-all cursor-pointer {copied ? 'bg-success-100 text-base-100 border-success-100' : 'bg-base-50 text-content/40 border-base-400 hover:border-primary-100 hover:text-content'}"
+					>
+						<Copy size={14} />
+						{copied ? 'Copiado' : 'Copiar Contexto IA'}
+					</button>
+				</div>
 				<textarea
 					bind:value={inputScript}
+					placeholder="PC = prom(C1, C2)
+NF = PC * 0.6 + Cert * 0.4
+
+NF >= 55
+cada(C1, C2) >= 30
+
+dominio C1, C2 [0, 100]
+dominio Cert [0, 100]"
 					class="w-full h-[400px] px-4 py-3 rounded-lg border border-base-400 bg-base-100 text-sm font-mono text-content focus:outline-none focus:border-primary-100 resize-none"
 					spellcheck="false"
 				></textarea>
@@ -141,8 +174,26 @@
 			</div>
 
 			<div class="p-6 space-y-4">
+				<div class="flex items-center gap-2">
+					<span class="text-xs font-semibold text-content/50">¿Necesitas Ayuda?</span>
+					<button
+						onclick={copyContext}
+						class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-medium transition-all cursor-pointer {copied ? 'bg-success-100 text-base-100 border-success-100' : 'bg-base-50 text-content/40 border-base-400 hover:border-primary-100 hover:text-content'}"
+					>
+						<Copy size={14} />
+						{copied ? 'Copiado' : 'Copiar Contexto IA'}
+					</button>
+				</div>
 				<textarea
 					bind:value={inputScript}
+					placeholder="PC = prom(C1, C2)
+NF = PC * 0.6 + Cert * 0.4
+
+NF >= 55
+cada(C1, C2) >= 30
+
+dominio C1, C2 [0, 100]
+dominio Cert [0, 100]"
 					class="w-full h-[300px] px-4 py-3 rounded-lg border border-base-400 bg-base-50 text-sm font-mono text-content focus:outline-none focus:border-primary-100 resize-none"
 					spellcheck="false"
 				></textarea>
