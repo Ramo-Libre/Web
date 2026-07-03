@@ -4,6 +4,7 @@
 	import CargaMensual from './_components/dashboard/CargaMensual.svelte';
 	import ProbabilidadesCard from './_components/dashboard/ProbabilidadesCard.svelte';
 	import UpcomingEventsCard from './_components/dashboard/UpcomingEventsCard.svelte';
+	import QuickActions from './_components/dashboard/QuickActions.svelte';
 
 	let now = $state(getNow());
 	$effect(() => {
@@ -18,5 +19,6 @@
 		<CargaMensual {now} />
 		<ProbabilidadesCard />
 		<UpcomingEventsCard {now} />
+		<QuickActions />
 	</div>
 </div>

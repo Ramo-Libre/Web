@@ -1,6 +1,9 @@
 <script lang="ts">
 	import { fly } from 'svelte/transition';
 	import { Sparkles, Rocket, CalendarPlus, X } from '@lucide/svelte';
+	import { goto } from '$app/navigation';
+	import { semestre } from '$lib/infra/semestres.svelte';
+	import WizardSemestre from './WizardSemestre.svelte';
 
 	const actions = [
 		{
@@ -17,9 +20,9 @@
 			iconBg: 'bg-classes-400/20 text-classes-100',
 			iconHoverBg: 'group-hover:bg-classes-100 group-active:bg-classes-100',
 			hoverBg: 'hover:bg-classes-400/5 active:bg-classes-400/10',
-			title: 'Inicio Rápido',
+			title: 'Inicia un semestre',
 			desc: 'Deja todo listo para empezar con tu semestre.',
-			id: 'inicio-guiado'
+			id: 'inicia-semestre'
 		},
 		{
 			icon: CalendarPlus,
@@ -33,14 +36,27 @@
 	];
 
 	let openModal = $state<string | null>(null);
+	let wizardName = $state('');
+	let wizardRamos = $state<{ name: string; color: string }[]>([]);
+	let wizardStep = $state(1);
 
 	function handleClick(id: string) {
+		if (id === 'inicia-semestre') {
+			wizardName = '';
+			wizardRamos = [];
+			wizardStep = 1;
+		}
 		openModal = id;
 	}
 
-	function getAction(id: string) {
-		return actions.find((a) => a.id === id);
+	function handleFinish() {
+		for (const r of wizardRamos) {
+			if (r.name.trim()) semestre.ramos.add({ name: r.name.trim(), color: r.color });
+		}
+		openModal = null;
+		goto('/new/ramos#semesters');
 	}
+
 </script>
 
 <div class="bg-base-100 border border-base-400 rounded-xl shadow-sm overflow-hidden">
@@ -57,7 +73,9 @@
 						<action.icon class="w-5 h-5" />
 					</div>
 					<div>
-						<h3 class="text-content font-bold text-sm lg:text-base leading-tight">{action.title}</h3>
+						<h3 class="text-content font-bold text-sm lg:text-base leading-tight">
+							{action.title}
+						</h3>
 						<p class="text-content/60 text-xs lg:text-sm mt-0.5">{action.desc}</p>
 					</div>
 				</div>
@@ -65,7 +83,14 @@
 					class="p-2 bg-base-200 {action.iconHoverBg} group-hover:text-white group-active:text-white text-content rounded-lg transition-all border border-base-400 group-hover:border-transparent group-active:border-transparent"
 				>
 					<svg class="w-4 h-4 fill-current" viewBox="0 0 16 16">
-						<path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+						<path
+							d="M6 3l5 5-5 5"
+							stroke="currentColor"
+							stroke-width="2"
+							fill="none"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+						/>
 					</svg>
 				</div>
 			</button>
@@ -76,11 +101,7 @@
 {#each actions as action (action.id)}
 	{#if openModal === action.id}
 		<!-- svelte-ignore a11y_click_events_have_key_events a11y_interactive_supports_focus -->
-		<div
-			class="fixed inset-0 z-50"
-			role="dialog"
-			aria-modal="true"
-		>
+		<div class="fixed inset-0 z-50" role="dialog" aria-modal="true">
 			<button
 				class="absolute inset-0 bg-black/40 backdrop-blur-sm cursor-pointer"
 				onclick={() => (openModal = null)}
@@ -88,11 +109,14 @@
 			></button>
 			<!-- Mobile: bottom sheet -->
 			<div
-				class="absolute bottom-0 left-0 right-0 bg-base-100 rounded-t-2xl shadow-xl border border-base-400 lg:hidden"
+				class="absolute bottom-0 left-0 right-0 bg-base-100 rounded-t-2xl shadow-xl border border-base-400 lg:hidden {action.id ===
+				'inicia-semestre'
+					? 'max-h-[85vh] flex flex-col'
+					: ''}"
 				in:fly={{ y: 100, duration: 250 }}
 			>
 				<div
-					class="sticky top-0 bg-base-100 z-10 flex items-center justify-between px-6 pt-4 pb-2 border-b border-base-300"
+					class="sticky top-0 bg-base-100 z-10 flex items-center justify-between px-6 pt-4 pb-2 border-b border-base-300 shrink-0"
 				>
 					<h3 class="text-lg font-bold text-content">{action.title}</h3>
 					<button
@@ -103,7 +127,18 @@
 						<X size={20} />
 					</button>
 				</div>
-				<div class="p-6"></div>
+				<div class="p-6 {action.id === 'inicia-semestre' ? 'flex-1 overflow-y-auto' : ''}">
+					{#if action.id === 'inicia-semestre'}
+						<WizardSemestre
+							bind:semesterName={wizardName}
+							bind:ramosList={wizardRamos}
+							bind:step={wizardStep}
+							onNext={() => wizardStep++}
+							onPrev={() => wizardStep--}
+							onFinish={handleFinish}
+						/>
+					{/if}
+				</div>
 			</div>
 			<!-- Desktop: right drawer -->
 			<div
@@ -122,7 +157,18 @@
 						<X size={20} />
 					</button>
 				</div>
-				<div class="p-6 flex-1 overflow-y-auto"></div>
+				<div class="p-6 flex-1 overflow-y-auto">
+					{#if action.id === 'inicia-semestre'}
+						<WizardSemestre
+							bind:semesterName={wizardName}
+							bind:ramosList={wizardRamos}
+							bind:step={wizardStep}
+							onNext={() => wizardStep++}
+							onPrev={() => wizardStep--}
+							onFinish={handleFinish}
+						/>
+					{/if}
+				</div>
 			</div>
 		</div>
 	{/if}

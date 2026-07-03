@@ -28,9 +28,14 @@ class SemestresManager {
 	private _semestres = $state<SvelteMap<string, SemestreData>>(new SvelteMap());
 
 	private _preferences = new PreferencesManager();
-	private _ramos = new RamosManager();
 	private _schedule = new ScheduleManager();
 	private _escenarios = new EscenariosManager();
+	private _ramos = new RamosManager((id) => {
+		if (this._preferences.clearRamoData) {
+			this._schedule.removeByRamo(id);
+			this._escenarios.removeByRamo(id);
+		}
+	});
 
 	constructor() {
 		if (browser) this.load();
@@ -103,7 +108,8 @@ class SemestresManager {
 	add(name: string): string {
 		const id = generateUUID();
 		this._semestres.set(id, { name });
-		if (!this._active) this._active = id;
+		this._active = id;
+		this.loadCurrentSemester();
 		return id;
 	}
 
@@ -112,6 +118,9 @@ class SemestresManager {
 		if (this._active === id) {
 			this._active = '';
 			this.loadCurrentSemester();
+		}
+		for (const key of [KEYS.RAMOS, KEYS.SCHEDULE, KEYS.ESCENARIOS, KEYS.PREFERENCES]) {
+			local.remove(id + '_' + key);
 		}
 	}
 

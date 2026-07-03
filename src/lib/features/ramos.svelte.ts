@@ -12,8 +12,15 @@ type Ramos = SvelteMap<Key, Ramo>;
 export type RamosSerial = [Key, Ramo][];
 export const DEFAULT_RAMOS = [];
 
+export type RamoRemoveHandler = (id: string) => void;
+
 export class RamosManager implements Serializable<RamosSerial> {
 	private _ramos = $state<Ramos>(new SvelteMap<Key, Ramo>(DEFAULT_RAMOS));
+	private _onRemove: RamoRemoveHandler | null = null;
+
+	constructor(onRemove?: RamoRemoveHandler) {
+		this._onRemove = onRemove ?? null;
+	}
 
 	fromSerial(serial: RamosSerial) {
 		this._ramos = new SvelteMap<Key, Ramo>(serial);
@@ -39,6 +46,7 @@ export class RamosManager implements Serializable<RamosSerial> {
 
 	remove(id: string) {
 		this._ramos.delete(id);
+		this._onRemove?.(id);
 	}
 
 	get(id: string): Ramo | undefined {

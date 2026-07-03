@@ -1,6 +1,7 @@
 export interface LocalPersistenceAdapter {
     save(key: string, data: unknown): void;
     get<T>(key: string): T | null;
+    remove(key: string): void;
 };
 
 
@@ -19,6 +20,11 @@ class LocalStorageManager implements LocalPersistenceAdapter {
         if (!strData) return null;
         const objectData = JSON.parse(strData);
         return objectData;
+    }
+
+    remove(id_key: string): void {
+        const key = this._prefix + id_key;
+        localStorage.removeItem(key);
     }
 };
 

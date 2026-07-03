@@ -15,6 +15,7 @@ export interface Preferences {
 	layout: {
 		sidebarCollapsed: boolean;
 	};
+	clearRamoData: boolean;
 }
 
 export type PreferencesSerial = Preferences;
@@ -30,7 +31,8 @@ const DEFAULTS: Preferences = {
 	},
 	layout: {
 		sidebarCollapsed: false
-	}
+	},
+	clearRamoData: true
 };
 
 export class PreferencesManager implements Serializable<PreferencesSerial> {
@@ -91,6 +93,14 @@ export class PreferencesManager implements Serializable<PreferencesSerial> {
 
 	get sidebarCollapsed() {
 		return this._prefs.layout.sidebarCollapsed;
+	}
+
+	get clearRamoData() {
+		return this._prefs.clearRamoData;
+	}
+
+	setClearRamoData(v: boolean) {
+		this._prefs = { ...this._prefs, clearRamoData: v };
 	}
 
 	setTheme(theme: Theme) {
