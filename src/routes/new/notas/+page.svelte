@@ -208,9 +208,7 @@
 		const fs = fullScript;
 		const strat = selectedStrategy;
 		if (!fs || !selectedEscenarioId || !worker || !scriptRaw.trim() || statements.length === 0) {
-			if (selectedEscenarioId) {
-				solverResult ??= semestre.escenarios.get(selectedEscenarioId)?.lastResult ?? null;
-			}
+			solverResult = null;
 			isSolving = false;
 			solveError = null;
 			return;

@@ -158,6 +158,8 @@ export class EscenariosManager implements Serializable<EscenariosSerial> {
 		this._data.set(id, {
 			...e,
 			scriptRaw,
+			lastResult: scriptRaw.trim() ? e.lastResult : null,
+			lastHash: scriptRaw.trim() ? e.lastHash : '',
 			variableEntries: Object.fromEntries(oldVars.map((v) => [v, e.variableEntries[v] ?? null]))
 		});
 	}

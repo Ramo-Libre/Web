@@ -1,11 +1,12 @@
 <script lang="ts">
 	import { fly } from 'svelte/transition';
-	import { Sparkles, Rocket, CalendarPlus, X } from '@lucide/svelte';
+	import { Sparkles, Rocket, CalendarPlus, Bot, X } from '@lucide/svelte';
 	import { goto } from '$app/navigation';
 	import { semestre } from '$lib/infra/semestres.svelte';
 	import { getNow } from '$lib/utils/date';
 	import WizardSemestre from './WizardSemestre.svelte';
 	import VistaPreviaWizard from './VistaPreviaWizard.svelte';
+	import AIContextDrawer from './AIContextDrawer.svelte';
 
 	const now = getNow();
 	const year = now.getFullYear();
@@ -42,6 +43,16 @@
 			desc: 'Próximamente disponible.',
 			id: 'importar-google',
 			disabled: true
+		},
+		{
+			icon: Bot,
+			iconBg: 'bg-grades-400/20 text-grades-100',
+			iconHoverBg: 'group-hover:bg-grades-100 group-active:bg-grades-100',
+			hoverBg: 'hover:bg-grades-400/5 active:bg-grades-400/10',
+			title: 'Ayuda con IA',
+			desc: 'Contextos para que una IA te explique cómo usar la app.',
+			id: 'contexto-ia',
+			disabled: false
 		}
 	];
 
@@ -127,7 +138,7 @@
 			<!-- Mobile: bottom sheet -->
 			<div
 				class="absolute bottom-0 left-0 right-0 bg-base-100 rounded-t-2xl shadow-xl border border-base-400 lg:hidden {action.id ===
-				'inicia-semestre' || action.id === 'vista-previa'
+				'inicia-semestre' || action.id === 'vista-previa' || action.id === 'contexto-ia'
 					? 'max-h-[85vh] flex flex-col'
 					: ''}"
 				in:fly={{ y: 100, duration: 250 }}
@@ -144,7 +155,7 @@
 						<X size={20} />
 					</button>
 				</div>
-				<div class="p-6 {action.id === 'inicia-semestre' || action.id === 'vista-previa' ? 'flex-1 overflow-y-auto' : ''}">
+				<div class="p-6 {action.id === 'inicia-semestre' || action.id === 'vista-previa' || action.id === 'contexto-ia' ? 'flex-1 overflow-y-auto' : ''}">
 					{#if action.id === 'inicia-semestre'}
 						<WizardSemestre
 							bind:semesterName={wizardName}
@@ -161,6 +172,8 @@
 							onPrev={() => previewStep--}
 							onFinish={() => (openModal = null)}
 						/>
+					{:else if action.id === 'contexto-ia'}
+						<AIContextDrawer />
 					{/if}
 				</div>
 			</div>
@@ -198,6 +211,8 @@
 							onPrev={() => previewStep--}
 							onFinish={() => (openModal = null)}
 						/>
+					{:else if action.id === 'contexto-ia'}
+						<AIContextDrawer />
 					{/if}
 				</div>
 			</div>

@@ -3,7 +3,6 @@
 	import type { RenderType } from '$lib/features/notas.svelte';
 	import katex from 'katex';
 	import 'katex/dist/katex.min.css';
-	import { Sigma } from '@lucide/svelte';
 
 	interface Props {
 		scriptRaw: string;
@@ -27,21 +26,20 @@
 </script>
 
 <div
-	class="rounded-xl border border-base-400 bg-base-100 shadow-inner w-full relative cursor-pointer overflow-hidden"
+	class="rounded-xl border border-base-400 bg-base-100 shadow-inner w-full relative cursor-pointer overflow-hidden group"
 	onclick={onEdit}
 	role="button"
 	tabindex="0"
 	onkeydown={(e) => { if (e.key === 'Enter') onEdit?.(); }}
 >
 	<div class="absolute top-4 left-4 flex items-center gap-2 text-content/50 pointer-events-none">
-		<Sigma class="w-5 h-5" />
 		<span class="font-medium text-xs uppercase tracking-widest">Ecuación de Nota</span>
 	</div>
 
 	{#if visibleStatements.length === 0}
-		<div class="h-40 flex items-center justify-center text-content/40">
-			<div class="text-center">
-				<span>Presiona para configurar las reglas</span>
+		<div class="h-40 flex items-center justify-center">
+			<div class="flex flex-col items-center gap-2 px-6 py-3.5 rounded-xl border-2 border-dashed border-primary-100/30 bg-primary-100/5 group-hover:bg-primary-100/10 group-hover:border-primary-100/50 transition-all cursor-pointer">
+				<span class="text-sm font-bold text-primary-100/70">Presiona para configurar las reglas</span>
 			</div>
 		</div>
 	{:else}
