@@ -14,7 +14,6 @@
 		CircleX,
 		HelpCircle,
 		ArrowRight,
-		MapPin
 	} from '@lucide/svelte';
 	import { fly } from 'svelte/transition';
 	import { semestre } from '$lib/infra/semestres.svelte';
@@ -178,12 +177,6 @@
 											<div class="flex items-center gap-1 text-[11px] text-content/50 leading-tight">
 												<span>{ev.startTime}–{ev.endTime}</span>
 											</div>
-											{#if ev.location}
-												<div class="flex items-center gap-1 text-[11px] text-content/50 leading-tight">
-													<MapPin class="h-3 w-3 shrink-0 text-content/40" />
-													<span class="truncate">{ev.location}</span>
-												</div>
-											{/if}
 										</div>
 										{#if ev.description}
 											<div class="text-[11px] text-content/50 leading-tight text-right max-w-[140px] shrink-0 line-clamp-3">

@@ -2,7 +2,6 @@
 	import { semestre } from '$lib/infra/semestres.svelte';
 	import {
 		Clock,
-		MapPin,
 		CheckCircle2,
 		Coffee,
 		FlaskConical,
@@ -124,12 +123,6 @@
 							<Clock class="h-3 w-3" />
 							{c.startTime} – {c.endTime}
 						</span>
-						{#if c.location}
-							<span class="flex items-center gap-1 truncate">
-								<MapPin class="h-3 w-3" />
-								<span class="truncate">{c.location}</span>
-							</span>
-						{/if}
 					</div>
 					<div class="flex items-center gap-2">
 						<span class="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-bold text-success-100 bg-success-400 border border-success-300 rounded uppercase tracking-wide">
@@ -159,12 +152,6 @@
 							<Clock class="h-3 w-3" />
 							Empieza a las {c.startTime}
 						</span>
-						{#if c.location}
-							<span class="flex items-center gap-1 truncate">
-								<MapPin class="h-3 w-3" />
-								<span class="truncate">{c.location}</span>
-							</span>
-						{/if}
 					</div>
 					<span class="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-bold text-primary-100 bg-primary-400 border border-primary-300 rounded uppercase tracking-wide">
 						Empieza en {countdownStr}

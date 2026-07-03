@@ -3,7 +3,13 @@
 	import { Sparkles, Rocket, CalendarPlus, X } from '@lucide/svelte';
 	import { goto } from '$app/navigation';
 	import { semestre } from '$lib/infra/semestres.svelte';
+	import { getNow } from '$lib/utils/date';
 	import WizardSemestre from './WizardSemestre.svelte';
+
+	const now = getNow();
+	const year = now.getFullYear();
+	const semestreNum = now.getMonth() < 6 ? 1 : 2;
+	const recomendado = `${year}-${semestreNum}`;
 
 	const actions = [
 		{
@@ -50,6 +56,8 @@
 	}
 
 	function handleFinish() {
+		const name = wizardName.trim() || recomendado;
+		semestre.add(name);
 		for (const r of wizardRamos) {
 			if (r.name.trim()) semestre.ramos.add({ name: r.name.trim(), color: r.color });
 		}

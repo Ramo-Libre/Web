@@ -9,7 +9,6 @@ export interface ScheduleEvent {
 	ramoId?: string;
 	title?: string;
 	description?: string;
-	location?: string;
 	category: ScheduleCategory;
 
 	startTime?: string;
