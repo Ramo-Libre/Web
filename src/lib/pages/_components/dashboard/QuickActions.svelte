@@ -5,6 +5,7 @@
 	import { semestre } from '$lib/infra/semestres.svelte';
 	import { getNow } from '$lib/utils/date';
 	import WizardSemestre from './WizardSemestre.svelte';
+	import VistaPreviaWizard from './VistaPreviaWizard.svelte';
 
 	const now = getNow();
 	const year = now.getFullYear();
@@ -19,7 +20,8 @@
 			hoverBg: 'hover:bg-primary-400/5 active:bg-primary-400/10',
 			title: 'Vista Previa',
 			desc: 'Recorrido rápido por las funcionalidades de la app.',
-			id: 'vista-previa'
+			id: 'vista-previa',
+			disabled: false
 		},
 		{
 			icon: Rocket,
@@ -28,16 +30,18 @@
 			hoverBg: 'hover:bg-classes-400/5 active:bg-classes-400/10',
 			title: 'Inicia un semestre',
 			desc: 'Deja todo listo para empezar con tu semestre.',
-			id: 'inicia-semestre'
+			id: 'inicia-semestre',
+			disabled: false
 		},
 		{
 			icon: CalendarPlus,
-			iconBg: 'bg-calendar-400/20 text-calendar-100',
-			iconHoverBg: 'group-hover:bg-calendar-100 group-active:bg-calendar-100',
-			hoverBg: 'hover:bg-calendar-400/5 active:bg-calendar-400/10',
+			iconBg: 'bg-base-200/50 text-content/30',
+			iconHoverBg: '',
+			hoverBg: '',
 			title: 'Importar Google Calendar',
-			desc: 'Agrega tus eventos de Google Calendar.',
-			id: 'importar-google'
+			desc: 'Próximamente disponible.',
+			id: 'importar-google',
+			disabled: true
 		}
 	];
 
@@ -45,8 +49,12 @@
 	let wizardName = $state('');
 	let wizardRamos = $state<{ name: string; color: string }[]>([]);
 	let wizardStep = $state(1);
+	let previewStep = $state(1);
 
 	function handleClick(id: string) {
+		if (id === 'vista-previa') {
+			previewStep = 1;
+		}
 		if (id === 'inicia-semestre') {
 			wizardName = '';
 			wizardRamos = [];
@@ -71,8 +79,9 @@
 	<div class="flex flex-col divide-y divide-base-400">
 		{#each actions as action (action.id)}
 			<button
-				onclick={() => handleClick(action.id)}
-				class="cursor-pointer w-full p-4 sm:p-5 flex items-center justify-between group {action.hoverBg} transition-colors text-left"
+				onclick={() => !action.disabled && handleClick(action.id)}
+				disabled={action.disabled}
+				class="cursor-pointer w-full p-4 sm:p-5 flex items-center justify-between group {action.hoverBg} transition-colors text-left {action.disabled ? 'cursor-not-allowed opacity-50' : ''}"
 			>
 				<div class="flex items-center gap-4">
 					<div
@@ -118,7 +127,7 @@
 			<!-- Mobile: bottom sheet -->
 			<div
 				class="absolute bottom-0 left-0 right-0 bg-base-100 rounded-t-2xl shadow-xl border border-base-400 lg:hidden {action.id ===
-				'inicia-semestre'
+				'inicia-semestre' || action.id === 'vista-previa'
 					? 'max-h-[85vh] flex flex-col'
 					: ''}"
 				in:fly={{ y: 100, duration: 250 }}
@@ -135,7 +144,7 @@
 						<X size={20} />
 					</button>
 				</div>
-				<div class="p-6 {action.id === 'inicia-semestre' ? 'flex-1 overflow-y-auto' : ''}">
+				<div class="p-6 {action.id === 'inicia-semestre' || action.id === 'vista-previa' ? 'flex-1 overflow-y-auto' : ''}">
 					{#if action.id === 'inicia-semestre'}
 						<WizardSemestre
 							bind:semesterName={wizardName}
@@ -144,6 +153,13 @@
 							onNext={() => wizardStep++}
 							onPrev={() => wizardStep--}
 							onFinish={handleFinish}
+						/>
+					{:else if action.id === 'vista-previa'}
+						<VistaPreviaWizard
+							bind:step={previewStep}
+							onNext={() => previewStep++}
+							onPrev={() => previewStep--}
+							onFinish={() => (openModal = null)}
 						/>
 					{/if}
 				</div>
@@ -174,6 +190,13 @@
 							onNext={() => wizardStep++}
 							onPrev={() => wizardStep--}
 							onFinish={handleFinish}
+						/>
+					{:else if action.id === 'vista-previa'}
+						<VistaPreviaWizard
+							bind:step={previewStep}
+							onNext={() => previewStep++}
+							onPrev={() => previewStep--}
+							onFinish={() => (openModal = null)}
 						/>
 					{/if}
 				</div>
