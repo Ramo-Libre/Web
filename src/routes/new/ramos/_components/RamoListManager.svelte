@@ -135,9 +135,7 @@
 			<p class="text-sm text-content/70 mb-6">
 				Esta acción eliminará permanentemente el ramo <strong class="text-content"
 					>"{deleteConfirmData.name}"</strong
-				>{semestre.preferences.clearRamoData
-					? ' y todos sus datos asociados (horarios, eventos, escenarios).'
-					: '. Los horarios y escenarios vinculados se quedarán sin referencia.'}
+				> y todos sus datos asociados (horarios, eventos, escenarios).
 				No se puede deshacer.
 			</p>
 			<div class="flex justify-end gap-3">

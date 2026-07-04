@@ -1,5 +1,6 @@
 import type { Serializable } from '$lib/types/state';
 import { generateUUID } from '$lib/utils/crypto';
+import { changeBus } from '$lib/infra/changes.svelte';
 import { SvelteDate, SvelteMap } from 'svelte/reactivity';
 
 export type ScheduleCategory = 'book' | 'lab' | 'assist' | 'taller' | 'exam' | 'urgent' | 'event' | 'other';
@@ -44,11 +45,13 @@ export class ScheduleManager implements Serializable<ScheduleSerial> {
 	add(event: Omit<ScheduleEvent, 'id'> & { id?: string }): string {
 		const id = event.id ?? generateUUID();
 		this._events.set(id, { ...event, id });
+		changeBus.emit('schedule', 'created', id);
 		return id;
 	}
 
 	remove(id: string) {
 		this._events.delete(id);
+		changeBus.emit('schedule', 'deleted', id);
 	}
 
 	get(id: string): ScheduleEvent | undefined {
@@ -61,6 +64,7 @@ export class ScheduleManager implements Serializable<ScheduleSerial> {
 
 	update(id: string, event: ScheduleEvent) {
 		this._events.set(id, event);
+		changeBus.emit('schedule', 'updated', id);
 	}
 
 	removeByRamo(ramoId: string) {
@@ -69,6 +73,7 @@ export class ScheduleManager implements Serializable<ScheduleSerial> {
 			if (event.ramoId === ramoId) toDelete.push(id);
 		}
 		for (const id of toDelete) this._events.delete(id);
+		if (toDelete.length) changeBus.emit('schedule', 'deleted', ramoId);
 	}
 
 	private isActiveOnDate(event: ScheduleEvent, date: string): boolean {

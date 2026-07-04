@@ -1,6 +1,7 @@
 import type { Serializable } from '$lib/types/state';
 import { SvelteMap } from 'svelte/reactivity';
 import { generateUUID } from '$lib/utils/crypto';
+import { changeBus } from '$lib/infra/changes.svelte';
 
 export type RenderType = 'assignment' | 'constraint' | 'domain';
 
@@ -138,6 +139,7 @@ export class EscenariosManager implements Serializable<EscenariosSerial> {
 			lastStrategy: 'punto_medio',
 			lastHash: ''
 		});
+		changeBus.emit('escenarios', 'created', id);
 		return id;
 	}
 
@@ -149,6 +151,7 @@ export class EscenariosManager implements Serializable<EscenariosSerial> {
 		const e = this._data.get(id);
 		if (!e) return;
 		this._data.set(id, { ...e, ...partial });
+		changeBus.emit('escenarios', 'updated', id);
 	}
 
 	setScript(id: string, scriptRaw: string) {
@@ -162,6 +165,7 @@ export class EscenariosManager implements Serializable<EscenariosSerial> {
 			lastHash: scriptRaw.trim() ? e.lastHash : '',
 			variableEntries: Object.fromEntries(oldVars.map((v) => [v, e.variableEntries[v] ?? null]))
 		});
+		changeBus.emit('escenarios', 'updated', id);
 	}
 
 	setVariableEntry(id: string, variable: string, value: number | null) {
@@ -171,12 +175,14 @@ export class EscenariosManager implements Serializable<EscenariosSerial> {
 			...e,
 			variableEntries: { ...e.variableEntries, [variable]: value }
 		});
+		changeBus.emit('escenarios', 'updated', id);
 	}
 
 	setRenderTypes(id: string, renderTypes: RenderType[]) {
 		const e = this._data.get(id);
 		if (!e) return;
 		this._data.set(id, { ...e, renderTypes });
+		changeBus.emit('escenarios', 'updated', id);
 	}
 
 	setLastResult(id: string, result: SolverResult | null) {
@@ -193,12 +199,14 @@ export class EscenariosManager implements Serializable<EscenariosSerial> {
 
 	remove(id: string) {
 		this._data.delete(id);
+		changeBus.emit('escenarios', 'deleted', id);
 	}
 
 	removeByRamo(ramoId: string) {
 		for (const [id, e] of this._data) {
 			if (e.ramoId === ramoId) this._data.delete(id);
 		}
+		changeBus.emit('escenarios', 'deleted', ramoId);
 	}
 
 	byRamo(ramoId: string): Escenario[] {

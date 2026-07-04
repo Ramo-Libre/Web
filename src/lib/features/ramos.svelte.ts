@@ -1,5 +1,6 @@
 import type { Serializable } from '$lib/types/state';
 import { generateUUID } from '$lib/utils/crypto';
+import { changeBus } from '$lib/infra/changes.svelte';
 import { SvelteMap } from 'svelte/reactivity';
 
 interface Ramo {
@@ -41,11 +42,13 @@ export class RamosManager implements Serializable<RamosSerial> {
 	add(ramo: Ramo) {
 		const id = generateUUID();
 		this._ramos.set(id, ramo);
+		changeBus.emit('ramos', 'created', id);
 		return id;
 	}
 
 	remove(id: string) {
 		this._ramos.delete(id);
+		changeBus.emit('ramos', 'deleted', id);
 		this._onRemove?.(id);
 	}
 
@@ -59,6 +62,7 @@ export class RamosManager implements Serializable<RamosSerial> {
 
 	update(id: string, ramo: Ramo) {
 		this._ramos.set(id, ramo);
+		changeBus.emit('ramos', 'updated', id);
 	}
 
 	get list() {

@@ -1,5 +1,6 @@
 import type { Serializable } from '$lib/types/state';
 import { themes, type Theme } from '@ramo-libre/ui-themes';
+import { changeBus } from '$lib/infra/changes.svelte';
 
 export type Orientation = 'normal' | 'rotated';
 
@@ -15,7 +16,6 @@ export interface Preferences {
 	layout: {
 		sidebarCollapsed: boolean;
 	};
-	clearRamoData: boolean;
 }
 
 export type PreferencesSerial = Preferences;
@@ -31,8 +31,7 @@ const DEFAULTS: Preferences = {
 	},
 	layout: {
 		sidebarCollapsed: false
-	},
-	clearRamoData: true
+	}
 };
 
 export class PreferencesManager implements Serializable<PreferencesSerial> {
@@ -95,32 +94,29 @@ export class PreferencesManager implements Serializable<PreferencesSerial> {
 		return this._prefs.layout.sidebarCollapsed;
 	}
 
-	get clearRamoData() {
-		return this._prefs.clearRamoData;
-	}
-
-	setClearRamoData(v: boolean) {
-		this._prefs = { ...this._prefs, clearRamoData: v };
-	}
-
 	setTheme(theme: Theme) {
 		this._prefs = { ...this._prefs, theme };
+		changeBus.emit('preferences', 'updated');
 	}
 
 	setScheduleShowCalendarEvents(v: boolean) {
 		this._prefs = { ...this._prefs, schedule: { ...this._prefs.schedule, showCalendarEvents: v } };
+		changeBus.emit('preferences', 'updated');
 	}
 
 	setScheduleOrientation(v: Orientation) {
 		this._prefs = { ...this._prefs, schedule: { ...this._prefs.schedule, orientation: v } };
+		changeBus.emit('preferences', 'updated');
 	}
 
 	setCalendarShowHorarios(v: boolean) {
 		this._prefs = { ...this._prefs, calendar: { ...this._prefs.calendar, showHorarios: v } };
+		changeBus.emit('preferences', 'updated');
 	}
 
 	setSidebarCollapsed(v: boolean) {
 		this._prefs = { ...this._prefs, layout: { ...this._prefs.layout, sidebarCollapsed: v } };
+		changeBus.emit('preferences', 'updated');
 	}
 
 	applyTheme() {

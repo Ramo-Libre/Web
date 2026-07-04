@@ -6,19 +6,14 @@ import { SvelteMap } from 'svelte/reactivity';
 import { local } from './persistence.svelte';
 import { ScheduleManager, type ScheduleSerial } from '$lib/features/schedule.svelte';
 import { EscenariosManager, type EscenariosSerial } from '$lib/features/notas.svelte';
+import { changeBus, type FeatureId } from './changes.svelte';
+import { syncRouter } from './sync-router.svelte';
+import { KEYS } from './sync-policies';
 import type { MockDataOutputV2 } from '$lib/dev-tools/types-v2';
+import type { Serializable } from '$lib/types/state';
 
 export interface SemestreData {
 	name: string;
-}
-
-const enum KEYS {
-	ACTIVE_SEM = 'ACT',
-	SEMESTRES = 'SEM',
-	RAMOS = 'RMS',
-	SCHEDULE = 'SCH',
-	ESCENARIOS = 'ESC',
-	PREFERENCES = 'PRE'
 }
 
 type SemestresSerial = [string, SemestreData][];
@@ -31,19 +26,16 @@ class SemestresManager {
 	private _schedule = new ScheduleManager();
 	private _escenarios = new EscenariosManager();
 	private _ramos = new RamosManager((id) => {
-		if (this._preferences.clearRamoData) {
-			this._schedule.removeByRamo(id);
-			this._escenarios.removeByRamo(id);
-		}
+		this._schedule.removeByRamo(id);
+		this._escenarios.removeByRamo(id);
 	});
 
 	constructor() {
-		if (browser) this.load();
-		$effect.root(() => {
-			$effect(() => {
-				this.persist();
-			});
-		});
+		if (browser) {
+			changeBus.setSemesterIdProvider(() => this._active);
+			syncRouter.init();
+			this.load();
+		}
 	}
 
 	private prefix(id_key: string) {
@@ -51,46 +43,25 @@ class SemestresManager {
 	}
 
 	private load() {
-		console.log('semestres:load');
-		this._active = local.get<string>(KEYS.ACTIVE_SEM) || '';
-		const raw = local.get<SemestresSerial>(KEYS.SEMESTRES);
+		this._active = local.get<string>(KEYS.active) || '';
+		const raw = local.get<SemestresSerial>(KEYS.semesters);
 		this._semestres = new SvelteMap(raw ?? []);
+
+		const prefs = local.get<PreferencesSerial>(KEYS.preferences);
+		if (prefs) this._preferences.fromSerial(prefs);
 
 		this.loadCurrentSemester();
 	}
 
 	loadCurrentSemester() {
-		console.log('semestres:loadCurrentSemester');
-
-		const prefs = local.get<PreferencesSerial>(this.prefix(KEYS.PREFERENCES));
-		if (prefs) this._preferences.fromSerial(prefs);
-
-		const ramos = local.get<RamosSerial>(this.prefix(KEYS.RAMOS)) || DEFAULT_RAMOS;
+		const ramos = local.get<RamosSerial>(this.prefix(KEYS.ramos)) || DEFAULT_RAMOS;
 		this._ramos.fromSerial(ramos);
 
-		const schedule = local.get<ScheduleSerial>(this.prefix(KEYS.SCHEDULE)) || [];
+		const schedule = local.get<ScheduleSerial>(this.prefix(KEYS.schedule)) || [];
 		this._schedule.fromSerial(schedule);
 
-		const escenarios = local.get<EscenariosSerial>(this.prefix(KEYS.ESCENARIOS)) || [];
+		const escenarios = local.get<EscenariosSerial>(this.prefix(KEYS.escenarios)) || [];
 		this._escenarios.fromSerial(escenarios);
-	}
-
-	private persist() {
-		console.log('semestres:persist');
-		local.save(KEYS.ACTIVE_SEM, this._active);
-		local.save(KEYS.SEMESTRES, Array.from(this._semestres.entries()));
-
-		const toSave = {
-			[KEYS.RAMOS]: this._ramos.toSerial(),
-			[KEYS.SCHEDULE]: this._schedule.toSerial(),
-			[KEYS.ESCENARIOS]: this._escenarios.toSerial(),
-			[KEYS.PREFERENCES]: this._preferences.toSerial()
-		};
-
-		for (const [id_key, val] of Object.entries(toSave)) {
-			const key = this.prefix(id_key);
-			local.save(key, val);
-		}
 	}
 
 	get active() {
@@ -110,6 +81,7 @@ class SemestresManager {
 		this._semestres.set(id, { name });
 		this._active = id;
 		this.loadCurrentSemester();
+		changeBus.emit('semesters', 'created', id);
 		return id;
 	}
 
@@ -119,21 +91,21 @@ class SemestresManager {
 			this._active = '';
 			this.loadCurrentSemester();
 		}
-		for (const key of [KEYS.RAMOS, KEYS.SCHEDULE, KEYS.ESCENARIOS, KEYS.PREFERENCES]) {
-			local.remove(id + '_' + key);
-		}
+		changeBus.emit('semesters', 'deleted', id);
 	}
 
 	select(id: string) {
 		if (!this._semestres.has(id)) return;
 		this._active = id;
 		this.loadCurrentSemester();
+		changeBus.emit('semesters', 'updated', id);
 	}
 
 	rename(id: string, name: string) {
 		const data = this._semestres.get(id);
 		if (!data) return;
 		this._semestres.set(id, { ...data, name });
+		changeBus.emit('semesters', 'updated', id);
 	}
 
 	get preferences() {
@@ -156,6 +128,16 @@ class SemestresManager {
 		return this._semestres.size > 0 || !this._ramos.empty() || !this._schedule.empty() || !this._escenarios.empty();
 	}
 
+	managerFor(feature: FeatureId): Serializable<unknown> {
+		switch (feature) {
+			case 'preferences': return this._preferences;
+			case 'ramos': return this._ramos;
+			case 'schedule': return this._schedule;
+			case 'escenarios': return this._escenarios;
+			case 'semesters': throw new Error('semesters has no manager');
+		}
+	}
+
 	applyMock(data: MockDataOutputV2) {
 		this._semestres = new SvelteMap(data.semestres.map((s) => [s.id, { name: s.name }]));
 		this._active = data.active;
@@ -167,7 +149,7 @@ class SemestresManager {
 			this._escenarios.fromSerial(entry.escenarios);
 		}
 
-		this.persist();
+		syncRouter.persistAll();
 	}
 }
 

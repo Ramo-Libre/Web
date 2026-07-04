@@ -25,9 +25,7 @@ Puedes cambiar la apariencia de la interfaz eligiendo entre diferentes temas:
 ## Comportamiento
 
 **Al eliminar un ramo:**
-- Opción para limpiar automáticamente los horarios y escenarios vinculados a ese ramo.
-- Si está activada, al eliminar un ramo también se eliminan sus eventos de horario y escenarios de nota.
-- Si está desactivada, los horarios y escenarios se conservan sin ramo vinculado.
+- También se eliminan sus horarios y escenarios vinculados automáticamente.
 
 ## Ejemplos
 
@@ -38,6 +36,5 @@ Puedes cambiar la apariencia de la interfaz eligiendo entre diferentes temas:
 
 **Ajustar visualización:**
 1. Activar "Mostrar horarios en el calendario" para ver tus clases en la vista mensual.
-2. Cambiar la orientación del horario a "rotada" para ver los días en filas.
-3. Desactivar "Limpiar datos al eliminar ramo" para conservar horarios y escenarios.`;
+2. Cambiar la orientación del horario a "rotada" para ver los días en filas.`;
 }
