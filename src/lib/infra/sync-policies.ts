@@ -1,4 +1,4 @@
-import type { FeatureId } from './changes.svelte';
+import type { FeatureId } from '$lib/infra/sync.svelte';
 
 export interface SyncPolicy {
 	persist: boolean;

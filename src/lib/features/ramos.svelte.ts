@@ -1,6 +1,6 @@
 import type { Serializable } from '$lib/types/state';
 import { generateUUID } from '$lib/utils/crypto';
-import { changeBus } from '$lib/infra/changes.svelte';
+import { changeBus } from '$lib/infra/sync.svelte';
 import { SvelteMap } from 'svelte/reactivity';
 
 interface Ramo {

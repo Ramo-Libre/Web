@@ -1,7 +1,7 @@
 import type { Serializable } from '$lib/types/state';
 import { SvelteMap } from 'svelte/reactivity';
 import { generateUUID } from '$lib/utils/crypto';
-import { changeBus } from '$lib/infra/changes.svelte';
+import { changeBus } from '$lib/infra/sync.svelte';
 
 export type RenderType = 'assignment' | 'constraint' | 'domain';
 

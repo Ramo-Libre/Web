@@ -1,6 +1,6 @@
 import type { Serializable } from '$lib/types/state';
 import { generateUUID } from '$lib/utils/crypto';
-import { changeBus } from '$lib/infra/changes.svelte';
+import { changeBus } from '$lib/infra/sync.svelte';
 import { SvelteDate, SvelteMap } from 'svelte/reactivity';
 
 export type ScheduleCategory = 'book' | 'lab' | 'assist' | 'taller' | 'exam' | 'urgent' | 'event' | 'other';

@@ -1,8 +1,8 @@
 import { browser } from '$app/environment';
-import { changeBus, type ChangeEvent, type FeatureId } from './changes.svelte';
+import { changeBus, type ChangeEvent, type FeatureId } from '$lib/infra/sync.svelte';
 import { semestre } from './semestres.svelte';
 import { local } from './persistence.svelte';
-import { SYNC_POLICIES, KEYS } from './sync-policies';
+import { SYNC_POLICIES, KEYS } from '$lib/infra/sync.svelte';
 
 class SyncRouter {
 	private _init = false;

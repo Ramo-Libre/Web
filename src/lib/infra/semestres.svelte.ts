@@ -6,9 +6,9 @@ import { SvelteMap } from 'svelte/reactivity';
 import { local } from './persistence.svelte';
 import { ScheduleManager, type ScheduleSerial } from '$lib/features/schedule.svelte';
 import { EscenariosManager, type EscenariosSerial } from '$lib/features/notas.svelte';
-import { changeBus, type FeatureId } from './changes.svelte';
-import { syncRouter } from './sync-router.svelte';
-import { KEYS } from './sync-policies';
+import { changeBus, type FeatureId } from '$lib/infra/sync.svelte';
+import { syncRouter } from '$lib/infra/sync.svelte';
+import { KEYS } from '$lib/infra/sync.svelte';
 import type { MockDataOutputV2 } from '$lib/dev-tools/types-v2';
 import type { Serializable } from '$lib/types/state';
 

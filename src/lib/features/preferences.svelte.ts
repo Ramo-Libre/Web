@@ -1,6 +1,6 @@
 import type { Serializable } from '$lib/types/state';
 import { themes, type Theme } from '@ramo-libre/ui-themes';
-import { changeBus } from '$lib/infra/changes.svelte';
+import { changeBus } from '$lib/infra/sync.svelte';
 
 export type Orientation = 'normal' | 'rotated';
 
