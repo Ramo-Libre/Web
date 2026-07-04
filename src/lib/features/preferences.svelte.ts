@@ -54,6 +54,7 @@ export class PreferencesManager implements Serializable<PreferencesSerial> {
 				...((serial?.layout ?? {}) as Partial<Preferences['layout']>)
 			}
 		};
+		if (typeof document !== 'undefined') this.applyTheme();
 	}
 
 	toSerial(): PreferencesSerial {

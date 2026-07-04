@@ -34,10 +34,27 @@
 				return ramos;
 			}
 			case 'schedule': {
-				const events: [string, { id: string; title?: string; category: string }][] = [];
-				for (let i = 0; i < faker.number.int({ min: 1, max: 5 }); i++) {
+				const events: [string, Record<string, unknown>][] = [];
+				const count = faker.number.int({ min: 3, max: 6 });
+				for (let i = 0; i < count; i++) {
 					const id = generateUUID();
-					events.push([id, { id, title: faker.lorem.words(3), category: faker.helpers.arrayElement(['book', 'lab', 'exam', 'other']) }]);
+					const isRecurring = faker.datatype.boolean();
+					const event: Record<string, unknown> = {
+						id,
+						title: faker.lorem.words(3),
+						category: faker.helpers.arrayElement(['book', 'lab', 'exam', 'taller', 'other']),
+						startTime: `${faker.number.int({ min: 7, max: 20 })}:${faker.helpers.arrayElement(['00', '30'])}`,
+						endTime: `${faker.number.int({ min: 8, max: 22 })}:${faker.helpers.arrayElement(['00', '30'])}`
+					};
+					if (isRecurring) {
+						const start = faker.date.soon({ days: 30 });
+						event.daysOfWeek = [faker.number.int({ min: 1, max: 7 })];
+						event.recurrenceStart = start.toISOString().slice(0, 10);
+						event.recurrenceEnd = faker.date.soon({ days: 90, refDate: start }).toISOString().slice(0, 10);
+					} else {
+						event.date = faker.date.soon({ days: 60 }).toISOString().slice(0, 10);
+					}
+					events.push([id, event]);
 				}
 				return events;
 			}

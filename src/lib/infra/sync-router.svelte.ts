@@ -60,9 +60,12 @@ class SyncRouter {
 			if (event.origin !== 'remote' || event.payload === undefined) continue;
 
 			if (event.feature === 'semesters') {
+				const oldIds = new Set(Array.from(semestre.semestres.keys()));
 				semestre.applySemestersSnapshot(event.payload as { semestres: [string, { name: string }][]; active: string });
 				this._persistActiveSem();
 				this._persistSemesterList();
+				const newIds = new Set(Array.from(semestre.semestres.keys()));
+				this._removeOrphanSemesters(oldIds, newIds);
 			} else {
 				const manager = semestre.managerFor(event.feature);
 				manager.fromSerial(event.payload);
@@ -85,8 +88,16 @@ class SyncRouter {
 		this._persistSemesterList();
 
 		if (event.action === 'deleted' && event.entityId) {
-			for (const key of ['RMS', 'SCH', 'ESC']) {
-				local.remove(event.entityId + '_' + key);
+			this._removeOrphanSemesters(new Set([event.entityId]), new Set());
+		}
+	}
+
+	private _removeOrphanSemesters(oldIds: Set<string>, newIds: Set<string>) {
+		for (const id of oldIds) {
+			if (!newIds.has(id)) {
+				for (const key of ['RMS', 'SCH', 'ESC']) {
+					local.remove(id + '_' + key);
+				}
 			}
 		}
 	}
