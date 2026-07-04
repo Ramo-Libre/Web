@@ -4,6 +4,7 @@
 	import TimeTravel from './_components/dev-tools/TimeTravel.svelte';
 	import StorageTransfer from './_components/dev-tools/StorageTransfer.svelte';
 	import GeneratorV2 from './_components/dev-tools/GeneratorV2.svelte';
+	import DevSyncPanel from './_components/dev-tools/DevSyncPanel.svelte';
 </script>
 
 <div in:fly={{ y: 10, duration: 300, delay: 100 }} class="w-full space-y-8">
@@ -22,6 +23,10 @@
 
 		<div class="break-inside-avoid">
 			<GeneratorV2 />
+		</div>
+
+		<div class="break-inside-avoid">
+			<DevSyncPanel />
 		</div>
 	</div>
 </div>

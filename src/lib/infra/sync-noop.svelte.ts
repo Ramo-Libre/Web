@@ -4,6 +4,7 @@ import type { SyncAdapter } from './sync-adapter';
 class NoopAdapter implements SyncAdapter {
 	readonly id = 'noop' as const;
 	private _connected = false;
+	private _remoteHandler: ((events: ChangeEvent[]) => void) | null = null;
 
 	get connected() {
 		return this._connected;
@@ -28,9 +29,17 @@ class NoopAdapter implements SyncAdapter {
 		return { changes: [], serverSequence: 0 };
 	}
 
-	onRemoteChanges(_handler: (events: ChangeEvent[]) => void) {
-		console.log('[Sync:Noop] onRemoteChanges (no-op)', _handler);
-		return () => {};
+	onRemoteChanges(handler: (events: ChangeEvent[]) => void) {
+		console.log('[Sync:Noop] onRemoteChanges');
+		this._remoteHandler = handler;
+		return () => {
+			this._remoteHandler = null;
+		};
+	}
+
+	async simulateReceiveEvents(events: ChangeEvent[]) {
+		console.log('[Sync:Noop] simulateReceiveEvents', events);
+		this._remoteHandler?.(events);
 	}
 }
 

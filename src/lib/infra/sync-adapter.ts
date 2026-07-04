@@ -12,4 +12,5 @@ export interface SyncAdapter {
 		serverSequence: number;
 	}>;
 	onRemoteChanges(handler: (events: ChangeEvent[]) => void): () => void;
+	simulateReceiveEvents?(events: ChangeEvent[]): Promise<void>;
 }

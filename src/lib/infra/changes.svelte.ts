@@ -12,34 +12,50 @@ export interface ChangeEvent {
 	deviceId: string;
 	origin: 'local' | 'remote';
 	sequence: number;
+	payload?: unknown;
+}
+
+const SEQ_PREFIX = 'RAMOLIBRE_V2_SEQ_';
+
+function storageKey(semesterId: string): string {
+	return SEQ_PREFIX + semesterId;
 }
 
 function eventName(feature: FeatureId): string {
 	return `ramolibre:${feature}:change`;
 }
 
-let _sequence = 0;
-function nextSequence(): number {
-	return ++_sequence;
-}
-
 class ChangeBus {
 	private _getSemesterId: () => string = () => '';
+	private _sequences = new Map<string, number>();
 
 	setSemesterIdProvider(fn: () => string) {
 		this._getSemesterId = fn;
 	}
 
+	private _nextSequence(semesterId: string): number {
+		let seq = this._sequences.get(semesterId);
+		if (seq === undefined) {
+			const stored = localStorage.getItem(storageKey(semesterId));
+			seq = stored ? parseInt(stored, 10) || 0 : 0;
+		}
+		seq++;
+		this._sequences.set(semesterId, seq);
+		localStorage.setItem(storageKey(semesterId), String(seq));
+		return seq;
+	}
+
 	emit(feature: FeatureId, action: ChangeAction, entityId?: string) {
+		const semesterId = this._getSemesterId();
 		const event: ChangeEvent = {
-			semesterId: this._getSemesterId(),
+			semesterId,
 			feature,
 			action,
 			entityId,
 			timestamp: Date.now(),
 			deviceId,
 			origin: 'local',
-			sequence: nextSequence()
+			sequence: this._nextSequence(semesterId)
 		};
 		window.dispatchEvent(new CustomEvent(eventName(feature), { detail: event }));
 	}

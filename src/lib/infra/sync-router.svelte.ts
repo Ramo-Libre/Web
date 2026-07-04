@@ -27,6 +27,7 @@ class SyncRouter {
 		this._init = true;
 
 		this._adapter.connect();
+		this._adapter.onRemoteChanges((events) => this._handleRemoteEvents(events));
 
 		changeBus.subscribeAll((event) => {
 			const policy = SYNC_POLICIES[event.feature];
@@ -52,6 +53,22 @@ class SyncRouter {
 		}
 		this._persistActiveSem();
 		this._persistSemesterList();
+	}
+
+	private _handleRemoteEvents(events: ChangeEvent[]) {
+		for (const event of events) {
+			if (event.origin !== 'remote' || event.payload === undefined) continue;
+
+			if (event.feature === 'semesters') {
+				semestre.applySemestersSnapshot(event.payload as { semestres: [string, { name: string }][]; active: string });
+				this._persistActiveSem();
+				this._persistSemesterList();
+			} else {
+				const manager = semestre.managerFor(event.feature);
+				manager.fromSerial(event.payload);
+				this._persistFeature(event.feature);
+			}
+		}
 	}
 
 	private _persistFeature(feature: FeatureId) {
