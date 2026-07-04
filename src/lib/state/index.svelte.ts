@@ -123,7 +123,6 @@ class RootStore {
 	}
 
 	private loadCurrentSemesterRamos() {
-		console.log('Loading ramos for current semester');
 		const semester = this.semestres.activeName ?? 'default';
 		const data = JSON.parse(localStorage.getItem(STORAGE_KEY(semester)) || '{}');
 		// Cargar datos
@@ -140,7 +139,6 @@ class RootStore {
 
 	fromMock(data: MockDataOutput) {
 		if (!browser) return;
-		console.log('Iniciando inyección masiva de Mock Data...');
 		this.hydrate({
 			semestres: data.semestres,
 			snapshots: Object.fromEntries(
@@ -156,7 +154,6 @@ class RootStore {
 				])
 			)
 		});
-		console.log('Inyección masiva completada.');
 	}
 
 	deleteSemesterData(semesterName: string) {
@@ -206,7 +203,6 @@ class RootStore {
 	}
 
 	private save() {
-		console.log('RootStore save triggered');
 		if (!browser) return;
 		// Recolectar los datos de cada manager
 		const semesterSnapshot = {
