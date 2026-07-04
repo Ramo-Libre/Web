@@ -1,15 +1,32 @@
 import { browser } from '$app/environment';
-import { changeBus, type ChangeEvent, type FeatureId } from '$lib/infra/sync.svelte';
+import { changeBus, type FeatureId } from './changes.svelte';
+import type { ChangeEvent } from './changes.svelte';
+import type { SyncAdapter } from './sync-adapter';
+import { noopAdapter } from './sync-noop.svelte';
 import { semestre } from './semestres.svelte';
 import { local } from './persistence.svelte';
-import { SYNC_POLICIES, KEYS } from '$lib/infra/sync.svelte';
+import { SYNC_POLICIES, KEYS } from './sync-policies';
 
 class SyncRouter {
 	private _init = false;
+	private _adapter: SyncAdapter = noopAdapter;
+
+	get adapter() {
+		return this._adapter;
+	}
+
+	setAdapter(adapter: SyncAdapter) {
+		if (this._adapter.id !== 'noop') {
+			this._adapter.disconnect();
+		}
+		this._adapter = adapter;
+	}
 
 	init() {
 		if (this._init || !browser) return;
 		this._init = true;
+
+		this._adapter.connect();
 
 		changeBus.subscribeAll((event) => {
 			const policy = SYNC_POLICIES[event.feature];
@@ -19,6 +36,10 @@ class SyncRouter {
 				this._persistSemesters(event);
 			} else {
 				this._persistFeature(event.feature);
+			}
+
+			if (policy?.sync) {
+				this._adapter.push([event]);
 			}
 		});
 	}
