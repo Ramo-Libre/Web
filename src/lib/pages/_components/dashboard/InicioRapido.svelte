@@ -18,7 +18,7 @@
 	function start() {
 		const name = semesterName.trim() || recomendado;
 		semestre.add(name);
-		goto('/new/ramos#semesters');
+		goto('/ramos#semesters');
 	}
 </script>
 

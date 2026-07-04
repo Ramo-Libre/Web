@@ -202,7 +202,7 @@
 						{@const { label, cls, Icon } = escenarioStatus(esc)}
 						<button
 							class="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left transition-colors hover:bg-base-200 cursor-pointer"
-							onclick={() => navTo('/new/notas#' + esc.id)}
+							onclick={() => navTo('/notas#' + esc.id)}
 						>
 							<Icon class="h-4 w-4 shrink-0 {cls}" />
 							<div class="min-w-0 flex-1">

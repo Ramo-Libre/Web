@@ -33,7 +33,7 @@
 		path: string;
 	};
 
-	const prefix = '/new';
+	const prefix = '';
 
 	const sections: Section[] = [
 		{

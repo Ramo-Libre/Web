@@ -81,7 +81,7 @@
 			if (r.name.trim()) semestre.ramos.add({ name: r.name.trim(), color: r.color });
 		}
 		openModal = null;
-		goto('/new/ramos#semesters');
+		goto('/ramos#semesters');
 	}
 
 </script>

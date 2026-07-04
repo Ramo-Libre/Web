@@ -78,7 +78,7 @@
 		} else if (event.daysOfWeek && event.daysOfWeek.length > 0) {
 			selectedDate = getNextDateForDow(event.daysOfWeek);
 		}
-		history.replaceState(null, '', '/new/calendario');
+		history.replaceState(null, '', '/calendario');
 	}
 
 	onMount(() => {

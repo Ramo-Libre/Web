@@ -30,7 +30,7 @@
 		<span class="text-content/70 font-mono">{label}</span>
 		<div class="flex-1"></div>
 		<button
-			onclick={() => goto('/new/dev-tools/')}
+			onclick={() => goto('/dev-tools/')}
 			class="flex items-center gap-1 text-primary-100 hover:underline font-medium cursor-pointer"
 		>
 			<ExternalLink size={12} />

@@ -69,7 +69,7 @@
 				{@const CatIcon = categoryIcons[ev.category] ?? Ellipsis}
 				{@const color = ramoColor(ev.ramoId)}
 				<button
-					onclick={() => goto('/new/calendario#' + ev.id)}
+					onclick={() => goto('/calendario#' + ev.id)}
 					class="flex items-center gap-2.5 w-full rounded-lg px-3 py-2 text-left hover:bg-base-200 transition-colors cursor-pointer"
 				>
 					<div class="flex flex-col items-center min-w-[36px]">

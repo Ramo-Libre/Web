@@ -38,7 +38,7 @@ class AccountManager {
 		const { error } = await supabase.auth.signInWithOAuth({
 			provider,
 			options: {
-				redirectTo: `${window.location.origin}/new`
+				redirectTo: window.location.origin
 			}
 		});
 		if (error) console.error('Login error:', error.message);

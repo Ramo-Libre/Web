@@ -19,7 +19,7 @@
 	function start() {
 		if (!semesterName.trim()) return;
 		semestre.add(semesterName.trim());
-		goto('/new/ramos#semesters');
+		goto('/ramos#semesters');
 	}
 </script>
 
