@@ -20,7 +20,9 @@
 	import type { SolverWorkerMessage } from './solver.worker';
 
 	let worker: Worker | null = null;
-	let dashboardResults = $state(new Map<string, { feasible: boolean; probability: number } | null>());
+	let dashboardResults = $state(
+		new Map<string, { feasible: boolean; probability: number } | null>()
+	);
 	let solveError = $state<string | null>(null);
 
 	onMount(() => {

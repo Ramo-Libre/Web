@@ -30,7 +30,7 @@ self.onmessage = async (e: MessageEvent<SolverWorkerRequest>) => {
 	const { fs, strategy, requestId, escenarioId } = e.data;
 
 	try {
-	    await ready;
+		await ready;
 		const jsResult = solve(fs, {
 			strategy,
 			montecarlo_n: 2000,
