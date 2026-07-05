@@ -29,10 +29,10 @@
 
 	interface Props {
 		selectedRamo: string | null;
-		selectedCategories: Set<ScheduleCategory>;
+		selectedCategories: SvelteSet<ScheduleCategory>;
 		showHorarios: boolean;
 		onRamoChange: (ramoId: string | null) => void;
-		onCategoriesChange: (categories: Set<ScheduleCategory>) => void;
+		onCategoriesChange: (categories: SvelteSet<ScheduleCategory>) => void;
 		onToggleHorarios: () => void;
 		onAddEvent: () => void;
 	}

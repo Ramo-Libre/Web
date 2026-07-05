@@ -73,7 +73,7 @@
 					/>
 				</div>
 				<div class="space-y-2">
-					<label class="text-sm font-semibold text-content/70">Color</label>
+					<label for="create-ramo-color" class="text-sm font-semibold text-content/70">Color</label>
 					<div class="flex flex-wrap gap-3">
 						{#each ColorUtils.COLORS as color (color)}
 							<button

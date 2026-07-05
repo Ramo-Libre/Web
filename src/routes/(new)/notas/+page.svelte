@@ -4,7 +4,7 @@
 	import { page } from '$app/state';
 	import { browser } from '$app/environment';
 	import { semestre } from '$lib/infra/semestres.svelte';
-	import { onMount, untrack } from 'svelte';
+	import { onDestroy, onMount, untrack } from 'svelte';
 	import { parseScript, extractFreeVariables, extractDomains } from '@ramo-libre/dsl-parser';
 	import ScriptViewer from './_components/ScriptViewer.svelte';
 	import ScriptEditor from './_components/ScriptEditor.svelte';
@@ -17,26 +17,21 @@
 	import CreateEscenarioDrawer from './_components/CreateEscenarioDrawer.svelte';
 	import type { RenderType, Escenario } from '$lib/features/notas.svelte';
 	import { hashContext } from '$lib/features/notas.svelte';
+	import type { SolverWorkerMessage } from './solver.worker';
 
 	let worker: Worker | null = null;
-	// svelte-ignore non_reactive_update
-	let dashboardResults = new SvelteMap<string, { feasible: boolean; probability: number } | null>();
+	let dashboardResults = $state(new Map<string, { feasible: boolean; probability: number } | null>());
+	let solveError = $state<string | null>(null);
 
 	onMount(() => {
 		worker = new Worker(new URL('./solver.worker.ts', import.meta.url), { type: 'module' });
-		worker.onmessage = (
-			e: MessageEvent<{
-				requestId: number;
-				result?: Record<string, unknown>;
-				error?: string;
-				escenarioId?: string;
-			}>
-		) => {
-			const { requestId, result, error, escenarioId } = e.data;
+		worker.onmessage = (e: MessageEvent<SolverWorkerMessage>) => {
+			const { requestId, hasError, escenarioId } = e.data;
 			if (escenarioId) {
-				if (error) {
+				if (hasError) {
 					dashboardResults.set(escenarioId, null);
 				} else {
+					const { result } = e.data;
 					const esc = semestre.escenarios.get(escenarioId);
 					dashboardResults.set(escenarioId, {
 						feasible: result.feasible,
@@ -64,10 +59,12 @@
 				return;
 			}
 			if (requestId !== solveRequestId) return;
-			if (error) {
-				solveError = error;
+			if (hasError) {
+				solveError = e.data.error;
+				console.log(solveError);
 				solverResult = null;
 			} else {
+				const { result } = e.data;
 				solverResult = {
 					feasible: result.feasible,
 					plan: result.plan,
@@ -112,7 +109,6 @@
 		libertad: { label?: string; raw: string; slack: number; penalty: number }[];
 	} | null>(null);
 	let isSolving = $state(false);
-	let solveError = $state<string | null>(null);
 
 	let escenario = $derived<Escenario | null>(
 		selectedEscenarioId ? (semestre.escenarios.get(selectedEscenarioId) ?? null) : null
@@ -237,6 +233,8 @@
 
 	$effect(() => {
 		if (!worker || selectedEscenarioId) return;
+		const w = worker;
+		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 		dashboardSolveTrigger;
 		untrack(() => {
 			dashboardResults = new SvelteMap();
@@ -260,7 +258,7 @@
 					});
 					continue;
 				}
-				worker.postMessage({
+				w.postMessage({
 					fs: full,
 					strategy,
 					requestId: ++solveRequestId,
@@ -268,6 +266,11 @@
 				});
 			}
 		});
+	});
+
+	onDestroy(() => {
+		worker?.terminate();
+		worker = null;
 	});
 </script>
 

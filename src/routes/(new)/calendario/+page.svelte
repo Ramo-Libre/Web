@@ -14,7 +14,8 @@
 	import DayTimeline from './_components/DayTimeline.svelte';
 
 	let selectedRamo = $state<string | null>(null);
-	let selectedCategories: Set<ScheduleCategory> = new SvelteSet();
+	// svelte-ignore non_reactive_update
+	let selectedCategories: SvelteSet<ScheduleCategory> = new SvelteSet();
 	let selectedDate = $state<string | null>(
 		(() => {
 			const d = getNow();
