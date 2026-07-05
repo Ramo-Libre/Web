@@ -97,6 +97,24 @@ class SemestresManager {
 	}
 
 	remove(id: string) {
+		const rmsKey = id + '_' + KEYS.ramos;
+		const schKey = id + '_' + KEYS.schedule;
+		const escKey = id + '_' + KEYS.escenarios;
+
+		const ramos = local.get<RamosSerial>(rmsKey) ?? [];
+		const schedule = local.get<ScheduleSerial>(schKey) ?? [];
+		const escenarios = local.get<EscenariosSerial>(escKey) ?? [];
+
+		for (const [ramoId] of ramos) {
+			changeBus.emit('ramos', 'deleted', ramoId, id);
+		}
+		for (const [eventId] of schedule) {
+			changeBus.emit('schedule', 'deleted', eventId, id);
+		}
+		for (const [escId] of escenarios) {
+			changeBus.emit('escenarios', 'deleted', escId, id);
+		}
+
 		this._semestres.delete(id);
 		if (this._active === id) {
 			this._active = '';
@@ -126,7 +144,6 @@ class SemestresManager {
 		if (!this._semestres.has(id)) return;
 		this._active = id;
 		this.loadCurrentSemester();
-		changeBus.emit('semesters', 'updated', id);
 	}
 
 	rename(id: string, name: string) {
