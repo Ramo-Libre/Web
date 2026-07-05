@@ -87,7 +87,7 @@
 		const payload = generatePayload(selectedFeature);
 
 		const event: EntityChange = {
-			semesterId: semestre.activeId || '$DEFAULT$',
+			semesterId: semestre.activeId,
 			feature: selectedFeature,
 			entityId: selectedAction === 'created' ? generateUUID() : generateUUID(),
 			action: selectedAction,

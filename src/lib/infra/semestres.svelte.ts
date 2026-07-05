@@ -39,7 +39,7 @@ class SemestresManager {
 	}
 
 	private prefix(id_key: string) {
-		return (this._active || '$DEFAULT$') + '_' + id_key;
+		return this._active + '_' + id_key;
 	}
 
 	private load() {
@@ -54,12 +54,24 @@ class SemestresManager {
 			this._active = Array.from(this._semestres.keys())[0];
 		}
 
+		if (!this._active) {
+			const id = generateUUID();
+			this._semestres.set(id, { name: 'Mis Datos' });
+			this._active = id;
+		}
+
 		this.loadCurrentSemester();
 	}
 
 	ensureActive() {
-		if (!this._active && this._semestres.size > 0) {
-			this._active = Array.from(this._semestres.keys())[0];
+		if (!this._active) {
+			if (this._semestres.size > 0) {
+				this._active = Array.from(this._semestres.keys())[0];
+			} else {
+				const id = generateUUID();
+				this._semestres.set(id, { name: 'Mis Datos' });
+				this._active = id;
+			}
 			this.loadCurrentSemester();
 		}
 	}
@@ -88,6 +100,12 @@ class SemestresManager {
 	}
 
 	add(name: string): string {
+		if (this._semestres.size === 1 && !this.hasData) {
+			this._semestres.set(this._active, { name });
+			changeBus.emit('semesters', 'updated', this._active);
+			return this._active;
+		}
+
 		const id = generateUUID();
 		this._semestres.set(id, { name });
 		this._active = id;
@@ -97,6 +115,7 @@ class SemestresManager {
 	}
 
 	remove(id: string) {
+		if (this._semestres.size <= 1) return;
 		const rmsKey = id + '_' + KEYS.ramos;
 		const schKey = id + '_' + KEYS.schedule;
 		const escKey = id + '_' + KEYS.escenarios;
@@ -170,7 +189,7 @@ class SemestresManager {
 	}
 
 	get hasData() {
-		return this._semestres.size > 0 || !this._ramos.empty() || !this._schedule.empty() || !this._escenarios.empty();
+		return !this._ramos.empty() || !this._schedule.empty() || !this._escenarios.empty();
 	}
 
 	managerFor(feature: FeatureId): Serializable<unknown> {

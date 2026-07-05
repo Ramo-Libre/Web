@@ -26,6 +26,7 @@
 	const totalSteps = 3;
 
 	let openColorIndex = $state<number | null>(null);
+	let hasRamos = $derived(ramosList.some((r) => r.name.trim()));
 
 	function setRamoColor(index: number, color: string) {
 		ramosList[index].color = color;
@@ -156,7 +157,8 @@
 			</button>
 			<button
 				onclick={onNext}
-				class="h-10 px-5 text-sm bg-primary-100 text-white rounded-lg hover:opacity-90 transition-opacity font-medium cursor-pointer"
+				disabled={!hasRamos}
+				class="h-10 px-5 text-sm bg-primary-100 text-white rounded-lg hover:opacity-90 disabled:opacity-40 transition-opacity font-medium cursor-pointer disabled:cursor-not-allowed"
 			>
 				Siguiente
 			</button>

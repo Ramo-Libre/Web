@@ -19,5 +19,6 @@ export const KEYS: Record<string, string> = {
 	schedule: 'SCH',
 	escenarios: 'ESC',
 	semesters: 'SEM',
-	active: 'ACT'
+	active: 'ACT',
+	pushed: 'PSH'
 };

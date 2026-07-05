@@ -16,6 +16,7 @@
 	let deleteConfirmData = $state<{ id: string; name: string } | null>(null);
 
 	const semestreList = $derived(Array.from(semestre.semestres.entries()));
+	const canDelete = $derived(semestre.semestres.size > 1);
 	const hasSemestres = $derived(semestreList.length > 0);
 	const activeSemestre = $derived(semestre.active);
 	const activeSemestreId = $derived(semestre.activeId);
@@ -96,7 +97,7 @@
 				<span class="text-xs font-bold uppercase tracking-widest">Periodo Actual</span>
 			</div>
 
-			{#if hasSemestres}
+			{#if canDelete}
 				<button
 					onclick={() => openDeleteConfirm(activeSemestreId, activeSemestre)}
 					class="p-2 rounded-lg bg-base-100/10 text-base-100/60 hover:bg-error-100 hover:text-base-100 transition-all backdrop-blur-sm z-20 cursor-pointer"
@@ -164,15 +165,17 @@
 							/>
 						</div>
 
-						<button
-							onclick={(e) => {
-								e.stopPropagation();
-								openDeleteConfirm(id, data.name);
-							}}
-							class="group-hover:opacity-100 p-2 text-content/30 hover:text-error-100 transition-opacity cursor-pointer"
-						>
-							<Trash2 size={16} />
-						</button>
+						{#if canDelete}
+							<button
+								onclick={(e) => {
+									e.stopPropagation();
+									openDeleteConfirm(id, data.name);
+								}}
+								class="group-hover:opacity-100 p-2 text-content/30 hover:text-error-100 transition-opacity cursor-pointer"
+							>
+								<Trash2 size={16} />
+							</button>
+						{/if}
 					</div>
 				{/if}
 			{/each}

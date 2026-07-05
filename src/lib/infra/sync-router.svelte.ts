@@ -19,6 +19,7 @@ class SyncRouter {
 	private _init = false;
 	private _adapter: SyncAdapter = noopAdapter;
 	private _unsubscribeRemote: (() => void) | null = null;
+	private _pushedSemesters = new Set<string>();
 
 	get adapter() {
 		return this._adapter;
@@ -48,13 +49,14 @@ class SyncRouter {
 	init() {
 		if (this._init || !browser) return;
 		this._init = true;
+		this._loadPushedSemesters();
 
 		this._adapter.connect();
 		this._unsubscribeRemote = this._adapter.onRemoteChanges(
 			(events) => this._handleRemoteEvents(events)
 		);
 
-		changeBus.subscribeAll((event) => {
+		changeBus.subscribeAll(async (event) => {
 			const policy = SYNC_POLICIES[event.feature];
 			if (!policy?.persist) return;
 
@@ -66,31 +68,81 @@ class SyncRouter {
 
 			if (!policy?.sync) return;
 
-			let payload: unknown = null;
-			if (event.action !== 'deleted') {
-				if (event.feature === 'semesters') {
+			// Skip push for auto-created semesters with no content
+			if (event.feature === 'semesters' && event.action === 'created' &&
+				semestre.ramos.empty() && semestre.schedule.empty() && semestre.escenarios.empty()) {
+				return;
+			}
+
+			// For 'semesters' events: push server → mark pushed
+			if (event.feature === 'semesters') {
+				if (event.action === 'deleted' && !this._pushedSemesters.has(event.entityId)) {
+					return;
+				}
+
+				let payload: unknown = null;
+				if (event.action !== 'deleted') {
 					const data = semestre.toOne(event.entityId);
 					if (data === null) return;
 					payload = data;
-				} else {
-					const manager = semestre.managerFor(event.feature) as EntityManager;
-					const entityData = manager.toOne(event.entityId);
-					if (entityData === null) return;
-					payload = entityData;
 				}
+
+				const entity: EntityChange = {
+					...event,
+					semesterId: event.entityId,
+					payload
+				};
+
+				const result = await this._adapter.push(entity);
+				if (result.accepted) {
+					this._pushedSemesters.add(event.entityId);
+					this._savePushedSemesters();
+				} else if (result.conflict) {
+					this._persistConflict(result.conflict);
+				}
+				return;
+			}
+
+			// Before pushing entity data, ensure parent semester is on server
+			if (event.semesterId && !this._pushedSemesters.has(event.semesterId)) {
+				const semesterData = semestre.toOne(event.semesterId);
+				if (semesterData) {
+					const semEntity: EntityChange = {
+						semesterId: event.semesterId,
+						feature: 'semesters',
+						entityId: event.semesterId,
+						action: 'created',
+						payload: semesterData,
+						deviceId: event.deviceId,
+						origin: 'local',
+						timestamp: Date.now()
+					};
+					const result = await this._adapter.push(semEntity);
+					if (result.accepted) {
+						this._pushedSemesters.add(event.semesterId);
+						this._savePushedSemesters();
+					}
+				}
+			}
+
+			let payload: unknown = null;
+			if (event.action !== 'deleted') {
+				const manager = semestre.managerFor(event.feature) as EntityManager;
+				const entityData = manager.toOne(event.entityId);
+				if (entityData === null) return;
+				payload = entityData;
 			}
 
 			const entity: EntityChange = {
 				...event,
-				semesterId: event.feature === 'semesters' ? event.entityId : event.semesterId,
+				semesterId: event.semesterId,
 				payload
 			};
 
-			this._adapter.push(entity).then((result) => {
-				if (!result.accepted && result.conflict) {
-					this._persistConflict(result.conflict);
-				}
-			});
+			const result = await this._adapter.push(entity);
+			if (!result.accepted && result.conflict) {
+				this._persistConflict(result.conflict);
+			}
 		});
 	}
 
@@ -169,7 +221,7 @@ class SyncRouter {
 		if (feature === 'preferences') {
 			local.save(KEYS.preferences, semestre.managerFor('preferences').toSerial());
 		} else {
-			const semId = semestre.activeId || '$DEFAULT$';
+			const semId = semestre.activeId;
 			local.save(semId + '_' + KEYS[feature], semestre.managerFor(feature).toSerial());
 		}
 	}
@@ -205,6 +257,15 @@ class SyncRouter {
 		const queue = local.get<ConflictEvent[]>(CONFLICT_QUEUE_KEY) ?? [];
 		queue.push(conflict);
 		local.save(CONFLICT_QUEUE_KEY, queue);
+	}
+
+	private _loadPushedSemesters() {
+		const saved = local.get<string[]>(KEYS.pushed);
+		if (saved) this._pushedSemesters = new Set(saved);
+	}
+
+	private _savePushedSemesters() {
+		local.save(KEYS.pushed, Array.from(this._pushedSemesters));
 	}
 }
 
