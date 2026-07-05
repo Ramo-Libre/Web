@@ -1,7 +1,16 @@
 <script lang="ts">
-	import { account } from '$lib/infra/sync.svelte';
+	import { account, syncRouter } from '$lib/infra/sync.svelte';
 	import Icon from '@iconify/svelte';
-	import { CircleUser, LogOut } from '@lucide/svelte';
+	import {
+		CircleUser,
+		LogOut,
+		RefreshCw,
+		WifiOff,
+		CircleCheck,
+		CircleAlert,
+		type LucideProps
+	} from '@lucide/svelte';
+	import type { Component } from 'svelte';
 
 	let user = $derived(account.user);
 	let userName = $derived(
@@ -9,6 +18,7 @@
 	);
 	let userMail = $derived(user?.email ?? 'Sin sesión activa');
 	let currentProvider = $derived((user?.app_metadata?.provider as string) ?? 'github');
+	let syncStatus = $derived(syncRouter.status);
 
 	const providerColors: Record<string, string> = {
 		github: 'bg-base-200 text-content border border-base-400',
@@ -16,14 +26,50 @@
 		discord: 'bg-[#5865F2] text-white border border-[#4752c4]'
 	};
 
+	const statusConfig: Record<
+		string,
+		{ label: string; class: string; icon: Component<LucideProps> }
+	> = {
+		offline: {
+			label: 'Sin conexión',
+			class: 'bg-warning-400 text-warning-100 border-warning-300',
+			icon: WifiOff
+		},
+		disconnected: {
+			label: 'No sincronizado',
+			class: 'bg-base-200 text-content/50 border-base-300',
+			icon: CircleAlert
+		},
+		connecting: {
+			label: 'Conectando...',
+			class: 'bg-warning-400 text-warning-100 border-warning-300',
+			icon: RefreshCw
+		},
+		syncing: {
+			label: 'Sincronizando...',
+			class: 'bg-warning-400 text-warning-100 border-warning-300',
+			icon: RefreshCw
+		},
+		idle: {
+			label: 'Sincronizado',
+			class: 'bg-success-400 text-success-100 border-success-300',
+			icon: CircleCheck
+		},
+		error: {
+			label: 'Error',
+			class: 'bg-error-400 text-error-100 border-error-300',
+			icon: CircleAlert
+		}
+	};
+
+	let currentStatus = $derived(statusConfig[syncStatus] ?? statusConfig.disconnected);
+
 	async function handleLogout() {
 		await account.logout();
 	}
 </script>
 
-<div
-	class="bg-base-100 rounded-xl border border-base-400 shadow-sm overflow-hidden transition-all"
->
+<div class="bg-base-100 rounded-xl border border-base-400 shadow-sm overflow-hidden transition-all">
 	{#if account.isLoading}
 		<div class="flex items-center gap-4 animate-pulse p-6">
 			<div class="w-12 h-12 rounded-full bg-base-200"></div>
@@ -33,9 +79,7 @@
 			</div>
 		</div>
 	{:else if user}
-		<div
-			class="flex flex-row items-center gap-3 p-5 bg-linear-to-br from-base-100 to-base-100/90"
-		>
+		<div class="flex flex-row items-center gap-3 p-5 bg-linear-to-br from-base-100 to-base-100/90">
 			<div class="flex items-center gap-3 flex-1 min-w-0">
 				<div
 					class="w-12 h-12 bg-base-300 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md shrink-0"
@@ -53,17 +97,38 @@
 				<div class="min-w-0">
 					<div class="font-semibold text-content text-sm truncate">{userName}</div>
 					<div class="text-xs text-content/50 truncate">{userMail}</div>
-					<span
-						class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium {providerColors[
-							currentProvider
-						] || providerColors.github} gap-1 capitalize shadow-sm mt-1"
-					>
-					{#if currentProvider === 'github'}<Icon icon="mdi:github" width={10} />
-					{:else if currentProvider === 'google'}<Icon icon="mdi:google" width={10} />
-					{:else if currentProvider === 'discord'}<Icon icon="ic:baseline-discord" width={10} />
-					{/if}
-						<span>{currentProvider}</span>
-					</span>
+					<div class="flex flex-wrap gap-1 mt-1">
+						<span
+							class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium {providerColors[
+								currentProvider
+							] || providerColors.github} gap-1 capitalize shadow-sm"
+						>
+							{#if currentProvider === 'github'}<Icon icon="mdi:github" width={10} />
+							{:else if currentProvider === 'google'}<Icon icon="mdi:google" width={10} />
+							{:else if currentProvider === 'discord'}<Icon icon="ic:baseline-discord" width={10} />
+							{/if}
+							<span>{currentProvider}</span>
+						</span>
+						<span
+							class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium {currentStatus.class} gap-1 shadow-sm"
+						>
+							{#if currentStatus.icon === WifiOff}
+								<WifiOff size={10} />
+							{:else if currentStatus.icon === CircleCheck}
+								<CircleCheck size={10} />
+							{:else if currentStatus.icon === CircleAlert}
+								<CircleAlert size={10} />
+							{:else}
+								<RefreshCw
+									size={10}
+									class={syncStatus === 'syncing' || syncStatus === 'connecting'
+										? 'animate-spin'
+										: ''}
+								/>
+							{/if}
+							<span>{currentStatus.label}</span>
+						</span>
+					</div>
 				</div>
 			</div>
 
