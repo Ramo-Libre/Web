@@ -1,10 +1,13 @@
+import { env } from '$env/dynamic/public';
 import { deviceId } from '$lib/utils/device';
 import type { EntityChange, FeatureId } from './changes.svelte';
 import type { SyncAdapter, PushResult, PullResult, ConflictEvent } from './sync-adapter';
-import { tryUpdate, insertEntity, fetchEntity } from './sync-entities-store';
+import { tryUpdate, insertEntity, fetchEntity, fetchWatermark, fetchChangesSince } from './sync-entities-store';
 import { merge } from './conflict-resolver';
 import { local } from './persistence.svelte';
 import { supabase } from '$lib/supabase/client';
+
+const POLL_INTERVAL = parseInt(env.PUBLIC_CLOUD_SYNC_POLL_INTERVAL ?? '') || 10000;
 
 const LKS_SEQ_PREFIX = 'RAMOLIBRE_V2_LKS_SEQ_';
 const LKS_PAYLOAD_PREFIX = 'RAMOLIBRE_V2_LKS_PAYLOAD_';
@@ -41,12 +44,16 @@ class PollingAdapter implements SyncAdapter {
 	private _connected = false;
 	private _remoteHandler: ((changes: EntityChange[]) => void) | null = null;
 	private _userId: string | null = null;
+	private _timer: ReturnType<typeof setInterval> | null = null;
+	private _deviceWatermark = 0;
 
 	get connected() {
 		return this._connected;
 	}
 
 	async connect() {
+		if (this._connected) return;
+
 		const { data: { user } } = await supabase.auth.getUser();
 		if (!user) {
 			console.warn('[Sync:Polling] connect: no authenticated user');
@@ -55,12 +62,32 @@ class PollingAdapter implements SyncAdapter {
 		this._userId = user.id;
 		this._connected = true;
 		console.log('[Sync:Polling] connect', { userId: this._userId });
+
+		await this._tick();
+
+		this._timer = setInterval(() => this._tick(), POLL_INTERVAL);
 	}
 
 	disconnect() {
 		console.log('[Sync:Polling] disconnect');
+		if (this._timer) {
+			clearInterval(this._timer);
+			this._timer = null;
+		}
 		this._connected = false;
 		this._userId = null;
+		this._deviceWatermark = 0;
+	}
+
+	private async _tick() {
+		if (!this._userId || !this._connected) return;
+
+		const result = await this.pull(this._deviceWatermark);
+
+		if (result.changes.length > 0) {
+			this._deviceWatermark = result.watermark;
+			this._remoteHandler?.(result.changes);
+		}
 	}
 
 	async push(entity: EntityChange): Promise<PushResult> {
@@ -155,8 +182,38 @@ class PollingAdapter implements SyncAdapter {
 	}
 
 	async pull(sinceWatermark: number): Promise<PullResult> {
-		console.log('[Sync:Polling] pull (not implemented yet)', { sinceWatermark });
-		return { changes: [], watermark: sinceWatermark };
+		if (!this._userId) {
+			return { changes: [], watermark: sinceWatermark };
+		}
+
+		const currentWatermark = await fetchWatermark(this._userId);
+
+		if (currentWatermark <= sinceWatermark) {
+			return { changes: [], watermark: sinceWatermark };
+		}
+
+		const rows = await fetchChangesSince(this._userId, sinceWatermark);
+		const changes: EntityChange[] = [];
+
+		for (const row of rows) {
+			if (row.payload === null) continue;
+
+			changes.push({
+				semesterId: row.semester_id,
+				feature: row.feature as FeatureId,
+				entityId: row.entity_id,
+				action: 'updated',
+				payload: row.payload,
+				deviceId: row.device_id,
+				origin: 'remote',
+				timestamp: new Date(row.updated_at).getTime()
+			});
+
+			setLastKnownSequence(row.semester_id, row.feature, row.entity_id, row.sequence);
+			setLastKnownPayload(row.semester_id, row.feature, row.entity_id, row.payload);
+		}
+
+		return { changes, watermark: currentWatermark };
 	}
 
 	onRemoteChanges(handler: (changes: EntityChange[]) => void) {
