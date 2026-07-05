@@ -6,6 +6,7 @@ import { tryUpdate, insertEntity, fetchEntity, fetchWatermark, fetchChangesSince
 import { merge } from './conflict-resolver';
 import { local } from './persistence.svelte';
 import { supabase } from '$lib/supabase/client';
+import { network } from './network.svelte';
 
 const POLL_INTERVAL = parseInt(env.PUBLIC_CLOUD_SYNC_POLL_INTERVAL ?? '') || 10000;
 
@@ -54,6 +55,11 @@ class PollingAdapter implements SyncAdapter {
 	async connect() {
 		if (this._connected) return;
 
+		if (!network.online) {
+			console.warn('[Sync:Polling] connect: offline, skipping');
+			return;
+		}
+
 		const { data: { user } } = await supabase.auth.getUser();
 		if (!user) {
 			console.warn('[Sync:Polling] connect: no authenticated user');
@@ -82,11 +88,15 @@ class PollingAdapter implements SyncAdapter {
 	private async _tick() {
 		if (!this._userId || !this._connected) return;
 
-		const result = await this.pull(this._deviceWatermark);
+		try {
+			const result = await this.pull(this._deviceWatermark);
 
-		if (result.changes.length > 0) {
-			this._deviceWatermark = result.watermark;
-			this._remoteHandler?.(result.changes);
+			if (result.changes.length > 0) {
+				this._deviceWatermark = result.watermark;
+				this._remoteHandler?.(result.changes);
+			}
+		} catch (e) {
+			console.warn('[Sync:Polling] _tick error', e);
 		}
 	}
 
@@ -96,89 +106,94 @@ class PollingAdapter implements SyncAdapter {
 			return { accepted: false, serverSequence: 0 };
 		}
 
-		const { semesterId, feature, entityId, payload } = entity;
-		const lastKnown = getLastKnownSequence(semesterId, feature, entityId);
+		try {
+			const { semesterId, feature, entityId, payload } = entity;
+			const lastKnown = getLastKnownSequence(semesterId, feature, entityId);
 
-		const result = await tryUpdate(
-			this._userId, semesterId, feature, entityId,
-			payload, lastKnown, deviceId
-		);
-
-		if (result) {
-			setLastKnownSequence(semesterId, feature, entityId, result.sequence);
-			setLastKnownPayload(semesterId, feature, entityId, payload);
-			return { accepted: true, serverSequence: result.sequence };
-		}
-
-		if (lastKnown === 0) {
-			const insertResult = await insertEntity(
+			const result = await tryUpdate(
 				this._userId, semesterId, feature, entityId,
-				payload, deviceId
+				payload, lastKnown, deviceId
 			);
 
-			if (insertResult) {
-				setLastKnownSequence(semesterId, feature, entityId, insertResult.sequence);
+			if (result) {
+				setLastKnownSequence(semesterId, feature, entityId, result.sequence);
 				setLastKnownPayload(semesterId, feature, entityId, payload);
-				return { accepted: true, serverSequence: insertResult.sequence };
+				return { accepted: true, serverSequence: result.sequence };
 			}
 
+			if (lastKnown === 0) {
+				const insertResult = await insertEntity(
+					this._userId, semesterId, feature, entityId,
+					payload, deviceId
+				);
+
+				if (insertResult) {
+					setLastKnownSequence(semesterId, feature, entityId, insertResult.sequence);
+					setLastKnownPayload(semesterId, feature, entityId, payload);
+					return { accepted: true, serverSequence: insertResult.sequence };
+				}
+
+				return { accepted: false, serverSequence: 0 };
+			}
+
+			const current = await fetchEntity(this._userId, semesterId, feature, entityId);
+
+			const lastKnownPayload = getLastKnownPayload(semesterId, feature, entityId);
+			const serverPayload = current?.payload ?? null;
+			const serverSequence = current?.sequence ?? 0;
+
+			const { merged, userConflicts } = merge({
+				feature,
+				semesterId,
+				entityId,
+				base: lastKnownPayload as Record<string, unknown> | null,
+				mine: payload as Record<string, unknown> | null,
+				theirs: serverPayload as Record<string, unknown> | null
+			});
+
+			if (userConflicts.length > 0) {
+				const conflict: ConflictEvent = {
+					entityId,
+					feature,
+					semesterId,
+					localPayload: payload,
+					serverPayload,
+					lastKnownSequence: lastKnown,
+					serverSequence
+				};
+				persistConflict(conflict);
+			}
+
+			if (merged !== null) {
+				const retry = await tryUpdate(
+					this._userId, semesterId, feature, entityId,
+					merged, serverSequence, deviceId
+				);
+
+				if (retry) {
+					setLastKnownSequence(semesterId, feature, entityId, retry.sequence);
+					setLastKnownPayload(semesterId, feature, entityId, merged);
+					return { accepted: true, serverSequence: retry.sequence };
+				}
+			}
+
+			return {
+				accepted: false,
+				serverSequence,
+				conflict: {
+					entityId,
+					feature,
+					semesterId,
+					localPayload: payload,
+					serverPayload,
+					lastKnownSequence: lastKnown,
+					serverSequence
+				}
+			};
+		} catch (e) {
+			console.warn('[Sync:Polling] push error', e);
 			return { accepted: false, serverSequence: 0 };
 		}
-
-		const current = await fetchEntity(this._userId, semesterId, feature, entityId);
-
-		const lastKnownPayload = getLastKnownPayload(semesterId, feature, entityId);
-		const serverPayload = current?.payload ?? null;
-		const serverSequence = current?.sequence ?? 0;
-
-		const { merged, userConflicts } = merge({
-			feature,
-			semesterId,
-			entityId,
-			base: lastKnownPayload as Record<string, unknown> | null,
-			mine: payload as Record<string, unknown> | null,
-			theirs: serverPayload as Record<string, unknown> | null
-		});
-
-		if (userConflicts.length > 0) {
-			const conflict: ConflictEvent = {
-				entityId,
-				feature,
-				semesterId,
-				localPayload: payload,
-				serverPayload,
-				lastKnownSequence: lastKnown,
-				serverSequence
-			};
-			persistConflict(conflict);
-		}
-
-		if (merged !== null) {
-			const retry = await tryUpdate(
-				this._userId, semesterId, feature, entityId,
-				merged, serverSequence, deviceId
-			);
-
-			if (retry) {
-				setLastKnownSequence(semesterId, feature, entityId, retry.sequence);
-				setLastKnownPayload(semesterId, feature, entityId, merged);
-				return { accepted: true, serverSequence: retry.sequence };
-			}
-		}
-
-		return {
-			accepted: false,
-			serverSequence,
-			conflict: {
-				entityId,
-				feature,
-				semesterId,
-				localPayload: payload,
-				serverPayload,
-				lastKnownSequence: lastKnown,
-				serverSequence
-			}
-		};
 	}
 
 	async pull(sinceWatermark: number): Promise<PullResult> {
@@ -186,32 +201,37 @@ class PollingAdapter implements SyncAdapter {
 			return { changes: [], watermark: sinceWatermark };
 		}
 
-		const currentWatermark = await fetchWatermark(this._userId);
+		try {
+			const currentWatermark = await fetchWatermark(this._userId);
 
-		if (currentWatermark <= sinceWatermark) {
+			if (currentWatermark <= sinceWatermark) {
+				return { changes: [], watermark: sinceWatermark };
+			}
+
+			const rows = await fetchChangesSince(this._userId, sinceWatermark);
+			const changes: EntityChange[] = [];
+
+			for (const row of rows) {
+				changes.push({
+					semesterId: row.semester_id,
+					feature: row.feature as FeatureId,
+					entityId: row.entity_id,
+					action: 'updated',
+					payload: row.payload,
+					deviceId: row.device_id,
+					origin: 'remote',
+					timestamp: new Date(row.updated_at).getTime()
+				});
+
+				setLastKnownSequence(row.semester_id, row.feature, row.entity_id, row.sequence);
+				setLastKnownPayload(row.semester_id, row.feature, row.entity_id, row.payload);
+			}
+
+			return { changes, watermark: currentWatermark };
+		} catch (e) {
+			console.warn('[Sync:Polling] pull error', e);
 			return { changes: [], watermark: sinceWatermark };
 		}
-
-		const rows = await fetchChangesSince(this._userId, sinceWatermark);
-		const changes: EntityChange[] = [];
-
-		for (const row of rows) {
-			changes.push({
-				semesterId: row.semester_id,
-				feature: row.feature as FeatureId,
-				entityId: row.entity_id,
-				action: 'updated',
-				payload: row.payload,
-				deviceId: row.device_id,
-				origin: 'remote',
-				timestamp: new Date(row.updated_at).getTime()
-			});
-
-			setLastKnownSequence(row.semester_id, row.feature, row.entity_id, row.sequence);
-			setLastKnownPayload(row.semester_id, row.feature, row.entity_id, row.payload);
-		}
-
-		return { changes, watermark: currentWatermark };
 	}
 
 	onRemoteChanges(handler: (changes: EntityChange[]) => void) {

@@ -5,3 +5,4 @@ export * from './sync-policies';
 export * from './sync-adapter';
 export * from './sync-noop.svelte';
 export { pollingAdapter } from './sync-polling.svelte';
+export { network } from './network.svelte';

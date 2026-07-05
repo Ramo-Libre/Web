@@ -9,6 +9,9 @@ import { SYNC_POLICIES, KEYS } from './sync-policies';
 import type { RamosSerial } from '$lib/features/ramos.svelte';
 import type { ScheduleSerial } from '$lib/features/schedule.svelte';
 import type { EscenariosSerial } from '$lib/features/notas.svelte';
+import { network } from './network.svelte';
+
+type SyncStatus = 'offline' | 'disconnected' | 'connecting' | 'syncing' | 'idle' | 'error';
 
 interface EntityManager extends Serializable<unknown> {
 	toOne(id: string): unknown | null;
@@ -17,15 +20,77 @@ interface EntityManager extends Serializable<unknown> {
 }
 
 const CONFLICT_QUEUE_KEY = 'RAMOLIBRE_V2_UNRESOLVED_CONFLICTS';
+const ERROR_CLEAR_MS = 5000;
 
 class SyncRouter {
 	private _init = false;
 	private _adapter: SyncAdapter = noopAdapter;
 	private _unsubscribeRemote: (() => void) | null = null;
 	private _pushedSemesters = new Set<string>();
+	private _status = $state<SyncStatus>('disconnected');
+	private _lastSyncAt = $state<number | null>(null);
+	private _lastErrorMessage = $state<string | null>(null);
+	private _syncingCount = 0;
+	private _errorTimer: ReturnType<typeof setTimeout> | null = null;
+	private _effectCleanup: (() => void) | null = null;
 
 	get adapter() {
 		return this._adapter;
+	}
+
+	get status() {
+		return this._status;
+	}
+
+	get lastSyncAt() {
+		return this._lastSyncAt;
+	}
+
+	get lastErrorMessage() {
+		return this._lastErrorMessage;
+	}
+
+	private _setStatus(status: SyncStatus, errorMessage?: string) {
+		this._status = status;
+		if (status === 'error' && errorMessage) {
+			this._lastErrorMessage = errorMessage;
+			this._clearErrorTimer();
+			this._errorTimer = setTimeout(() => {
+				this._lastErrorMessage = null;
+				if (this._status === 'error') {
+					this._status = this._adapter.id === 'noop' ? 'disconnected' : 'idle';
+				}
+			}, ERROR_CLEAR_MS);
+		}
+		if (status !== 'error') {
+			this._lastErrorMessage = null;
+			if (this._errorTimer) {
+				clearTimeout(this._errorTimer);
+				this._errorTimer = null;
+			}
+		}
+	}
+
+	private _clearErrorTimer() {
+		if (this._errorTimer) {
+			clearTimeout(this._errorTimer);
+			this._errorTimer = null;
+		}
+	}
+
+	private async _trackedPush(entity: EntityChange) {
+		this._syncingCount++;
+		if (this._syncingCount === 1) this._status = 'syncing';
+		try {
+			const result = await this._adapter.push(entity);
+			this._lastSyncAt = Date.now();
+			return result;
+		} finally {
+			this._syncingCount--;
+			if (this._syncingCount === 0) {
+				this._status = this._lastErrorMessage ? 'error' : 'idle';
+			}
+		}
 	}
 
 	async setAdapter(adapter: SyncAdapter) {
@@ -41,12 +106,25 @@ class SyncRouter {
 
 		this._adapter = adapter;
 
+		if (adapter.id === 'noop') {
+			this._setStatus('disconnected');
+		} else {
+			this._setStatus('connecting');
+		}
+
 		if (this._init) {
 			this._unsubscribeRemote = this._adapter.onRemoteChanges(
 				(events) => this._handleRemoteEvents(events)
 			);
-			await this._adapter.connect();
-			await this._pushLocalState();
+			try {
+				await this._adapter.connect();
+				await this._pushLocalState();
+				this._setStatus(this._syncingCount > 0 ? 'syncing' : 'idle');
+			} catch (e) {
+				const msg = e instanceof Error ? e.message : String(e);
+				console.warn('[SyncRouter] setAdapter error', e);
+				this._setStatus('error', msg);
+			}
 		}
 	}
 
@@ -54,6 +132,27 @@ class SyncRouter {
 		if (this._init || !browser) return;
 		this._init = true;
 		this._loadPushedSemesters();
+
+		this._setStatus(network.online ? 'disconnected' : 'offline');
+
+		this._effectCleanup = $effect.root(() => {
+			$effect(() => {
+				if (!network.online) {
+					this._setStatus('offline');
+				} else if (this._status === 'offline') {
+					this._setStatus(
+						this._adapter.id === 'noop' ? 'disconnected' : 'connecting'
+					);
+					if (this._adapter.id !== 'noop') {
+						this._adapter.connect().then(() => {
+							this._setStatus('idle');
+						}).catch((e) => {
+							this._setStatus('error', e instanceof Error ? e.message : String(e));
+						});
+					}
+				}
+			});
+		});
 
 		this._unsubscribeRemote = this._adapter.onRemoteChanges(
 			(events) => this._handleRemoteEvents(events)
@@ -97,7 +196,7 @@ class SyncRouter {
 					payload
 				};
 
-				const result = await this._adapter.push(entity);
+				const result = await this._trackedPush(entity);
 				if (result.accepted) {
 					this._pushedSemesters.add(event.entityId);
 					this._savePushedSemesters();
@@ -121,7 +220,7 @@ class SyncRouter {
 						origin: 'local',
 						timestamp: Date.now()
 					};
-					const result = await this._adapter.push(semEntity);
+					const result = await this._trackedPush(semEntity);
 					if (result.accepted) {
 						this._pushedSemesters.add(event.semesterId);
 						this._savePushedSemesters();
@@ -143,7 +242,7 @@ class SyncRouter {
 				payload
 			};
 
-			const result = await this._adapter.push(entity);
+			const result = await this._trackedPush(entity);
 			if (!result.accepted && result.conflict) {
 				this._persistConflict(result.conflict);
 			}
@@ -286,32 +385,42 @@ class SyncRouter {
 	}
 
 	private async _pushLocalState() {
+		this._syncingCount++;
+		if (this._syncingCount === 1) this._status = 'syncing';
+
 		const { deviceId } = await import('$lib/utils/device');
 
-		for (const [id, data] of semestre.semestres) {
-			const semResult = await this._adapter.push({
-				feature: 'semesters', action: 'updated',
-				entityId: id, semesterId: id,
-				payload: data, deviceId,
-				origin: 'local', timestamp: Date.now()
-			});
-			if (semResult.accepted) {
-				this._pushedSemesters.add(id);
-				this._savePushedSemesters();
-			}
+		try {
+			for (const [id, data] of semestre.semestres) {
+				const semResult = await this._trackedPush({
+					feature: 'semesters', action: 'updated',
+					entityId: id, semesterId: id,
+					payload: data, deviceId,
+					origin: 'local', timestamp: Date.now()
+				});
+				if (semResult.accepted) {
+					this._pushedSemesters.add(id);
+					this._savePushedSemesters();
+				}
 
-			const ramos = local.get<RamosSerial>(`${id}_${KEYS.ramos}`) || [];
-			const schedule = local.get<ScheduleSerial>(`${id}_${KEYS.schedule}`) || [];
-			const escenarios = local.get<EscenariosSerial>(`${id}_${KEYS.escenarios}`) || [];
+				const ramos = local.get<RamosSerial>(`${id}_${KEYS.ramos}`) || [];
+				const schedule = local.get<ScheduleSerial>(`${id}_${KEYS.schedule}`) || [];
+				const escenarios = local.get<EscenariosSerial>(`${id}_${KEYS.escenarios}`) || [];
 
-			for (const [entId, entData] of ramos) {
-				await this._pushEntity(id, 'ramos', entId, entData, deviceId);
+				for (const [entId, entData] of ramos) {
+					await this._pushEntity(id, 'ramos', entId, entData, deviceId);
+				}
+				for (const [evId, ev] of schedule) {
+					await this._pushEntity(id, 'schedule', evId, ev, deviceId);
+				}
+				for (const [entId, entData] of escenarios) {
+					await this._pushEntity(id, 'escenarios', entId, entData, deviceId);
+				}
 			}
-			for (const [evId, ev] of schedule) {
-				await this._pushEntity(id, 'schedule', evId, ev, deviceId);
-			}
-			for (const [entId, entData] of escenarios) {
-				await this._pushEntity(id, 'escenarios', entId, entData, deviceId);
+		} finally {
+			this._syncingCount--;
+			if (this._syncingCount === 0) {
+				this._status = this._lastErrorMessage ? 'error' : 'idle';
 			}
 		}
 	}
@@ -321,7 +430,7 @@ class SyncRouter {
 		entityId: string, payload: unknown, deviceId: string
 	) {
 		try {
-			await this._adapter.push({
+			await this._trackedPush({
 				feature, action: 'updated',
 				entityId, semesterId,
 				payload, deviceId,
