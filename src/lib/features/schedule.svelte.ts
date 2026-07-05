@@ -85,8 +85,10 @@ export class ScheduleManager implements Serializable<ScheduleSerial> {
 		for (const [id, event] of this._events) {
 			if (event.ramoId === ramoId) toDelete.push(id);
 		}
-		for (const id of toDelete) this._events.delete(id);
-		if (toDelete.length) changeBus.emit('schedule', 'deleted', ramoId);
+		for (const id of toDelete) {
+			this._events.delete(id);
+			changeBus.emit('schedule', 'deleted', id);
+		}
 	}
 
 	private isActiveOnDate(event: ScheduleEvent, date: string): boolean {

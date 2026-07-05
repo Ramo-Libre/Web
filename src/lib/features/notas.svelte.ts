@@ -252,10 +252,14 @@ export class EscenariosManager implements Serializable<EscenariosSerial> {
 	}
 
 	removeByRamo(ramoId: string) {
+		const toDelete: string[] = [];
 		for (const [id, e] of this._data) {
-			if (e.ramoId === ramoId) this._data.delete(id);
+			if (e.ramoId === ramoId) toDelete.push(id);
 		}
-		changeBus.emit('escenarios', 'deleted', ramoId);
+		for (const id of toDelete) {
+			this._data.delete(id);
+			changeBus.emit('escenarios', 'deleted', id);
+		}
 	}
 
 	byRamo(ramoId: string): Escenario[] {

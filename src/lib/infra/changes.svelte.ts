@@ -25,8 +25,8 @@ class ChangeBus {
 		this._getSemesterId = fn;
 	}
 
-	emit(feature: FeatureId, action: ChangeAction, entityId: string) {
-		const semesterId = this._getSemesterId();
+	emit(feature: FeatureId, action: ChangeAction, entityId: string, overrideSemesterId?: string) {
+		const semesterId = overrideSemesterId ?? this._getSemesterId();
 		const event: EntityChange = {
 			semesterId,
 			feature,
