@@ -83,7 +83,6 @@
 		openModal = null;
 		goto('/ramos#semesters');
 	}
-
 </script>
 
 <div class="bg-base-100 border border-base-400 rounded-xl shadow-sm overflow-hidden">
@@ -92,7 +91,9 @@
 			<button
 				onclick={() => !action.disabled && handleClick(action.id)}
 				disabled={action.disabled}
-				class="cursor-pointer w-full p-4 sm:p-5 flex items-center justify-between group {action.hoverBg} transition-colors text-left {action.disabled ? 'cursor-not-allowed opacity-50' : ''}"
+				class="cursor-pointer w-full p-4 sm:p-5 flex items-center justify-between group {action.hoverBg} transition-colors text-left {action.disabled
+					? 'cursor-not-allowed opacity-50'
+					: ''}"
 			>
 				<div class="flex items-center gap-4">
 					<div
@@ -138,7 +139,9 @@
 			<!-- Mobile: bottom sheet -->
 			<div
 				class="absolute bottom-0 left-0 right-0 bg-base-100 rounded-t-2xl shadow-xl border border-base-400 lg:hidden {action.id ===
-				'inicia-semestre' || action.id === 'vista-previa' || action.id === 'contexto-ia'
+					'inicia-semestre' ||
+				action.id === 'vista-previa' ||
+				action.id === 'contexto-ia'
 					? 'max-h-[85vh] flex flex-col'
 					: ''}"
 				in:fly={{ y: 100, duration: 250 }}
@@ -155,7 +158,13 @@
 						<X size={20} />
 					</button>
 				</div>
-				<div class="p-6 {action.id === 'inicia-semestre' || action.id === 'vista-previa' || action.id === 'contexto-ia' ? 'flex-1 overflow-y-auto' : ''}">
+				<div
+					class="p-6 {action.id === 'inicia-semestre' ||
+					action.id === 'vista-previa' ||
+					action.id === 'contexto-ia'
+						? 'flex-1 overflow-y-auto'
+						: ''}"
+				>
 					{#if action.id === 'inicia-semestre'}
 						<WizardSemestre
 							bind:semesterName={wizardName}

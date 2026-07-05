@@ -6,7 +6,7 @@ body {
 }
 
 .bg-grid-pattern-100 {
-    background-color: var(--color-base-100);
+	background-color: var(--color-base-100);
 	background-image: radial-gradient(var(--color-base-300) 1px, transparent 1px);
 	background-size: 24px 24px;
 }

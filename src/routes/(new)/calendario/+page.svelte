@@ -15,7 +15,12 @@
 
 	let selectedRamo = $state<string | null>(null);
 	let selectedCategories = $state<Set<ScheduleCategory>>(new SvelteSet());
-	let selectedDate = $state<string | null>((() => { const d = getNow(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; })());
+	let selectedDate = $state<string | null>(
+		(() => {
+			const d = getNow();
+			return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+		})()
+	);
 	let editingEvent = $state<ScheduleEvent | null>(null);
 	let showModal = $state(false);
 	let modalDate = $state<string | undefined>(undefined);
@@ -27,21 +32,23 @@
 		semestre.schedule.list
 			.map(([, e]) => e)
 			.filter((e) => !selectedRamo || e.ramoId === selectedRamo)
-			.filter((e) => selectedCategories.size === 0 || (e.category && selectedCategories.has(e.category)))
+			.filter(
+				(e) => selectedCategories.size === 0 || (e.category && selectedCategories.has(e.category))
+			)
 	);
 
-	const filteredEvents = $derived(
-		showHorarios
-			? baseEvents
-			: baseEvents.filter((e) => e.date)
-	);
+	const filteredEvents = $derived(showHorarios ? baseEvents : baseEvents.filter((e) => e.date));
 
 	const dayEvents = $derived(
 		selectedDate
-			? semestre.schedule.getByDate(selectedDate)
-				.filter((e) => !selectedRamo || e.ramoId === selectedRamo)
-				.filter((e) => selectedCategories.size === 0 || (e.category && selectedCategories.has(e.category)))
-				.filter((e) => showHorarios || e.date)
+			? semestre.schedule
+					.getByDate(selectedDate)
+					.filter((e) => !selectedRamo || e.ramoId === selectedRamo)
+					.filter(
+						(e) =>
+							selectedCategories.size === 0 || (e.category && selectedCategories.has(e.category))
+					)
+					.filter((e) => showHorarios || e.date)
 			: []
 	);
 
@@ -140,10 +147,16 @@
 	}
 
 	function handleRecurringSave(data: {
-		id?: string; title?: string; description?: string;
-		category: ScheduleCategory; ramoId?: string;
-		daysOfWeek: number[]; startTime: string; endTime: string;
-		recurrenceStart?: string; recurrenceEnd?: string;
+		id?: string;
+		title?: string;
+		description?: string;
+		category: ScheduleCategory;
+		ramoId?: string;
+		daysOfWeek: number[];
+		startTime: string;
+		endTime: string;
+		recurrenceStart?: string;
+		recurrenceEnd?: string;
 	}) {
 		if (data.id) {
 			const existing = semestre.schedule.get(data.id);
@@ -174,22 +187,11 @@
 		onAddEvent={() => openCreate(selectedDate ?? undefined)}
 	/>
 
-	<CalendarGrid
-		events={filteredEvents}
-		{selectedDate}
-		onDaySelect={(d) => (selectedDate = d)}
-	/>
+	<CalendarGrid events={filteredEvents} {selectedDate} onDaySelect={(d) => (selectedDate = d)} />
 
 	<div class="flex flex-col lg:grid lg:grid-cols-2 gap-4">
-		<DayList
-			dateStr={selectedDate}
-			events={dayEvents}
-			onEventClick={(e) => openEdit(e)}
-		/>
-		<DayTimeline
-			events={dayEvents}
-			onEventClick={(e) => openEdit(e)}
-		/>
+		<DayList dateStr={selectedDate} events={dayEvents} onEventClick={(e) => openEdit(e)} />
+		<DayTimeline events={dayEvents} onEventClick={(e) => openEdit(e)} />
 	</div>
 </div>
 

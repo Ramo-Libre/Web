@@ -45,9 +45,15 @@
 	function step(dir: -1 | 1) {
 		const d = new Date(selectedDate);
 		switch (unit) {
-			case 'minutos': d.setMinutes(d.getMinutes() + dir * 15); break;
-			case 'horas':   d.setHours(d.getHours() + dir); break;
-			case 'dias':    d.setDate(d.getDate() + dir); break;
+			case 'minutos':
+				d.setMinutes(d.getMinutes() + dir * 15);
+				break;
+			case 'horas':
+				d.setHours(d.getHours() + dir);
+				break;
+			case 'dias':
+				d.setDate(d.getDate() + dir);
+				break;
 		}
 		datePart = d.toISOString().split('T')[0];
 		timePart = d.toTimeString().slice(0, 5);
@@ -57,9 +63,15 @@
 	function stepBig(dir: -1 | 1) {
 		const d = new Date(selectedDate);
 		switch (unit) {
-			case 'minutos': d.setMinutes(d.getMinutes() + dir * 60); break;
-			case 'horas':   d.setHours(d.getHours() + dir * 6); break;
-			case 'dias':    d.setDate(d.getDate() + dir * 7); break;
+			case 'minutos':
+				d.setMinutes(d.getMinutes() + dir * 60);
+				break;
+			case 'horas':
+				d.setHours(d.getHours() + dir * 6);
+				break;
+			case 'dias':
+				d.setDate(d.getDate() + dir * 7);
+				break;
 		}
 		datePart = d.toISOString().split('T')[0];
 		timePart = d.toTimeString().slice(0, 5);
@@ -71,46 +83,62 @@
 	<div class="bg-base-100 px-3 py-2 border-b border-base-300 flex items-center justify-between">
 		<div class="flex items-center gap-1.5">
 			<Clock class="h-3.5 w-3.5 text-primary-100" />
-			<span class="text-[10px] font-bold text-content/50 uppercase tracking-widest">Viaje en el Tiempo</span>
+			<span class="text-[10px] font-bold text-content/50 uppercase tracking-widest"
+				>Viaje en el Tiempo</span
+			>
 		</div>
 		<div class="flex items-center gap-1.5">
-			<span class="text-[9px] font-bold uppercase tracking-wider {isEnabled ? 'text-primary-100' : 'text-content/30'}">
+			<span
+				class="text-[9px] font-bold uppercase tracking-wider {isEnabled
+					? 'text-primary-100'
+					: 'text-content/30'}"
+			>
 				{isEnabled ? 'Activo' : 'Off'}
 			</span>
-			<span class="w-1.5 h-1.5 rounded-full {isEnabled ? 'bg-primary-100 animate-pulse' : 'bg-base-300'}"></span>
+			<span
+				class="w-1.5 h-1.5 rounded-full {isEnabled
+					? 'bg-primary-100 animate-pulse'
+					: 'bg-base-300'}"
+			></span>
 		</div>
 	</div>
 
 	<div class="p-3 space-y-2.5">
-		<div class="bg-base-300/80 border border-base-300 rounded-lg px-4 py-2.5 flex items-center justify-center min-h-[40px]">
-			<span class="text-sm font-mono font-bold tracking-[0.1em] {isEnabled ? 'text-primary-100' : 'text-content/40'}">{displayLabel}</span>
+		<div
+			class="bg-base-300/80 border border-base-300 rounded-lg px-4 py-2.5 flex items-center justify-center min-h-[40px]"
+		>
+			<span
+				class="text-sm font-mono font-bold tracking-[0.1em] {isEnabled
+					? 'text-primary-100'
+					: 'text-content/40'}">{displayLabel}</span
+			>
 		</div>
 
 		<div class="flex gap-1">
 			<button
-				onclick={() => unit = 'minutos'}
+				onclick={() => (unit = 'minutos')}
 				class="flex-1 h-8 text-[10px] font-bold uppercase tracking-wider rounded-md border-2 cursor-pointer transition-all duration-75 select-none
 					{unit === 'minutos'
-						? 'bg-primary-100/15 border-primary-200/30 shadow-inner text-primary-100'
-						: 'bg-base-100 border-base-300 shadow-sm text-content/40 hover:border-primary-200/20 hover:text-primary-100'}"
+					? 'bg-primary-100/15 border-primary-200/30 shadow-inner text-primary-100'
+					: 'bg-base-100 border-base-300 shadow-sm text-content/40 hover:border-primary-200/20 hover:text-primary-100'}"
 			>
 				Min
 			</button>
 			<button
-				onclick={() => unit = 'horas'}
+				onclick={() => (unit = 'horas')}
 				class="flex-1 h-8 text-[10px] font-bold uppercase tracking-wider rounded-md border-2 cursor-pointer transition-all duration-75 select-none
 					{unit === 'horas'
-						? 'bg-primary-100/15 border-primary-200/30 shadow-inner text-primary-100'
-						: 'bg-base-100 border-base-300 shadow-sm text-content/40 hover:border-primary-200/20 hover:text-primary-100'}"
+					? 'bg-primary-100/15 border-primary-200/30 shadow-inner text-primary-100'
+					: 'bg-base-100 border-base-300 shadow-sm text-content/40 hover:border-primary-200/20 hover:text-primary-100'}"
 			>
 				Hrs
 			</button>
 			<button
-				onclick={() => unit = 'dias'}
+				onclick={() => (unit = 'dias')}
 				class="flex-1 h-8 text-[10px] font-bold uppercase tracking-wider rounded-md border-2 cursor-pointer transition-all duration-75 select-none
 					{unit === 'dias'
-						? 'bg-primary-100/15 border-primary-200/30 shadow-inner text-primary-100'
-						: 'bg-base-100 border-base-300 shadow-sm text-content/40 hover:border-primary-200/20 hover:text-primary-100'}"
+					? 'bg-primary-100/15 border-primary-200/30 shadow-inner text-primary-100'
+					: 'bg-base-100 border-base-300 shadow-sm text-content/40 hover:border-primary-200/20 hover:text-primary-100'}"
 			>
 				Días
 			</button>
@@ -121,8 +149,8 @@
 				onclick={() => stepBig(-1)}
 				class="h-10 text-lg font-bold rounded-md border-2 cursor-pointer transition-all duration-75 select-none flex items-center justify-center
 					{isEnabled
-						? 'bg-primary-100/15 border-primary-200/30 shadow-inner text-primary-100'
-						: 'bg-base-100 border-base-300 shadow-sm text-content/40 hover:border-primary-200/20 hover:text-primary-100'}"
+					? 'bg-primary-100/15 border-primary-200/30 shadow-inner text-primary-100'
+					: 'bg-base-100 border-base-300 shadow-sm text-content/40 hover:border-primary-200/20 hover:text-primary-100'}"
 			>
 				◄◄
 			</button>
@@ -130,8 +158,8 @@
 				onclick={() => step(-1)}
 				class="h-10 text-lg font-bold rounded-md border-2 cursor-pointer transition-all duration-75 select-none flex items-center justify-center
 					{isEnabled
-						? 'bg-primary-100/15 border-primary-200/30 shadow-inner text-primary-100'
-						: 'bg-base-100 border-base-300 shadow-sm text-content/40 hover:border-primary-200/20 hover:text-primary-100'}"
+					? 'bg-primary-100/15 border-primary-200/30 shadow-inner text-primary-100'
+					: 'bg-base-100 border-base-300 shadow-sm text-content/40 hover:border-primary-200/20 hover:text-primary-100'}"
 			>
 				◄
 			</button>
@@ -139,8 +167,8 @@
 				onclick={() => step(1)}
 				class="h-10 text-lg font-bold rounded-md border-2 cursor-pointer transition-all duration-75 select-none flex items-center justify-center
 					{isEnabled
-						? 'bg-primary-100/15 border-primary-200/30 shadow-inner text-primary-100'
-						: 'bg-base-100 border-base-300 shadow-sm text-content/40 hover:border-primary-200/20 hover:text-primary-100'}"
+					? 'bg-primary-100/15 border-primary-200/30 shadow-inner text-primary-100'
+					: 'bg-base-100 border-base-300 shadow-sm text-content/40 hover:border-primary-200/20 hover:text-primary-100'}"
 			>
 				►
 			</button>
@@ -148,8 +176,8 @@
 				onclick={() => stepBig(1)}
 				class="h-10 text-lg font-bold rounded-md border-2 cursor-pointer transition-all duration-75 select-none flex items-center justify-center
 					{isEnabled
-						? 'bg-primary-100/15 border-primary-200/30 shadow-inner text-primary-100'
-						: 'bg-base-100 border-base-300 shadow-sm text-content/40 hover:border-primary-200/20 hover:text-primary-100'}"
+					? 'bg-primary-100/15 border-primary-200/30 shadow-inner text-primary-100'
+					: 'bg-base-100 border-base-300 shadow-sm text-content/40 hover:border-primary-200/20 hover:text-primary-100'}"
 			>
 				►►
 			</button>
@@ -172,18 +200,20 @@
 				onclick={activate}
 				class="flex-1 h-8 flex items-center justify-center gap-1.5 text-[10px] font-bold uppercase tracking-wider rounded-md border-2 cursor-pointer transition-all duration-75 select-none
 					{isEnabled
-						? 'bg-red-900/30 border-red-500/20 shadow-inner text-red-400'
-						: 'bg-base-100 border-base-300 shadow-sm text-content/40 hover:border-primary-200/20 hover:text-primary-100'}"
+					? 'bg-red-900/30 border-red-500/20 shadow-inner text-red-400'
+					: 'bg-base-100 border-base-300 shadow-sm text-content/40 hover:border-primary-200/20 hover:text-primary-100'}"
 			>
-				<span class="w-2 h-2 rounded-full {isEnabled ? 'bg-red-400 animate-pulse' : 'bg-transparent'}"></span>
+				<span
+					class="w-2 h-2 rounded-full {isEnabled ? 'bg-red-400 animate-pulse' : 'bg-transparent'}"
+				></span>
 				Viajar
 			</button>
 			<button
 				onclick={deactivate}
 				class="flex-1 h-8 text-[10px] font-bold uppercase tracking-wider rounded-md border-2 cursor-pointer transition-all duration-75 select-none
 					{!isEnabled
-						? 'bg-base-300 border-base-400 shadow-inner text-content/50'
-						: 'bg-base-100 border-base-300 shadow-sm text-content/40 hover:border-primary-200/20 hover:text-primary-100'}"
+					? 'bg-base-300 border-base-400 shadow-inner text-content/50'
+					: 'bg-base-100 border-base-300 shadow-sm text-content/40 hover:border-primary-200/20 hover:text-primary-100'}"
 			>
 				Detener
 			</button>

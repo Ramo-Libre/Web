@@ -35,7 +35,9 @@
 	let { now }: { now: Date } = $props();
 
 	const todayStr = $derived(now.toISOString().slice(0, 10));
-	const weekEndStr = $derived(new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10));
+	const weekEndStr = $derived(
+		new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10)
+	);
 
 	const upcomingEvents = $derived(
 		semestre.schedule
@@ -74,7 +76,9 @@
 				>
 					<div class="flex flex-col items-center min-w-[36px]">
 						<span class="text-xs lg:text-sm font-bold text-content/40 uppercase">
-							{ev.date ? new Date(ev.date + 'T12:00:00').toLocaleDateString('es-ES', { weekday: 'short' }) : ''}
+							{ev.date
+								? new Date(ev.date + 'T12:00:00').toLocaleDateString('es-ES', { weekday: 'short' })
+								: ''}
 						</span>
 						<span class="text-lg lg:text-xl font-bold text-content leading-tight">
 							{ev.date ? new Date(ev.date + 'T12:00:00').getDate() : ''}
@@ -82,13 +86,16 @@
 					</div>
 					<CatIcon class="h-4 w-4 lg:h-6 lg:w-6 shrink-0" style="color: {color}" />
 					<div class="min-w-0 flex-1">
-						<div class="text-sm lg:text-base font-bold text-content truncate">{ev.title || categoryLabels[ev.category] || 'Sin título'}</div>
+						<div class="text-sm lg:text-base font-bold text-content truncate">
+							{ev.title || categoryLabels[ev.category] || 'Sin título'}
+						</div>
 						{#if ev.ramoId}
 							<div class="text-xs lg:text-sm text-content/50">{ramoName(ev.ramoId)}</div>
 						{/if}
 					</div>
 					{#if ev.startTime}
-						<span class="text-xs lg:text-sm font-mono text-content/40 shrink-0">{ev.startTime}</span>
+						<span class="text-xs lg:text-sm font-mono text-content/40 shrink-0">{ev.startTime}</span
+						>
 					{/if}
 				</button>
 			{/each}

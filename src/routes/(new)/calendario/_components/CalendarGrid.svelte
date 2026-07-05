@@ -2,7 +2,18 @@
 	import { semestre } from '$lib/infra/semestres.svelte';
 	import { getNow } from '$lib/utils/date';
 	import type { ScheduleEvent } from '$lib/features/schedule.svelte';
-	import { ChevronLeft, ChevronRight, Presentation, CircleAlert, Book, FlaskConical, Users, Wrench, Clock, Ellipsis } from '@lucide/svelte';
+	import {
+		ChevronLeft,
+		ChevronRight,
+		Presentation,
+		CircleAlert,
+		Book,
+		FlaskConical,
+		Users,
+		Wrench,
+		Clock,
+		Ellipsis
+	} from '@lucide/svelte';
 
 	const categoryIcons: Record<string, typeof Book> = {
 		exam: Presentation,
@@ -78,21 +89,37 @@
 		const nextM = month === 12 ? 1 : month + 1;
 		const nextY = month === 12 ? year + 1 : year;
 
-		const cells: { day: number; dateStr: string; isCurrent: boolean; events: ScheduleEvent[] }[] = [];
+		const cells: { day: number; dateStr: string; isCurrent: boolean; events: ScheduleEvent[] }[] =
+			[];
 
 		for (let i = firstDowMon - 1; i >= 0; i--) {
 			const d = prevTotal - i;
 			const s = ds(prevY, prevM, d);
-			cells.push({ day: d, dateStr: s, isCurrent: false, events: events.filter((e) => isActiveOnDate(e, s)) });
+			cells.push({
+				day: d,
+				dateStr: s,
+				isCurrent: false,
+				events: events.filter((e) => isActiveOnDate(e, s))
+			});
 		}
 		for (let d = 1; d <= totalDays; d++) {
 			const s = ds(year, month, d);
-			cells.push({ day: d, dateStr: s, isCurrent: true, events: events.filter((e) => isActiveOnDate(e, s)) });
+			cells.push({
+				day: d,
+				dateStr: s,
+				isCurrent: true,
+				events: events.filter((e) => isActiveOnDate(e, s))
+			});
 		}
 		let nd = 1;
 		while (cells.length % 7 !== 0) {
 			const s = ds(nextY, nextM, nd);
-			cells.push({ day: nd, dateStr: s, isCurrent: false, events: events.filter((e) => isActiveOnDate(e, s)) });
+			cells.push({
+				day: nd,
+				dateStr: s,
+				isCurrent: false,
+				events: events.filter((e) => isActiveOnDate(e, s))
+			});
 			nd++;
 		}
 
@@ -106,13 +133,21 @@
 	);
 
 	function prev() {
-		if (month === 1) { month = 12; year--; }
-		else { month--; }
+		if (month === 1) {
+			month = 12;
+			year--;
+		} else {
+			month--;
+		}
 	}
 
 	function next() {
-		if (month === 12) { month = 1; year++; }
-		else { month++; }
+		if (month === 12) {
+			month = 1;
+			year++;
+		} else {
+			month++;
+		}
 	}
 </script>
 
@@ -135,17 +170,21 @@
 
 	<div class="grid grid-cols-7">
 		{#each dayHeaders as h, idx (idx)}
-			<div class="px-1.5 py-2 text-center text-xs font-semibold text-content/40 border-b border-base-300">
+			<div
+				class="px-1.5 py-2 text-center text-xs font-semibold text-content/40 border-b border-base-300"
+			>
 				{h}
 			</div>
 		{/each}
 
-		{#each weeks as week , idx2 (idx2)}
+		{#each weeks as week, idx2 (idx2)}
 			{#each week as cell (cell.dateStr)}
 				{@const isToday = cell.dateStr === todayStr}
 				{@const isSelected = cell.dateStr === selectedDate}
 				<button
-					class="flex flex-col items-start p-1.5 min-h-[72px] sm:min-h-[88px] border-b border-r border-base-300 text-left transition-colors cursor-pointer {cell.isCurrent ? '' : 'opacity-30'} {isSelected
+					class="flex flex-col items-start p-1.5 min-h-[72px] sm:min-h-[88px] border-b border-r border-base-300 text-left transition-colors cursor-pointer {cell.isCurrent
+						? ''
+						: 'opacity-30'} {isSelected
 						? 'bg-primary-100/20 ring-2 ring-inset ring-primary-100'
 						: isToday
 							? 'bg-calendar-400'
@@ -162,10 +201,7 @@
 					<div class="flex flex-wrap gap-0.5 mt-auto pt-0.5">
 						{#each cell.events.slice(0, 5) as event (event.id)}
 							{@const Icon = categoryIcons[event.category] ?? Ellipsis}
-							<span
-								class="pointer-events-none"
-								style="color: {ramoColor(event.ramoId)}"
-							>
+							<span class="pointer-events-none" style="color: {ramoColor(event.ramoId)}">
 								<Icon class="w-4 h-4" />
 							</span>
 						{/each}

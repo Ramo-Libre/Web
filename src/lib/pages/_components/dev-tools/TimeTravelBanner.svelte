@@ -12,7 +12,7 @@
 					month: 'short',
 					hour: '2-digit',
 					minute: '2-digit'
-			  })
+				})
 			: ''
 	);
 
@@ -24,7 +24,9 @@
 </script>
 
 {#if active}
-	<div class="bg-primary-400/20 border border-primary-100/30 rounded-lg px-3 py-2 flex items-center gap-2 text-xs">
+	<div
+		class="bg-primary-400/20 border border-primary-100/30 rounded-lg px-3 py-2 flex items-center gap-2 text-xs"
+	>
 		<div class="animate-pulse w-1.5 h-1.5 bg-primary-100 rounded-full shrink-0"></div>
 		<span class="text-primary-100 font-bold">Viaje en el tiempo:</span>
 		<span class="text-content/70 font-mono">{label}</span>

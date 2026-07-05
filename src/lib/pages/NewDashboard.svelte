@@ -9,7 +9,7 @@
 
 	let now = $state(getNow());
 	$effect(() => {
-		const i = setInterval(() => now = getNow(), 1000);
+		const i = setInterval(() => (now = getNow()), 1000);
 		return () => clearInterval(i);
 	});
 </script>

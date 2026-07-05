@@ -78,7 +78,12 @@
 		calCells.push({ day: prevTotal - i, isCurrent: false, hasEvent: false, isToday: false });
 	}
 	for (let d = 1; d <= totalDays; d++) {
-		calCells.push({ day: d, isCurrent: true, hasEvent: [3, 7, 12, 15, 19, 22, 25, 28].includes(d), isToday: d === 15 });
+		calCells.push({
+			day: d,
+			isCurrent: true,
+			hasEvent: [3, 7, 12, 15, 19, 22, 25, 28].includes(d),
+			isToday: d === 15
+		});
 	}
 	let nd = 1;
 	while (calCells.length % 7 !== 0) {
@@ -86,13 +91,34 @@
 		nd++;
 	}
 
-	const weeks: typeof calCells[] = [];
+	const weeks: (typeof calCells)[] = [];
 	for (let i = 0; i < calCells.length; i += 7) weeks.push(calCells.slice(i, i + 7));
 
 	const probRows = [
-		{ name: 'Matemáticas', color: '#ef4444', barCls: 'bg-success-100', pct: 100, label: '100%', labelCls: 'text-success-100' },
-		{ name: 'Física', color: '#3b82f6', barCls: 'bg-primary-100', pct: 70, label: '70%', labelCls: 'text-primary-100' },
-		{ name: 'Química', color: '#22c55e', barCls: 'bg-error-100', pct: 35, label: '35%', labelCls: 'text-error-100' }
+		{
+			name: 'Matemáticas',
+			color: '#ef4444',
+			barCls: 'bg-success-100',
+			pct: 100,
+			label: '100%',
+			labelCls: 'text-success-100'
+		},
+		{
+			name: 'Física',
+			color: '#3b82f6',
+			barCls: 'bg-primary-100',
+			pct: 70,
+			label: '70%',
+			labelCls: 'text-primary-100'
+		},
+		{
+			name: 'Química',
+			color: '#22c55e',
+			barCls: 'bg-error-100',
+			pct: 35,
+			label: '35%',
+			labelCls: 'text-error-100'
+		}
 	];
 
 	const chartData = [2, 4, 1, 0, 3, 5, 2, 1, 4, 3, 0, 2, 5, 1, 3];
@@ -116,7 +142,9 @@
 	<div class="flex gap-2">
 		{#each Array(totalSteps) as _, i}
 			<div
-				class="h-1.5 flex-1 rounded-full transition-colors {i < step ? 'bg-primary-100' : 'bg-base-300'}"
+				class="h-1.5 flex-1 rounded-full transition-colors {i < step
+					? 'bg-primary-100'
+					: 'bg-base-300'}"
 			></div>
 		{/each}
 	</div>
@@ -179,7 +207,6 @@
 				Siguiente
 			</button>
 		</div>
-
 	{:else if step === 2}
 		<div class="space-y-5">
 			<div class="flex items-center gap-2">
@@ -245,7 +272,6 @@
 				Siguiente
 			</button>
 		</div>
-
 	{:else if step === 3}
 		<div class="space-y-5">
 			<div class="flex items-center gap-2">
@@ -262,7 +288,9 @@
 						<CalendarCheck class="h-4 w-4 text-schedule-100" />
 						<h3 class="text-xs font-bold text-content/50 uppercase tracking-widest">Semanal</h3>
 					</div>
-					<div class="flex items-center gap-1 px-2 py-1 rounded-lg border border-base-400 bg-base-100">
+					<div
+						class="flex items-center gap-1 px-2 py-1 rounded-lg border border-base-400 bg-base-100"
+					>
 						<ChevronLeft class="w-3 h-3 text-content/60" />
 						<span class="text-xs font-semibold text-content/70">Esta semana</span>
 						<ChevronRight class="w-3 h-3 text-content/60" />
@@ -270,12 +298,21 @@
 				</div>
 				<div class="grid grid-cols-7">
 					{#each dayHeaders as d, idx}
-						<div class="px-1.5 py-2 text-center text-xs font-semibold text-content/40 border-b border-base-300 {idx < 6 ? 'border-r border-base-300' : ''}">
+						<div
+							class="px-1.5 py-2 text-center text-xs font-semibold text-content/40 border-b border-base-300 {idx <
+							6
+								? 'border-r border-base-300'
+								: ''}"
+						>
 							{d}
 						</div>
 					{/each}
 					{#each dayHeaders as d, idx}
-						<div class="min-h-[56px] p-1 border-b border-base-300 {idx < 6 ? 'border-r border-base-300' : ''}">
+						<div
+							class="min-h-[56px] p-1 border-b border-base-300 {idx < 6
+								? 'border-r border-base-300'
+								: ''}"
+						>
 							{#each scheduleDummy[d.slice(0, 1)] ?? [] as block}
 								{@const CatIcon = catIconsMap[block.cat] ?? Book}
 								<div
@@ -296,23 +333,27 @@
 						<CalendarDays class="h-4 w-4 text-calendar-100" />
 						<h3 class="text-xs font-bold text-content/50 uppercase tracking-widest">Junio 2026</h3>
 					</div>
-					<div class="flex items-center gap-1 px-2 py-1 rounded-lg border border-base-400 bg-base-100">
+					<div
+						class="flex items-center gap-1 px-2 py-1 rounded-lg border border-base-400 bg-base-100"
+					>
 						<ChevronLeft class="w-3 h-3 text-content/60" />
 						<ChevronRight class="w-3 h-3 text-content/60" />
 					</div>
 				</div>
 				<div class="grid grid-cols-7">
 					{#each dayHeaders as h}
-						<div class="px-1.5 py-2 text-center text-xs font-semibold text-content/40 border-b border-base-300">
+						<div
+							class="px-1.5 py-2 text-center text-xs font-semibold text-content/40 border-b border-base-300"
+						>
 							{h}
 						</div>
 					{/each}
 					{#each weeks as week}
 						{#each week as cell}
 							<div
-								class="flex flex-col items-start p-1.5 min-h-[48px] border-b border-r border-base-300 transition-colors {cell.isCurrent ? '' : 'opacity-30'} {cell.isToday
-									? 'bg-calendar-400'
-									: 'bg-transparent'}"
+								class="flex flex-col items-start p-1.5 min-h-[48px] border-b border-r border-base-300 transition-colors {cell.isCurrent
+									? ''
+									: 'opacity-30'} {cell.isToday ? 'bg-calendar-400' : 'bg-transparent'}"
 							>
 								<span
 									class="text-xs font-semibold leading-none mb-auto {cell.isToday
@@ -349,7 +390,6 @@
 				Siguiente
 			</button>
 		</div>
-
 	{:else if step === 4}
 		<div class="space-y-5">
 			<div class="flex items-center gap-2">
@@ -357,26 +397,43 @@
 				<h3 class="text-base font-bold text-content">Notas y Escenarios</h3>
 			</div>
 			<p class="text-sm text-content/60">
-				Crea ecuaciones personalizadas para cada ramo y simula escenarios con predicciones de probabilidad.
+				Crea ecuaciones personalizadas para cada ramo y simula escenarios con predicciones de
+				probabilidad.
 			</p>
 
 			<div class="bg-base-100 border border-base-400 rounded-xl p-4 shadow-sm">
 				<div class="flex items-center justify-between mb-3">
 					<div class="flex items-center gap-1.5">
 						<TrendingUp class="h-4 w-4 text-grades-100" />
-						<h3 class="text-xs font-bold text-content/50 uppercase tracking-widest">Probabilidades</h3>
+						<h3 class="text-xs font-bold text-content/50 uppercase tracking-widest">
+							Probabilidades
+						</h3>
 					</div>
-					<span class="text-xs font-bold text-content/60 bg-base-300 px-2 py-0.5 rounded-md">2026-1</span>
+					<span class="text-xs font-bold text-content/60 bg-base-300 px-2 py-0.5 rounded-md"
+						>2026-1</span
+					>
 				</div>
 				<div class="space-y-1">
 					{#each probRows as ramo}
-						<div class="flex items-center gap-2.5 w-full rounded-lg px-3 py-2 hover:bg-base-200 transition-colors">
-							<div class="w-3 h-3 rounded-full shrink-0" style="background-color: {ramo.color}"></div>
-							<span class="text-xs lg:text-sm lg:w-20 font-bold text-content w-16 truncate shrink-0">{ramo.name}</span>
+						<div
+							class="flex items-center gap-2.5 w-full rounded-lg px-3 py-2 hover:bg-base-200 transition-colors"
+						>
+							<div
+								class="w-3 h-3 rounded-full shrink-0"
+								style="background-color: {ramo.color}"
+							></div>
+							<span class="text-xs lg:text-sm lg:w-20 font-bold text-content w-16 truncate shrink-0"
+								>{ramo.name}</span
+							>
 							<div class="flex-1 h-3 bg-base-300 rounded-full overflow-hidden">
-								<div class="h-full {ramo.barCls} rounded-full transition-all" style="width: {ramo.pct}%"></div>
+								<div
+									class="h-full {ramo.barCls} rounded-full transition-all"
+									style="width: {ramo.pct}%"
+								></div>
 							</div>
-							<span class="text-xs font-bold tabular-nums {ramo.labelCls} w-10 text-right">{ramo.label}</span>
+							<span class="text-xs font-bold tabular-nums {ramo.labelCls} w-10 text-right"
+								>{ramo.label}</span
+							>
 						</div>
 					{/each}
 				</div>
@@ -402,7 +459,6 @@
 				Siguiente
 			</button>
 		</div>
-
 	{:else if step === 5}
 		<div class="space-y-4">
 			<div class="flex items-center gap-2">
@@ -413,13 +469,18 @@
 				Tu resumen inteligente: todo lo que necesitas saber de un vistazo.
 			</p>
 
-			<div class="flex items-center gap-3 bg-base-100 border border-base-400 rounded-xl p-4 shadow-sm">
+			<div
+				class="flex items-center gap-3 bg-base-100 border border-base-400 rounded-xl p-4 shadow-sm"
+			>
 				<div class="w-1 h-12 rounded-full shrink-0" style="background-color: #ef4444"></div>
 				<Book class="h-5 w-5 shrink-0" style="color: #ef4444" />
 				<div class="min-w-0 flex-1">
 					<div class="text-sm font-bold text-content">Matemáticas</div>
 					<div class="flex items-center gap-2 mt-0.5">
-						<span class="text-xs font-bold bg-base-200 border border-base-300 px-1.5 py-0.5 rounded text-content/70">10:00</span>
+						<span
+							class="text-xs font-bold bg-base-200 border border-base-300 px-1.5 py-0.5 rounded text-content/70"
+							>10:00</span
+						>
 						<div class="flex items-center gap-1">
 							<div class="w-1.5 h-1.5 bg-success-100 rounded-full animate-pulse"></div>
 							<span class="text-xs font-bold text-success-100">En curso</span>
@@ -431,9 +492,13 @@
 			<div class="bg-base-100 border border-base-400 rounded-xl p-4 shadow-sm">
 				<div class="flex items-center gap-1.5 mb-2">
 					<CalendarDays class="h-4 w-4 text-calendar-100" />
-					<h3 class="text-xs font-bold text-content/50 uppercase tracking-widest">Próximos eventos</h3>
+					<h3 class="text-xs font-bold text-content/50 uppercase tracking-widest">
+						Próximos eventos
+					</h3>
 				</div>
-				<button class="flex items-center gap-2.5 w-full rounded-lg px-3 py-2 text-left hover:bg-base-200 transition-colors cursor-default">
+				<button
+					class="flex items-center gap-2.5 w-full rounded-lg px-3 py-2 text-left hover:bg-base-200 transition-colors cursor-default"
+				>
 					<div class="flex flex-col items-center min-w-[36px]">
 						<span class="text-xs font-bold text-content/40 uppercase">lun</span>
 						<span class="text-lg font-bold text-content leading-tight">15</span>
@@ -451,21 +516,47 @@
 				<div class="flex items-center gap-1.5 mb-3">
 					<Activity class="h-4 w-4 text-schedule-100" />
 					<h3 class="text-xs font-bold text-content/50 uppercase tracking-widest">Carga Mensual</h3>
-					<span class="text-xs font-bold text-content/60 bg-base-300 px-2 py-0.5 rounded-md ml-auto">junio 2026</span>
+					<span class="text-xs font-bold text-content/60 bg-base-300 px-2 py-0.5 rounded-md ml-auto"
+						>junio 2026</span
+					>
 				</div>
 				<svg viewBox="0 0 {cSvgW} {cSvgH}" class="w-full h-auto">
 					{#each chartData as _, i}
 						{@const x = i === 0 ? cChartL : cChartL + (i / (cN - 1)) * cChartW}
-						<line x1={x} x2={x} y1={cChartT} y2={cChartB} stroke="currentColor" class="text-base-200" stroke-width="0.5" />
+						<line
+							x1={x}
+							x2={x}
+							y1={cChartT}
+							y2={cChartB}
+							stroke="currentColor"
+							class="text-base-200"
+							stroke-width="0.5"
+						/>
 					{/each}
-					<line x1={cChartL} x2={cChartR} y1={cChartB} y2={cChartB} stroke="currentColor" class="text-base-300" stroke-width="1" />
+					<line
+						x1={cChartL}
+						x2={cChartR}
+						y1={cChartB}
+						y2={cChartB}
+						stroke="currentColor"
+						class="text-base-300"
+						stroke-width="1"
+					/>
 					<polygon
-						points="{[cChartL, cChartB].concat(chartData.map((v, i) => {
-							const x = i === 0 ? cChartL : cChartL + (i / (cN - 1)) * cChartW;
-							const y = cChartB - (v / maxV) * cChartH;
-							return [x, y];
-						}).flat()).concat([cChartL + cChartW, cChartB]).join(' ')}"
-						fill="var(--color-schedule-100)" fill-opacity="0.12"
+						points={[cChartL, cChartB]
+							.concat(
+								chartData
+									.map((v, i) => {
+										const x = i === 0 ? cChartL : cChartL + (i / (cN - 1)) * cChartW;
+										const y = cChartB - (v / maxV) * cChartH;
+										return [x, y];
+									})
+									.flat()
+							)
+							.concat([cChartL + cChartW, cChartB])
+							.join(' ')}
+						fill="var(--color-schedule-100)"
+						fill-opacity="0.12"
 					/>
 					<polyline
 						fill="none"
@@ -473,20 +564,35 @@
 						stroke-width="1.5"
 						stroke-linejoin="round"
 						stroke-linecap="round"
-						points={chartData.map((v, i) => {
-							const x = i === 0 ? cChartL : cChartL + (i / (cN - 1)) * cChartW;
-							const y = cChartB - (v / maxV) * cChartH;
-							return `${x},${y}`;
-						}).join(' ')}
+						points={chartData
+							.map((v, i) => {
+								const x = i === 0 ? cChartL : cChartL + (i / (cN - 1)) * cChartW;
+								const y = cChartB - (v / maxV) * cChartH;
+								return `${x},${y}`;
+							})
+							.join(' ')}
 					/>
 					{#each chartData as v, i}
-						{@const x = i === 0 ? cChartL + 1.5 : i === cN - 1 ? cChartR - 1.5 : cChartL + (i / (cN - 1)) * cChartW}
+						{@const x =
+							i === 0
+								? cChartL + 1.5
+								: i === cN - 1
+									? cChartR - 1.5
+									: cChartL + (i / (cN - 1)) * cChartW}
 						{@const y = cChartB - (v / maxV) * cChartH}
 						<circle cx={x} cy={y} r="1.5" fill="var(--color-schedule-100)" />
 					{/each}
 					{#each chartData as _, i}
-						{@const x = i === 0 ? cChartL : i === cN - 1 ? cChartR : cChartL + (i / (cN - 1)) * cChartW}
-						<text x={x} y={cSvgH - 2} text-anchor={i === 0 ? 'start' : i === cN - 1 ? 'end' : 'middle'} fill="currentColor" class="text-content/30" font-size="6">{i + 1}</text>
+						{@const x =
+							i === 0 ? cChartL : i === cN - 1 ? cChartR : cChartL + (i / (cN - 1)) * cChartW}
+						<text
+							{x}
+							y={cSvgH - 2}
+							text-anchor={i === 0 ? 'start' : i === cN - 1 ? 'end' : 'middle'}
+							fill="currentColor"
+							class="text-content/30"
+							font-size="6">{i + 1}</text
+						>
 					{/each}
 				</svg>
 			</div>

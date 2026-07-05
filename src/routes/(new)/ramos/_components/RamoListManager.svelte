@@ -95,7 +95,9 @@
 
 	<!-- Desktop: inline input -->
 	<div class="hidden lg:block shrink-0 pt-4 border-t border-base-300 mt-4">
-		<div class="flex items-center gap-3 text-content/50 focus-within:text-primary-100 transition-colors">
+		<div
+			class="flex items-center gap-3 text-content/50 focus-within:text-primary-100 transition-colors"
+		>
 			<Plus size={20} />
 			<input
 				type="text"
@@ -135,8 +137,7 @@
 			<p class="text-sm text-content/70 mb-6">
 				Esta acción eliminará permanentemente el ramo <strong class="text-content"
 					>"{deleteConfirmData.name}"</strong
-				> y todos sus datos asociados (horarios, eventos, escenarios).
-				No se puede deshacer.
+				> y todos sus datos asociados (horarios, eventos, escenarios). No se puede deshacer.
 			</p>
 			<div class="flex justify-end gap-3">
 				<button

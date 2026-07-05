@@ -1,5 +1,14 @@
 <script lang="ts">
-	import { Plus, Trash2, Rocket, Calendar, CalendarCheck, CalendarDays, TrendingUp, BookMarked } from '@lucide/svelte';
+	import {
+		Plus,
+		Trash2,
+		Rocket,
+		Calendar,
+		CalendarCheck,
+		CalendarDays,
+		TrendingUp,
+		BookMarked
+	} from '@lucide/svelte';
 	import { ColorUtils } from '$lib/utils/colors';
 	import { getNow } from '$lib/utils/date';
 
@@ -52,7 +61,9 @@
 	<div class="flex gap-2">
 		{#each Array(totalSteps) as _, i}
 			<div
-				class="h-1.5 flex-1 rounded-full transition-colors {i < step ? 'bg-primary-100' : 'bg-base-300'}"
+				class="h-1.5 flex-1 rounded-full transition-colors {i < step
+					? 'bg-primary-100'
+					: 'bg-base-300'}"
 			></div>
 		{/each}
 	</div>
@@ -75,7 +86,8 @@
 				/>
 			</div>
 			<p class="text-xs text-content/40">
-				Se usará <span class="font-mono font-medium text-content/60">{recomendado}</span> si dejas el campo vacío.
+				Se usará <span class="font-mono font-medium text-content/60">{recomendado}</span> si dejas el
+				campo vacío.
 			</p>
 		</div>
 
@@ -100,7 +112,9 @@
 				{#each ramosList as ramo, i (i)}
 					<div class="space-y-1.5">
 						<div class="flex items-center gap-2">
-							<div class="flex items-center gap-2 flex-1 min-w-0 p-2 bg-base-200 rounded-lg border border-base-400">
+							<div
+								class="flex items-center gap-2 flex-1 min-w-0 p-2 bg-base-200 rounded-lg border border-base-400"
+							>
 								<button
 									class="shrink-0 w-7 h-7 rounded-lg border-2 transition-all hover:scale-110 cursor-pointer"
 									style="background-color: {ramo.color}; border-color: {ramo.color}"
@@ -127,7 +141,10 @@
 							<div class="flex flex-wrap gap-1.5 p-2 bg-base-200 rounded-lg border border-base-300">
 								{#each ColorUtils.COLORS as color}
 									<button
-										class="w-7 h-7 rounded-lg border-2 transition-all hover:scale-110 {ramo.color === color ? 'border-content scale-110 ring-2 ring-content/30' : 'border-transparent'} cursor-pointer"
+										class="w-7 h-7 rounded-lg border-2 transition-all hover:scale-110 {ramo.color ===
+										color
+											? 'border-content scale-110 ring-2 ring-content/30'
+											: 'border-transparent'} cursor-pointer"
 										style="background-color: {color}"
 										onclick={() => setRamoColor(i, color)}
 										aria-label="Color {color}"
@@ -170,7 +187,8 @@
 				<h3 class="text-base font-bold text-content">Semestre listo</h3>
 			</div>
 			<p class="text-sm text-content/60">
-				Semestre {semesterName || recomendado} con {ramosList.filter((r) => r.name.trim()).length || 0} ramos.
+				Semestre {semesterName || recomendado} con {ramosList.filter((r) => r.name.trim()).length ||
+					0} ramos.
 			</p>
 
 			<div class="space-y-2">
@@ -198,7 +216,9 @@
 					</div>
 					<div>
 						<p class="text-sm font-bold text-content">Escenarios</p>
-						<p class="text-xs text-content/60">Agrega la ecuación de tus ramos para recibir predicciones.</p>
+						<p class="text-xs text-content/60">
+							Agrega la ecuación de tus ramos para recibir predicciones.
+						</p>
 					</div>
 				</div>
 			</div>

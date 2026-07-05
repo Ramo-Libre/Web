@@ -51,10 +51,15 @@
 	<div class="bg-base-100 px-3 py-2 border-b border-base-300 flex items-center justify-between">
 		<div class="flex items-center gap-1.5">
 			<Database class="h-3.5 w-3.5 text-primary-100" />
-			<span class="text-[10px] font-bold text-content/50 uppercase tracking-widest">Generador de Datos</span>
+			<span class="text-[10px] font-bold text-content/50 uppercase tracking-widest"
+				>Generador de Datos</span
+			>
 		</div>
 		{#if logs.length > 0}
-			<button onclick={handleClear} class="flex items-center gap-1 text-[9px] font-bold text-content/30 hover:text-error-100 uppercase tracking-wider cursor-pointer transition-colors">
+			<button
+				onclick={handleClear}
+				class="flex items-center gap-1 text-[9px] font-bold text-content/30 hover:text-error-100 uppercase tracking-wider cursor-pointer transition-colors"
+			>
 				<Trash2 size={11} />
 				Limpiar
 			</button>
@@ -65,7 +70,10 @@
 		<div class="grid grid-cols-5 gap-2">
 			{#each Object.keys(params) as key (key)}
 				<div class="flex flex-col gap-0.5">
-					<label for="v2-{key}" class="text-[9px] font-bold text-content/40 uppercase tracking-wider">
+					<label
+						for="v2-{key}"
+						class="text-[9px] font-bold text-content/40 uppercase tracking-wider"
+					>
 						{key}
 					</label>
 					<input
@@ -99,7 +107,8 @@
 							style="padding-left: {8 + log.indent * 16}px"
 						>
 							<span class="shrink-0 w-4 text-center text-[11px]">{log.icon}</span>
-							{#if log.label}<span class="font-semibold text-content/70 shrink-0">{log.label}:</span>{/if}
+							{#if log.label}<span class="font-semibold text-content/70 shrink-0">{log.label}:</span
+								>{/if}
 							<span class="text-content/50 break-all">{log.detail}</span>
 						</div>
 					{/each}

@@ -2,7 +2,13 @@ import { env } from '$env/dynamic/public';
 import { deviceId } from '$lib/utils/device';
 import type { EntityChange, FeatureId } from './changes.svelte';
 import type { SyncAdapter, PushResult, PullResult, ConflictEvent } from './sync-adapter';
-import { tryUpdate, insertEntity, fetchEntity, fetchWatermark, fetchChangesSince } from './sync-entities-store';
+import {
+	tryUpdate,
+	insertEntity,
+	fetchEntity,
+	fetchWatermark,
+	fetchChangesSince
+} from './sync-entities-store';
 import { merge } from './conflict-resolver';
 import { local } from './persistence.svelte';
 import { supabase } from '$lib/supabase/client';
@@ -30,7 +36,12 @@ function getLastKnownPayload(semesterId: string, feature: string, entityId: stri
 	return local.get<unknown>(lksKey(LKS_PAYLOAD_PREFIX, semesterId, feature, entityId));
 }
 
-function setLastKnownPayload(semesterId: string, feature: string, entityId: string, payload: unknown) {
+function setLastKnownPayload(
+	semesterId: string,
+	feature: string,
+	entityId: string,
+	payload: unknown
+) {
 	local.save(lksKey(LKS_PAYLOAD_PREFIX, semesterId, feature, entityId), payload);
 }
 
@@ -60,7 +71,9 @@ class PollingAdapter implements SyncAdapter {
 			return;
 		}
 
-		const { data: { user } } = await supabase.auth.getUser();
+		const {
+			data: { user }
+		} = await supabase.auth.getUser();
 		if (!user) {
 			console.warn('[Sync:Polling] connect: no authenticated user');
 			return;
@@ -111,8 +124,13 @@ class PollingAdapter implements SyncAdapter {
 			const lastKnown = getLastKnownSequence(semesterId, feature, entityId);
 
 			const result = await tryUpdate(
-				this._userId, semesterId, feature, entityId,
-				payload, lastKnown, deviceId
+				this._userId,
+				semesterId,
+				feature,
+				entityId,
+				payload,
+				lastKnown,
+				deviceId
 			);
 
 			if (result) {
@@ -123,8 +141,12 @@ class PollingAdapter implements SyncAdapter {
 
 			if (lastKnown === 0) {
 				const insertResult = await insertEntity(
-					this._userId, semesterId, feature, entityId,
-					payload, deviceId
+					this._userId,
+					semesterId,
+					feature,
+					entityId,
+					payload,
+					deviceId
 				);
 
 				if (insertResult) {
@@ -166,8 +188,13 @@ class PollingAdapter implements SyncAdapter {
 
 			if (merged !== null) {
 				const retry = await tryUpdate(
-					this._userId, semesterId, feature, entityId,
-					merged, serverSequence, deviceId
+					this._userId,
+					semesterId,
+					feature,
+					entityId,
+					merged,
+					serverSequence,
+					deviceId
 				);
 
 				if (retry) {

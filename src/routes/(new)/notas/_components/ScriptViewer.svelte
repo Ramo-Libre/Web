@@ -14,7 +14,9 @@
 
 	const statements = $derived(parseScript(scriptRaw));
 
-	const visibleStatements = $derived(statements.filter((s) => renderTypes.includes(s.type as RenderType)));
+	const visibleStatements = $derived(
+		statements.filter((s) => renderTypes.includes(s.type as RenderType))
+	);
 
 	function renderStmtHtml(stmt: (typeof statements)[number]): string | null {
 		try {
@@ -30,7 +32,9 @@
 	onclick={onEdit}
 	role="button"
 	tabindex="0"
-	onkeydown={(e) => { if (e.key === 'Enter') onEdit?.(); }}
+	onkeydown={(e) => {
+		if (e.key === 'Enter') onEdit?.();
+	}}
 >
 	<div class="absolute top-4 left-4 flex items-center gap-2 text-content/50 pointer-events-none">
 		<span class="font-medium text-xs uppercase tracking-widest">Ecuación de Nota</span>
@@ -38,8 +42,12 @@
 
 	{#if visibleStatements.length === 0}
 		<div class="h-40 flex items-center justify-center">
-			<div class="flex flex-col items-center gap-2 px-6 py-3.5 rounded-xl border-2 border-dashed border-primary-100/30 bg-primary-100/5 group-hover:bg-primary-100/10 group-hover:border-primary-100/50 transition-all cursor-pointer">
-				<span class="text-sm font-bold text-primary-100/70">Presiona para configurar las reglas</span>
+			<div
+				class="flex flex-col items-center gap-2 px-6 py-3.5 rounded-xl border-2 border-dashed border-primary-100/30 bg-primary-100/5 group-hover:bg-primary-100/10 group-hover:border-primary-100/50 transition-all cursor-pointer"
+			>
+				<span class="text-sm font-bold text-primary-100/70"
+					>Presiona para configurar las reglas</span
+				>
 			</div>
 		</div>
 	{:else}

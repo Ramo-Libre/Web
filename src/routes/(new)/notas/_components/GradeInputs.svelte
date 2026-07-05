@@ -73,7 +73,7 @@
 					<input
 						id="grade-{variable}"
 						type="number"
-						value={value}
+						{value}
 						oninput={(e) => handleInput(variable, (e.target as HTMLInputElement).value)}
 						onblur={() => handleBlur(variable)}
 						placeholder={getPlaceholder(variable)}

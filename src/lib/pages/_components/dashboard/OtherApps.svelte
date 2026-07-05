@@ -33,7 +33,9 @@
 				<h3 class="text-sm lg:text-base font-bold text-content truncate">{app.name}</h3>
 				<p class="text-xs text-content/60 mt-0.5 line-clamp-2">{app.desc}</p>
 			</div>
-			<ExternalLink class="w-4 h-4 text-content/30 group-hover:text-primary-100 shrink-0 transition-colors" />
+			<ExternalLink
+				class="w-4 h-4 text-content/30 group-hover:text-primary-100 shrink-0 transition-colors"
+			/>
 		</a>
 	{/each}
 </div>

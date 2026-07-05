@@ -1,8 +1,17 @@
 <script lang="ts">
 	import { semestre } from '$lib/infra/semestres.svelte';
 	import {
-		X, ChevronDown, ChevronRight, Clock,
-		Presentation, CircleAlert, Book, FlaskConical, Users, Wrench, Ellipsis
+		X,
+		ChevronDown,
+		ChevronRight,
+		Clock,
+		Presentation,
+		CircleAlert,
+		Book,
+		FlaskConical,
+		Users,
+		Wrench,
+		Ellipsis
 	} from '@lucide/svelte';
 	import { fly } from 'svelte/transition';
 	import type { ScheduleEvent, ScheduleCategory } from '$lib/features/schedule.svelte';
@@ -63,7 +72,7 @@
 
 	function toggleDow(dow: number) {
 		if (daysOfWeek.includes(dow)) {
-			daysOfWeek = daysOfWeek.filter(d => d !== dow);
+			daysOfWeek = daysOfWeek.filter((d) => d !== dow);
 		} else {
 			daysOfWeek = [...daysOfWeek, dow].sort();
 		}
@@ -81,17 +90,18 @@
 			daysOfWeek,
 			startTime,
 			endTime,
-			...(showRecurrence ? { recurrenceStart: recurrenceStart || undefined, recurrenceEnd: recurrenceEnd || undefined } : {})
+			...(showRecurrence
+				? {
+						recurrenceStart: recurrenceStart || undefined,
+						recurrenceEnd: recurrenceEnd || undefined
+					}
+				: {})
 		});
 	}
 </script>
 
 <!-- svelte-ignore a11y_click_events_have_key_events a11y_interactive_supports_focus -->
-<div
-	class="fixed inset-0 z-50"
-	role="dialog"
-	aria-modal="true"
->
+<div class="fixed inset-0 z-50" role="dialog" aria-modal="true">
 	<button
 		class="absolute inset-0 bg-black/40 backdrop-blur-sm cursor-pointer"
 		onclick={onClose}
@@ -148,7 +158,9 @@
 							<button
 								type="button"
 								onclick={() => toggleDow(i + 1)}
-								class="w-10 h-10 rounded-lg text-sm font-semibold transition-all cursor-pointer {daysOfWeek.includes(i + 1)
+								class="w-10 h-10 rounded-lg text-sm font-semibold transition-all cursor-pointer {daysOfWeek.includes(
+									i + 1
+								)
 									? 'bg-primary-100 text-base-100'
 									: 'text-content/30 hover:text-content/70'}"
 							>
@@ -188,8 +200,7 @@
 								type="button"
 								onclick={() => (category = cat.value)}
 								title={cat.label}
-								class="p-2 rounded-lg transition-all cursor-pointer {category ===
-								cat.value
+								class="p-2 rounded-lg transition-all cursor-pointer {category === cat.value
 									? 'bg-primary-100/10 text-primary-100'
 									: 'text-content/20 hover:text-content/50'}"
 							>
@@ -213,7 +224,8 @@
 									? 'bg-primary-100/10 text-primary-100 border-primary-100/30'
 									: 'text-content/40 border-transparent hover:text-content/70'}"
 							>
-								<span class="w-2.5 h-2.5 rounded-full shrink-0" style="background: {ramo.color}"></span>
+								<span class="w-2.5 h-2.5 rounded-full shrink-0" style="background: {ramo.color}"
+								></span>
 								<span>{ramo.name}</span>
 							</button>
 						{/each}
@@ -226,7 +238,13 @@
 					</div>
 					<button
 						type="button"
-						onclick={() => { if (showRecurrence) { recurrenceStart = ''; recurrenceEnd = ''; } showRecurrence = !showRecurrence; }}
+						onclick={() => {
+							if (showRecurrence) {
+								recurrenceStart = '';
+								recurrenceEnd = '';
+							}
+							showRecurrence = !showRecurrence;
+						}}
 						class="flex items-center gap-2 text-sm transition-colors cursor-pointer {showRecurrence
 							? 'text-primary-100'
 							: 'text-content/30 hover:text-content/60'}"
@@ -353,7 +371,9 @@
 							<button
 								type="button"
 								onclick={() => toggleDow(i + 1)}
-								class="w-10 h-10 rounded-lg text-sm font-semibold transition-all cursor-pointer {daysOfWeek.includes(i + 1)
+								class="w-10 h-10 rounded-lg text-sm font-semibold transition-all cursor-pointer {daysOfWeek.includes(
+									i + 1
+								)
 									? 'bg-primary-100 text-base-100'
 									: 'text-content/30 hover:text-content/70'}"
 							>
@@ -393,8 +413,7 @@
 								type="button"
 								onclick={() => (category = cat.value)}
 								title={cat.label}
-								class="p-2 rounded-lg transition-all cursor-pointer {category ===
-								cat.value
+								class="p-2 rounded-lg transition-all cursor-pointer {category === cat.value
 									? 'bg-primary-100/10 text-primary-100'
 									: 'text-content/20 hover:text-content/50'}"
 							>
@@ -418,7 +437,8 @@
 									? 'bg-primary-100/10 text-primary-100 border-primary-100/30'
 									: 'text-content/40 border-transparent hover:text-content/70'}"
 							>
-								<span class="w-2.5 h-2.5 rounded-full shrink-0" style="background: {ramo.color}"></span>
+								<span class="w-2.5 h-2.5 rounded-full shrink-0" style="background: {ramo.color}"
+								></span>
 								<span>{ramo.name}</span>
 							</button>
 						{/each}
@@ -431,7 +451,13 @@
 					</div>
 					<button
 						type="button"
-						onclick={() => { if (showRecurrence) { recurrenceStart = ''; recurrenceEnd = ''; } showRecurrence = !showRecurrence; }}
+						onclick={() => {
+							if (showRecurrence) {
+								recurrenceStart = '';
+								recurrenceEnd = '';
+							}
+							showRecurrence = !showRecurrence;
+						}}
 						class="flex items-center gap-2 text-sm transition-colors cursor-pointer {showRecurrence
 							? 'text-primary-100'
 							: 'text-content/30 hover:text-content/60'}"

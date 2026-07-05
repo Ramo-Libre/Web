@@ -197,11 +197,16 @@ class SemestresManager {
 
 	managerFor(feature: FeatureId): Serializable<unknown> {
 		switch (feature) {
-			case 'preferences': return this._preferences;
-			case 'ramos': return this._ramos;
-			case 'schedule': return this._schedule;
-			case 'escenarios': return this._escenarios;
-			case 'semesters': throw new Error('semesters has no manager');
+			case 'preferences':
+				return this._preferences;
+			case 'ramos':
+				return this._ramos;
+			case 'schedule':
+				return this._schedule;
+			case 'escenarios':
+				return this._escenarios;
+			case 'semesters':
+				throw new Error('semesters has no manager');
 		}
 	}
 

@@ -13,7 +13,7 @@
 		Circle,
 		CircleX,
 		HelpCircle,
-		ArrowRight,
+		ArrowRight
 	} from '@lucide/svelte';
 	import { fly } from 'svelte/transition';
 	import { semestre } from '$lib/infra/semestres.svelte';
@@ -174,12 +174,16 @@
 													{ev.title || (categoryLabels[ev.category] ?? ev.category)}
 												</span>
 											</div>
-											<div class="flex items-center gap-1 text-[11px] text-content/50 leading-tight">
+											<div
+												class="flex items-center gap-1 text-[11px] text-content/50 leading-tight"
+											>
 												<span>{ev.startTime}–{ev.endTime}</span>
 											</div>
 										</div>
 										{#if ev.description}
-											<div class="text-[11px] text-content/50 leading-tight text-right max-w-[140px] shrink-0 line-clamp-3">
+											<div
+												class="text-[11px] text-content/50 leading-tight text-right max-w-[140px] shrink-0 line-clamp-3"
+											>
 												{ev.description}
 											</div>
 										{/if}
@@ -220,12 +224,7 @@
 
 {#if ramoDrawer.id !== null}
 	<!-- svelte-ignore a11y_click_events_have_key_events a11y_interactive_supports_focus -->
-	<div
-		class="fixed inset-0 z-50"
-		role="dialog"
-		aria-modal="true"
-		in:fly={{ duration: 200 }}
-	>
+	<div class="fixed inset-0 z-50" role="dialog" aria-modal="true" in:fly={{ duration: 200 }}>
 		<button
 			class="absolute inset-0 bg-black/40 backdrop-blur-sm cursor-pointer"
 			onclick={() => ramoDrawer.close()}

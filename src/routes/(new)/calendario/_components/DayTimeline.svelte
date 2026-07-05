@@ -11,8 +11,14 @@
 
 	const timed = $derived(events.filter((e) => e.startTime));
 
-	const minH = $derived(timed.length > 0 ? Math.min(...timed.map((e) => parseInt(e.startTime!.split(':')[0]))) : 6);
-	const maxH = $derived(timed.length > 0 ? Math.max(...timed.map((e) => parseInt((e.endTime || e.startTime)!.split(':')[0]))) : 23);
+	const minH = $derived(
+		timed.length > 0 ? Math.min(...timed.map((e) => parseInt(e.startTime!.split(':')[0]))) : 6
+	);
+	const maxH = $derived(
+		timed.length > 0
+			? Math.max(...timed.map((e) => parseInt((e.endTime || e.startTime)!.split(':')[0])))
+			: 23
+	);
 
 	const hours = $derived.by(() => {
 		const hs: number[] = [];
@@ -46,15 +52,24 @@
 				</div>
 				<div class="flex-1 min-w-0 border-t border-base-300/40 py-[5px]">
 					{#each evs as event (event.id)}
-						{@const timeLabel = event.endTime ? `${event.startTime}–${event.endTime}` : event.startTime}
+						{@const timeLabel = event.endTime
+							? `${event.startTime}–${event.endTime}`
+							: event.startTime}
 						<button
 							onclick={() => onEventClick?.(event)}
 							class="flex items-center gap-1.5 w-full mb-0.5 last:mb-0 px-1.5 py-0.5 rounded text-left hover:opacity-80 transition-opacity cursor-pointer"
 							style="background: {rc(event.ramoId)}15"
 						>
-							<span class="w-1 h-full min-h-[14px] rounded-sm shrink-0" style="background: {rc(event.ramoId)}"></span>
+							<span
+								class="w-1 h-full min-h-[14px] rounded-sm shrink-0"
+								style="background: {rc(event.ramoId)}"
+							></span>
 							<span class="text-[10px] font-mono text-content/40 shrink-0">{timeLabel}</span>
-							<span class="text-[11px] font-medium text-content truncate">{event.title || (event.ramoId ? semestre.ramos.get(event.ramoId)?.name : null) || 'Evento'}</span>
+							<span class="text-[11px] font-medium text-content truncate"
+								>{event.title ||
+									(event.ramoId ? semestre.ramos.get(event.ramoId)?.name : null) ||
+									'Evento'}</span
+							>
 						</button>
 					{/each}
 				</div>

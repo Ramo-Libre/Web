@@ -75,10 +75,16 @@
 		{#each contexts as ctx, i}
 			<button
 				onclick={() => copy(String(i), ctx.build)}
-				class="flex items-center gap-3 w-full p-3 rounded-lg border border-base-400 bg-base-100 {copied[String(i)] ? 'border-success-100 bg-success-100/5' : 'hover:bg-base-200'} transition-all text-left cursor-pointer"
+				class="flex items-center gap-3 w-full p-3 rounded-lg border border-base-400 bg-base-100 {copied[
+					String(i)
+				]
+					? 'border-success-100 bg-success-100/5'
+					: 'hover:bg-base-200'} transition-all text-left cursor-pointer"
 			>
 				<div
-					class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 {copied[String(i)] ? 'bg-success-100 text-base-100' : 'bg-base-200 text-content/50'}"
+					class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 {copied[String(i)]
+						? 'bg-success-100 text-base-100'
+						: 'bg-base-200 text-content/50'}"
 				>
 					{#if copied[String(i)]}
 						<Check class="w-4 h-4" />

@@ -31,7 +31,8 @@
 			{#each computed as { name, value }}
 				<div class="flex items-center gap-2 bg-base-200 rounded-lg px-3 py-2">
 					<span class="text-sm font-medium text-content/60">{name}</span>
-					<span class="text-sm font-bold text-content ml-auto tabular-nums">{value.toFixed(2)}</span>
+					<span class="text-sm font-bold text-content ml-auto tabular-nums">{value.toFixed(2)}</span
+					>
 				</div>
 			{/each}
 		</div>

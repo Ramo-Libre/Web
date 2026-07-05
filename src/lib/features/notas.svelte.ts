@@ -58,7 +58,7 @@ export function hashContext(fullScript: string, strategy: string): string {
 	const str = fullScript + '::strategy::' + strategy;
 	for (let i = 0; i < str.length; i++) {
 		const char = str.charCodeAt(i);
-		hash = ((hash << 5) - hash) + char;
+		hash = (hash << 5) - hash + char;
 		hash |= 0;
 	}
 	return hash.toString(36);
@@ -67,7 +67,7 @@ export function hashContext(fullScript: string, strategy: string): string {
 export class EscenariosManager implements Serializable<EscenariosSerial> {
 	private _data = $state<SvelteMap<string, Escenario>>(new SvelteMap());
 
-		fromSerial(serial: EscenariosSerial) {
+	fromSerial(serial: EscenariosSerial) {
 		this._data = new SvelteMap(
 			serial.map(([id, rest]) => [
 				id,

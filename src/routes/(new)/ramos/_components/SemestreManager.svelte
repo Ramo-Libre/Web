@@ -86,7 +86,9 @@
 </script>
 
 <div
-	class="bg-base-100 border border-base-400 rounded-xl overflow-hidden flex flex-col {highlighted ? 'shine-effect' : ''}"
+	class="bg-base-100 border border-base-400 rounded-xl overflow-hidden flex flex-col {highlighted
+		? 'shine-effect'
+		: ''}"
 >
 	<div
 		class="relative bg-linear-to-r from-primary-100 to-primary-100/90 p-6 text-base-100 transition-colors"

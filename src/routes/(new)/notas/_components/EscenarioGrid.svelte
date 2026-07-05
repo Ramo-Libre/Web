@@ -62,7 +62,13 @@
 					{:else}
 						<CircleX class="w-5 h-5 text-error-100 shrink-0" />
 					{/if}
-					<span class="text-sm font-semibold {guaranteed ? 'text-success-100' : feasible ? 'text-primary-100' : 'text-error-100'}">
+					<span
+						class="text-sm font-semibold {guaranteed
+							? 'text-success-100'
+							: feasible
+								? 'text-primary-100'
+								: 'text-error-100'}"
+					>
 						{guaranteed ? 'Garantizado' : feasible ? 'Factible' : 'No factible'}
 					</span>
 					<span class="text-sm text-content/50 ml-auto tabular-nums">

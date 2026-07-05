@@ -113,8 +113,8 @@ class SyncRouter {
 		}
 
 		if (this._init) {
-			this._unsubscribeRemote = this._adapter.onRemoteChanges(
-				(events) => this._handleRemoteEvents(events)
+			this._unsubscribeRemote = this._adapter.onRemoteChanges((events) =>
+				this._handleRemoteEvents(events)
 			);
 			try {
 				await this._adapter.connect();
@@ -140,22 +140,23 @@ class SyncRouter {
 				if (!network.online) {
 					this._setStatus('offline');
 				} else if (this._status === 'offline') {
-					this._setStatus(
-						this._adapter.id === 'noop' ? 'disconnected' : 'connecting'
-					);
+					this._setStatus(this._adapter.id === 'noop' ? 'disconnected' : 'connecting');
 					if (this._adapter.id !== 'noop') {
-						this._adapter.connect().then(() => {
-							this._setStatus('idle');
-						}).catch((e) => {
-							this._setStatus('error', e instanceof Error ? e.message : String(e));
-						});
+						this._adapter
+							.connect()
+							.then(() => {
+								this._setStatus('idle');
+							})
+							.catch((e) => {
+								this._setStatus('error', e instanceof Error ? e.message : String(e));
+							});
 					}
 				}
 			});
 		});
 
-		this._unsubscribeRemote = this._adapter.onRemoteChanges(
-			(events) => this._handleRemoteEvents(events)
+		this._unsubscribeRemote = this._adapter.onRemoteChanges((events) =>
+			this._handleRemoteEvents(events)
 		);
 		this._adapter.connect();
 
@@ -172,8 +173,11 @@ class SyncRouter {
 			if (!policy?.sync) return;
 
 			// Skip push for auto-created semesters with no content
-			if (event.feature === 'semesters' && event.action === 'created' &&
-				!this._semesterHasRealContent(event.entityId)) {
+			if (
+				event.feature === 'semesters' &&
+				event.action === 'created' &&
+				!this._semesterHasRealContent(event.entityId)
+			) {
 				return;
 			}
 
@@ -298,11 +302,16 @@ class SyncRouter {
 			const activeWasNeverSynced = !this._pushedSemesters.has(semestre.activeId);
 			const realSemestersArrived = semestre.semestres.size > 1;
 
-			if (activeWasNeverSynced && !this._semesterHasRealContent(semestre.activeId) && realSemestersArrived) {
+			if (
+				activeWasNeverSynced &&
+				!this._semesterHasRealContent(semestre.activeId) &&
+				realSemestersArrived
+			) {
 				const bootstrapId = semestre.activeId;
 				semestre.removeSilent(bootstrapId);
-				const firstReal = Array.from(semestre.semestres.entries())
-					.sort(([, a], [, b]) => a.name.localeCompare(b.name))[0];
+				const firstReal = Array.from(semestre.semestres.entries()).sort(([, a], [, b]) =>
+					a.name.localeCompare(b.name)
+				)[0];
 				if (firstReal) semestre.select(firstReal[0]);
 			} else {
 				semestre.ensureActive();
@@ -313,7 +322,12 @@ class SyncRouter {
 		semestre.loadCurrentSemester();
 	}
 
-	private _persistDirect(feature: FeatureId, semesterId: string, entityId: string, payload: unknown) {
+	private _persistDirect(
+		feature: FeatureId,
+		semesterId: string,
+		entityId: string,
+		payload: unknown
+	) {
 		if (feature === 'preferences') return;
 		const key = semesterId + '_' + KEYS[feature];
 		const existing = local.get<[string, unknown][]>(key) ?? [];
@@ -393,10 +407,14 @@ class SyncRouter {
 		try {
 			for (const [id, data] of semestre.semestres) {
 				const semResult = await this._trackedPush({
-					feature: 'semesters', action: 'updated',
-					entityId: id, semesterId: id,
-					payload: data, deviceId,
-					origin: 'local', timestamp: Date.now()
+					feature: 'semesters',
+					action: 'updated',
+					entityId: id,
+					semesterId: id,
+					payload: data,
+					deviceId,
+					origin: 'local',
+					timestamp: Date.now()
 				});
 				if (semResult.accepted) {
 					this._pushedSemesters.add(id);
@@ -426,15 +444,22 @@ class SyncRouter {
 	}
 
 	private async _pushEntity(
-		semesterId: string, feature: FeatureId,
-		entityId: string, payload: unknown, deviceId: string
+		semesterId: string,
+		feature: FeatureId,
+		entityId: string,
+		payload: unknown,
+		deviceId: string
 	) {
 		try {
 			await this._trackedPush({
-				feature, action: 'updated',
-				entityId, semesterId,
-				payload, deviceId,
-				origin: 'local', timestamp: Date.now()
+				feature,
+				action: 'updated',
+				entityId,
+				semesterId,
+				payload,
+				deviceId,
+				origin: 'local',
+				timestamp: Date.now()
 			});
 		} catch (e) {
 			console.warn(`[SyncRouter] push failed for ${feature}:${entityId}`, e);

@@ -1,5 +1,13 @@
 <script lang="ts">
-	import { CircleCheck, CircleX, AlertTriangle, BarChart3, Award, LoaderCircle, HelpCircle } from '@lucide/svelte';
+	import {
+		CircleCheck,
+		CircleX,
+		AlertTriangle,
+		BarChart3,
+		Award,
+		LoaderCircle,
+		HelpCircle
+	} from '@lucide/svelte';
 
 	interface Props {
 		feasible: boolean | null;
@@ -62,7 +70,9 @@
 					<div>
 						<div class="text-2xl font-bold">Factible</div>
 						{#if probability !== null}
-							<div class="text-sm text-base-100/80">{(probability * 100).toFixed(1)}% de aprobar</div>
+							<div class="text-sm text-base-100/80">
+								{(probability * 100).toFixed(1)}% de aprobar
+							</div>
 						{/if}
 					</div>
 				{:else}
@@ -70,7 +80,9 @@
 					<div>
 						<div class="text-2xl font-bold">No factible</div>
 						{#if probability !== null}
-							<div class="text-sm text-base-100/80">{(probability * 100).toFixed(1)}% de aprobar</div>
+							<div class="text-sm text-base-100/80">
+								{(probability * 100).toFixed(1)}% de aprobar
+							</div>
 						{/if}
 					</div>
 				{/if}
@@ -83,7 +95,11 @@
 		/>
 	</div>
 
-	<div class="p-4 {feasible !== null && (constraintViolations.length > 0 || libertad.length > 0) ? 'space-y-3' : 'space-y-3 invisible'}">
+	<div
+		class="p-4 {feasible !== null && (constraintViolations.length > 0 || libertad.length > 0)
+			? 'space-y-3'
+			: 'space-y-3 invisible'}"
+	>
 		{#if constraintViolations.length > 0}
 			<div class="space-y-1">
 				<div class="flex items-center gap-1.5 text-xs font-medium text-error-100">
@@ -104,7 +120,9 @@
 				<div class="space-y-1">
 					{#each libertad as item}
 						<div class="flex items-center gap-3 text-xs">
-							<span class="text-content/40 font-mono w-12 text-right shrink-0">{item.slack > 0 ? '+' : ''}{item.slack.toFixed(1)}</span>
+							<span class="text-content/40 font-mono w-12 text-right shrink-0"
+								>{item.slack > 0 ? '+' : ''}{item.slack.toFixed(1)}</span
+							>
 							<span class="text-content/50 truncate">{item.label ?? item.raw}</span>
 						</div>
 					{/each}

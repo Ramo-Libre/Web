@@ -54,7 +54,9 @@
 			>
 				<ChevronLeft class="w-4 h-4" />
 			</button>
-			<span class="text-xs sm:text-sm font-semibold text-content px-1 sm:px-2 truncate">{weekLabel}</span>
+			<span class="text-xs sm:text-sm font-semibold text-content px-1 sm:px-2 truncate"
+				>{weekLabel}</span
+			>
 			<button
 				onclick={onNextWeek}
 				class="p-1.5 rounded-lg border border-base-400 text-content/60 hover:bg-base-200 transition-colors cursor-pointer shrink-0"
@@ -66,7 +68,8 @@
 		<!-- Rotar vista: días en X (normal) <-> días en Y / tiempo en X (rotada) -->
 		<button
 			onclick={onToggleOrientation}
-			class="p-1.5 rounded-lg border transition-colors cursor-pointer shrink-0 {orientation === 'rotated'
+			class="p-1.5 rounded-lg border transition-colors cursor-pointer shrink-0 {orientation ===
+			'rotated'
 				? 'bg-primary-100 text-base-100 border-primary-100'
 				: 'border-base-400 text-content/60 hover:bg-base-200'}"
 			title="Rotar vista"

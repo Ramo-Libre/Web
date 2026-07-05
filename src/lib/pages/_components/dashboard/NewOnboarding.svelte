@@ -33,7 +33,7 @@
 		<input
 			bind:value={semesterName}
 			onkeydown={handleKeydown}
-			placeholder={placeholder}
+			{placeholder}
 			class="flex-1 h-12 px-4 max-sm:py-2 text-lg bg-base-100 text-content placeholder-content/40 border border-base-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-100 focus:border-transparent"
 		/>
 		<button

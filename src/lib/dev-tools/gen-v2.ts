@@ -6,7 +6,16 @@ import { generateUUID } from '$lib/utils/crypto';
 import { ColorUtils } from '$lib/utils/colors';
 import type { MockDataInputV2, MockDataOutputV2 } from './types-v2';
 
-const ALL_CATEGORIES: ScheduleCategory[] = ['book', 'lab', 'assist', 'taller', 'exam', 'urgent', 'event', 'other'];
+const ALL_CATEGORIES: ScheduleCategory[] = [
+	'book',
+	'lab',
+	'assist',
+	'taller',
+	'exam',
+	'urgent',
+	'event',
+	'other'
+];
 const ACADEMIC_CATEGORIES: ScheduleCategory[] = ['book', 'lab', 'assist', 'taller'];
 
 export class MockDataGeneratorV2 {
@@ -26,7 +35,13 @@ export class MockDataGeneratorV2 {
 			const ramosSerial = this.generateRamos(ramos);
 			const schedule = this.generateSchedule(oneoff, recurrent, ramosSerial);
 			const escenariosSerial = this.generateEscenarios(escenarios, ramosSerial);
-			data[sem.id] = { id: sem.id, name: sem.name, ramos: ramosSerial, schedule, escenarios: escenariosSerial };
+			data[sem.id] = {
+				id: sem.id,
+				name: sem.name,
+				ramos: ramosSerial,
+				schedule,
+				escenarios: escenariosSerial
+			};
 		}
 
 		return { semestres: semEntries, active, data };
@@ -43,14 +58,21 @@ export class MockDataGeneratorV2 {
 		return result;
 	}
 
-	private static generateSchedule(oneoff: number, recurrent: number, ramos: RamosSerial): ScheduleSerial {
+	private static generateSchedule(
+		oneoff: number,
+		recurrent: number,
+		ramos: RamosSerial
+	): ScheduleSerial {
 		const result: ScheduleSerial = [];
 		const ramoIds = ramos.map(([id]) => id);
 
 		for (let i = 0; i < oneoff; i++) {
 			const id = generateUUID();
 			const hasRamo = faker.datatype.boolean({ probability: 0.7 });
-			const d = faker.date.between({ from: new Date(new Date().getFullYear(), 0, 1), to: new Date(new Date().getFullYear(), 11, 31) });
+			const d = faker.date.between({
+				from: new Date(new Date().getFullYear(), 0, 1),
+				to: new Date(new Date().getFullYear(), 11, 31)
+			});
 			const startH = faker.number.int({ min: 8, max: 20 });
 			const startM = faker.helpers.arrayElement([0, 30]);
 			const durH = faker.number.int({ min: 1, max: 3 });
@@ -60,7 +82,9 @@ export class MockDataGeneratorV2 {
 					id,
 					ramoId: hasRamo ? faker.helpers.arrayElement(ramoIds) : undefined,
 					title: faker.lorem.sentence({ min: 3, max: 6 }),
-					description: faker.datatype.boolean({ probability: 0.5 }) ? faker.lorem.paragraph() : undefined,
+					description: faker.datatype.boolean({ probability: 0.5 })
+						? faker.lorem.paragraph()
+						: undefined,
 					category: faker.helpers.arrayElement(ALL_CATEGORIES),
 					date: d.toISOString().split('T')[0],
 					startTime: `${String(startH).padStart(2, '0')}:${String(startM).padStart(2, '0')}`,
@@ -83,7 +107,9 @@ export class MockDataGeneratorV2 {
 					id,
 					ramoId: hasRamo ? faker.helpers.arrayElement(ramoIds) : undefined,
 					title: faker.lorem.sentence({ min: 3, max: 6 }),
-					description: faker.datatype.boolean({ probability: 0.3 }) ? faker.lorem.paragraph() : undefined,
+					description: faker.datatype.boolean({ probability: 0.3 })
+						? faker.lorem.paragraph()
+						: undefined,
 					category: faker.helpers.arrayElement(ACADEMIC_CATEGORIES),
 					daysOfWeek: days,
 					startTime: `${String(startH).padStart(2, '0')}:${String(startM).padStart(2, '0')}`,
@@ -123,7 +149,9 @@ export class MockDataGeneratorV2 {
 				for (let v = 0; v < varCount; v++) {
 					vars.push(`V${v + 1}`);
 				}
-				const weights = vars.map(() => faker.number.float({ min: 0.05, max: 0.8, fractionDigits: 2 }));
+				const weights = vars.map(() =>
+					faker.number.float({ min: 0.05, max: 0.8, fractionDigits: 2 })
+				);
 				const sum = weights.reduce((a, b) => a + b, 0);
 				const normalized = weights.map((w) => (w / sum).toFixed(2));
 				const terms = vars.map((v, idx) => `${v} * ${normalized[idx]}`).join(' + ');

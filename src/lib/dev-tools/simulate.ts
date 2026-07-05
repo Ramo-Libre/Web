@@ -9,7 +9,9 @@ export interface LogEntry {
 	indent: number;
 }
 
-export async function simulate(input: MockDataInputV2): Promise<{ logs: LogEntry[]; data: MockDataOutputV2 }> {
+export async function simulate(
+	input: MockDataInputV2
+): Promise<{ logs: LogEntry[]; data: MockDataOutputV2 }> {
 	const { default: Gen } = await import('$lib/dev-tools/gen-v2');
 	const data = Gen.generate(input);
 
@@ -17,13 +19,25 @@ export async function simulate(input: MockDataInputV2): Promise<{ logs: LogEntry
 	let id = 0;
 
 	for (const sem of data.semestres) {
-		logs.push({ id: id++, icon: '📦', label: 'Semestre', detail: `${sem.id.slice(0, 8)}… · ${sem.name}`, indent: 0 });
+		logs.push({
+			id: id++,
+			icon: '📦',
+			label: 'Semestre',
+			detail: `${sem.id.slice(0, 8)}… · ${sem.name}`,
+			indent: 0
+		});
 
 		const semData = data.data[sem.id];
 		if (!semData) continue;
 
 		for (const [, ramo] of semData.ramos) {
-			logs.push({ id: id++, icon: '📚', label: 'Ramo', detail: `${ramo.name} · ${ramo.color}`, indent: 1 });
+			logs.push({
+				id: id++,
+				icon: '📚',
+				label: 'Ramo',
+				detail: `${ramo.name} · ${ramo.color}`,
+				indent: 1
+			});
 		}
 
 		for (const [, event] of semData.schedule) {
@@ -48,7 +62,7 @@ export async function simulate(input: MockDataInputV2): Promise<{ logs: LogEntry
 
 		for (const [, esc] of semData.escenarios) {
 			const ramoName = esc.ramoId
-				? semData.ramos.find(([rid]) => rid === esc.ramoId)?.[1]?.name ?? '?'
+				? (semData.ramos.find(([rid]) => rid === esc.ramoId)?.[1]?.name ?? '?')
 				: 'standalone';
 			const varCount = Object.keys(esc.variableEntries).length;
 			logs.push({

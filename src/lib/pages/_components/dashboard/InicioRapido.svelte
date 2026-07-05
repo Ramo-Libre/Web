@@ -22,7 +22,9 @@
 	}
 </script>
 
-<div class="bg-base-100 border border-base-400 rounded-xl p-4 shadow-sm flex flex-col sm:flex-row sm:items-center gap-3">
+<div
+	class="bg-base-100 border border-base-400 rounded-xl p-4 shadow-sm flex flex-col sm:flex-row sm:items-center gap-3"
+>
 	<div class="flex items-center gap-2 shrink-0">
 		<Rocket class="w-5 h-5 text-primary-100 shrink-0" />
 		<span class="text-sm lg:text-base font-bold text-content whitespace-nowrap">Inicio Rápido</span>

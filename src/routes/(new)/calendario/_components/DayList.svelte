@@ -1,11 +1,26 @@
 <script lang="ts">
 	import { semestre } from '$lib/infra/semestres.svelte';
 	import type { ScheduleEvent } from '$lib/features/schedule.svelte';
-	import { Presentation, CircleAlert, Book, FlaskConical, Users, Wrench, Clock, Ellipsis } from '@lucide/svelte';
+	import {
+		Presentation,
+		CircleAlert,
+		Book,
+		FlaskConical,
+		Users,
+		Wrench,
+		Clock,
+		Ellipsis
+	} from '@lucide/svelte';
 
 	const categoryIcons: Record<string, typeof Book> = {
-		exam: Presentation, urgent: CircleAlert, book: Book, lab: FlaskConical,
-		assist: Users, taller: Wrench, event: Clock, other: Ellipsis
+		exam: Presentation,
+		urgent: CircleAlert,
+		book: Book,
+		lab: FlaskConical,
+		assist: Users,
+		taller: Wrench,
+		event: Clock,
+		other: Ellipsis
 	};
 
 	interface Props {
@@ -16,16 +31,24 @@
 
 	let { dateStr, events, onEventClick }: Props = $props();
 
-	const sorted = $derived([...events].sort((a, b) => {
-		if (a.startTime && b.startTime) return a.startTime.localeCompare(b.startTime);
-		if (a.startTime) return -1;
-		if (b.startTime) return 1;
-		return 0;
-	}));
+	const sorted = $derived(
+		[...events].sort((a, b) => {
+			if (a.startTime && b.startTime) return a.startTime.localeCompare(b.startTime);
+			if (a.startTime) return -1;
+			if (b.startTime) return 1;
+			return 0;
+		})
+	);
 
-	const dayLabel = $derived(dateStr
-		? new Date(dateStr + 'T12:00:00').toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })
-		: null);
+	const dayLabel = $derived(
+		dateStr
+			? new Date(dateStr + 'T12:00:00').toLocaleDateString('es-ES', {
+					weekday: 'long',
+					day: 'numeric',
+					month: 'long'
+				})
+			: null
+	);
 
 	function rc(ramoId?: string) {
 		if (!ramoId) return 'var(--color-primary-100)';
@@ -48,7 +71,11 @@
 			<div class="space-y-1">
 				{#each sorted as event (event.id)}
 					{@const Icon = categoryIcons[event.category] ?? Ellipsis}
-					{@const time = event.startTime ? (event.endTime ? `${event.startTime}–${event.endTime}` : event.startTime) : null}
+					{@const time = event.startTime
+						? event.endTime
+							? `${event.startTime}–${event.endTime}`
+							: event.startTime
+						: null}
 					<button
 						onclick={() => onEventClick?.(event)}
 						class="w-full p-2 rounded-lg hover:bg-base-200 transition-colors text-left cursor-pointer"
@@ -59,7 +86,9 @@
 							</span>
 							<div class="flex-1 min-w-0 flex items-center gap-2">
 								<span class="text-sm font-medium text-content truncate">
-									{event.title || (event.ramoId ? semestre.ramos.get(event.ramoId)?.name : null) || 'Evento'}
+									{event.title ||
+										(event.ramoId ? semestre.ramos.get(event.ramoId)?.name : null) ||
+										'Evento'}
 								</span>
 							</div>
 							{#if time}
@@ -69,7 +98,9 @@
 							{/if}
 						</div>
 						{#if event.description}
-							<p class="text-[12px] text-content/50 mt-0.5 ml-7 line-clamp-2">{event.description}</p>
+							<p class="text-[12px] text-content/50 mt-0.5 ml-7 line-clamp-2">
+								{event.description}
+							</p>
 						{/if}
 					</button>
 				{/each}

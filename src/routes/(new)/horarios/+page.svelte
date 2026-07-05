@@ -4,5 +4,5 @@
 </script>
 
 <div in:fly={{ y: 10, duration: 300, delay: 100 }}>
-    <WeekGrid />
+	<WeekGrid />
 </div>
