@@ -1,16 +1,34 @@
-import type { ChangeEvent } from './changes.svelte';
+import type { EntityChange, FeatureId } from './changes.svelte';
 
 export type AdapterId = 'noop' | 'polling' | 'realtime';
+
+export interface ConflictEvent {
+	entityId: string;
+	feature: string;
+	semesterId: string;
+	localPayload: unknown;
+	serverPayload: unknown;
+	lastKnownSequence: number;
+	serverSequence: number;
+}
+
+export interface PushResult {
+	accepted: boolean;
+	serverSequence: number;
+	conflict?: ConflictEvent;
+}
+
+export interface PullResult {
+	changes: EntityChange[];
+	watermark: number;
+}
 
 export interface SyncAdapter {
 	readonly id: AdapterId;
 	connect(): Promise<void>;
 	disconnect(): void;
-	push(events: ChangeEvent[]): Promise<void>;
-	pull(sinceSequence: number): Promise<{
-		changes: ChangeEvent[];
-		serverSequence: number;
-	}>;
-	onRemoteChanges(handler: (events: ChangeEvent[]) => void): () => void;
-	simulateReceiveEvents?(events: ChangeEvent[]): Promise<void>;
+	push(entity: EntityChange): Promise<PushResult>;
+	pull(sinceWatermark: number): Promise<PullResult>;
+	onRemoteChanges(handler: (changes: EntityChange[]) => void): () => void;
+	simulateReceiveEvents?(events: EntityChange[]): Promise<void>;
 }

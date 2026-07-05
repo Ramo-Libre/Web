@@ -97,27 +97,27 @@ export class PreferencesManager implements Serializable<PreferencesSerial> {
 
 	setTheme(theme: Theme) {
 		this._prefs = { ...this._prefs, theme };
-		changeBus.emit('preferences', 'updated');
+		changeBus.emit('preferences', 'updated', '__global__');
 	}
 
 	setScheduleShowCalendarEvents(v: boolean) {
 		this._prefs = { ...this._prefs, schedule: { ...this._prefs.schedule, showCalendarEvents: v } };
-		changeBus.emit('preferences', 'updated');
+		changeBus.emit('preferences', 'updated', '__global__');
 	}
 
 	setScheduleOrientation(v: Orientation) {
 		this._prefs = { ...this._prefs, schedule: { ...this._prefs.schedule, orientation: v } };
-		changeBus.emit('preferences', 'updated');
+		changeBus.emit('preferences', 'updated', '__global__');
 	}
 
 	setCalendarShowHorarios(v: boolean) {
 		this._prefs = { ...this._prefs, calendar: { ...this._prefs.calendar, showHorarios: v } };
-		changeBus.emit('preferences', 'updated');
+		changeBus.emit('preferences', 'updated', '__global__');
 	}
 
 	setSidebarCollapsed(v: boolean) {
 		this._prefs = { ...this._prefs, layout: { ...this._prefs.layout, sidebarCollapsed: v } };
-		changeBus.emit('preferences', 'updated');
+		changeBus.emit('preferences', 'updated', '__global__');
 	}
 
 	applyTheme() {

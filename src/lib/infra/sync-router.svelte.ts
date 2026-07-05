@@ -1,6 +1,5 @@
 import { browser } from '$app/environment';
-import { changeBus, type FeatureId } from './changes.svelte';
-import type { ChangeEvent } from './changes.svelte';
+import { changeBus, type FeatureId, type EntityChange } from './changes.svelte';
 import type { SyncAdapter } from './sync-adapter';
 import { noopAdapter } from './sync-noop.svelte';
 import { semestre } from './semestres.svelte';
@@ -40,7 +39,7 @@ class SyncRouter {
 			}
 
 			if (policy?.sync) {
-				this._adapter.push([event]);
+				this._adapter.push(event);
 			}
 		});
 	}
@@ -55,7 +54,7 @@ class SyncRouter {
 		this._persistSemesterList();
 	}
 
-	private _handleRemoteEvents(events: ChangeEvent[]) {
+	private _handleRemoteEvents(events: EntityChange[]) {
 		for (const event of events) {
 			if (event.origin !== 'remote' || event.payload === undefined) continue;
 
@@ -83,7 +82,7 @@ class SyncRouter {
 		}
 	}
 
-	private _persistSemesters(event: ChangeEvent) {
+	private _persistSemesters(event: EntityChange) {
 		this._persistActiveSem();
 		this._persistSemesterList();
 

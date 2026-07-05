@@ -2,7 +2,7 @@
 	import { faker } from '@faker-js/faker/locale/es';
 	import { Radio, Send, Sparkles } from '@lucide/svelte';
 	import { generateUUID } from '$lib/utils/crypto';
-	import { syncRouter, type FeatureId, type ChangeAction, type ChangeEvent } from '$lib/infra/sync.svelte';
+	import { syncRouter, type FeatureId, type ChangeAction, type EntityChange } from '$lib/infra/sync.svelte';
 	import { semestre } from '$lib/infra/semestres.svelte';
 
 	const features: { id: FeatureId; label: string }[] = [
@@ -21,7 +21,7 @@
 
 	let selectedFeature = $state<FeatureId>('ramos');
 	let selectedAction = $state<ChangeAction>('created');
-	let lastEvent = $state<ChangeEvent | null>(null);
+	let lastEvent = $state<EntityChange | null>(null);
 	let log = $state<string[]>([]);
 
 	function generatePayload(feature: FeatureId): unknown {
@@ -86,22 +86,21 @@
 	async function handleSend() {
 		const payload = generatePayload(selectedFeature);
 
-		const event: ChangeEvent = {
+		const event: EntityChange = {
 			semesterId: semestre.activeId || '$DEFAULT$',
 			feature: selectedFeature,
+			entityId: selectedAction === 'created' ? generateUUID() : generateUUID(),
 			action: selectedAction,
-			entityId: selectedAction === 'created' ? generateUUID() : (selectedFeature === 'semesters' ? undefined : generateUUID()),
 			timestamp: Date.now(),
 			deviceId: 'dev-tool',
 			origin: 'remote',
-			sequence: 0,
 			payload
 		};
 
 		await syncRouter.adapter.simulateReceiveEvents?.([event]);
 
 		lastEvent = event;
-		log = [`[${event.feature}:${event.action}] → ${event.entityId ?? '(sin id)'}`, ...log].slice(0, 50);
+		log = [`[${event.feature}:${event.action}] → ${event.entityId}`, ...log].slice(0, 50);
 	}
 </script>
 
@@ -154,7 +153,7 @@
 				<div class="text-[10px] font-bold text-content/40 uppercase tracking-wider mb-1">Último evento</div>
 				<div class="text-[11px] text-content/70 leading-snug break-all">
 					{lastEvent.feature}:<span class="text-primary-100">{lastEvent.action}</span>
-					entityId={lastEvent.entityId ?? '-'} | seq={lastEvent.sequence}
+					entityId={lastEvent.entityId}
 				</div>
 				<pre class="text-[10px] text-content/40 leading-tight mt-1 max-h-[120px] overflow-auto custom-scroll">{JSON.stringify(lastEvent.payload, null, 1)}</pre>
 			</div>
