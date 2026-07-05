@@ -50,7 +50,18 @@ class SemestresManager {
 		const prefs = local.get<PreferencesSerial>(KEYS.preferences);
 		if (prefs) this._preferences.fromSerial(prefs);
 
+		if (!this._active && this._semestres.size > 0) {
+			this._active = Array.from(this._semestres.keys())[0];
+		}
+
 		this.loadCurrentSemester();
+	}
+
+	ensureActive() {
+		if (!this._active && this._semestres.size > 0) {
+			this._active = Array.from(this._semestres.keys())[0];
+			this.loadCurrentSemester();
+		}
 	}
 
 	loadCurrentSemester() {

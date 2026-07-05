@@ -105,14 +105,17 @@ class SyncRouter {
 	}
 
 	private _handleRemoteEvents(events: EntityChange[]) {
+		let hadSemesterEvents = false;
+
 		for (const event of events) {
 			if (event.origin !== 'remote' || event.payload === undefined) continue;
 
 			if (event.feature === 'semesters') {
+				hadSemesterEvents = true;
+
 				if (event.payload === null) {
 					if (event.entityId) {
 						semestre.removeSilent(event.entityId);
-						this._persistActiveSem();
 						this._persistSemesterList();
 						this._removeOrphanSemesters(new Set([event.entityId]), new Set());
 					}
@@ -134,6 +137,11 @@ class SyncRouter {
 					this._persistDirect(event.feature, event.semesterId, event.entityId, event.payload);
 				}
 			}
+		}
+
+		if (hadSemesterEvents) {
+			semestre.ensureActive();
+			this._persistActiveSem();
 		}
 	}
 
