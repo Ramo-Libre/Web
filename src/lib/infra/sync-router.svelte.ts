@@ -39,10 +39,10 @@ class SyncRouter {
 		this._adapter = adapter;
 
 		if (this._init) {
-			await this._adapter.connect();
 			this._unsubscribeRemote = this._adapter.onRemoteChanges(
 				(events) => this._handleRemoteEvents(events)
 			);
+			await this._adapter.connect();
 		}
 	}
 
@@ -51,10 +51,10 @@ class SyncRouter {
 		this._init = true;
 		this._loadPushedSemesters();
 
-		this._adapter.connect();
 		this._unsubscribeRemote = this._adapter.onRemoteChanges(
 			(events) => this._handleRemoteEvents(events)
 		);
+		this._adapter.connect();
 
 		changeBus.subscribeAll(async (event) => {
 			const policy = SYNC_POLICIES[event.feature];
@@ -192,9 +192,22 @@ class SyncRouter {
 		}
 
 		if (hadSemesterEvents) {
-			semestre.ensureActive();
+			const activeWasNeverSynced = !this._pushedSemesters.has(semestre.activeId);
+			const realSemestersArrived = semestre.semestres.size > 1;
+
+			if (activeWasNeverSynced && realSemestersArrived) {
+				const bootstrapId = semestre.activeId;
+				semestre.removeSilent(bootstrapId);
+				const firstReal = Array.from(semestre.semestres.entries())
+					.sort(([, a], [, b]) => a.name.localeCompare(b.name))[0];
+				if (firstReal) semestre.select(firstReal[0]);
+			} else {
+				semestre.ensureActive();
+			}
 			this._persistActiveSem();
 		}
+
+		semestre.loadCurrentSemester();
 	}
 
 	private _persistDirect(feature: FeatureId, semesterId: string, entityId: string, payload: unknown) {
