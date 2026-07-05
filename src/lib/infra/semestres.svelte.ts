@@ -60,6 +60,9 @@ class SemestresManager {
 			this._active = id;
 		}
 
+		local.save(KEYS.active, this._active);
+		local.save(KEYS.semesters, Array.from(this._semestres.entries()));
+
 		this.loadCurrentSemester();
 	}
 

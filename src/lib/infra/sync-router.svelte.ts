@@ -6,6 +6,9 @@ import { semestre } from './semestres.svelte';
 import type { Serializable } from '$lib/types/state';
 import { local } from './persistence.svelte';
 import { SYNC_POLICIES, KEYS } from './sync-policies';
+import type { RamosSerial } from '$lib/features/ramos.svelte';
+import type { ScheduleSerial } from '$lib/features/schedule.svelte';
+import type { EscenariosSerial } from '$lib/features/notas.svelte';
 
 interface EntityManager extends Serializable<unknown> {
 	toOne(id: string): unknown | null;
@@ -43,6 +46,7 @@ class SyncRouter {
 				(events) => this._handleRemoteEvents(events)
 			);
 			await this._adapter.connect();
+			await this._pushLocalState();
 		}
 	}
 
@@ -70,7 +74,7 @@ class SyncRouter {
 
 			// Skip push for auto-created semesters with no content
 			if (event.feature === 'semesters' && event.action === 'created' &&
-				semestre.ramos.empty() && semestre.schedule.empty() && semestre.escenarios.empty()) {
+				!this._semesterHasRealContent(event.entityId)) {
 				return;
 			}
 
@@ -195,7 +199,7 @@ class SyncRouter {
 			const activeWasNeverSynced = !this._pushedSemesters.has(semestre.activeId);
 			const realSemestersArrived = semestre.semestres.size > 1;
 
-			if (activeWasNeverSynced && realSemestersArrived) {
+			if (activeWasNeverSynced && !this._semesterHasRealContent(semestre.activeId) && realSemestersArrived) {
 				const bootstrapId = semestre.activeId;
 				semestre.removeSilent(bootstrapId);
 				const firstReal = Array.from(semestre.semestres.entries())
@@ -279,6 +283,60 @@ class SyncRouter {
 
 	private _savePushedSemesters() {
 		local.save(KEYS.pushed, Array.from(this._pushedSemesters));
+	}
+
+	private async _pushLocalState() {
+		const { deviceId } = await import('$lib/utils/device');
+
+		for (const [id, data] of semestre.semestres) {
+			const semResult = await this._adapter.push({
+				feature: 'semesters', action: 'updated',
+				entityId: id, semesterId: id,
+				payload: data, deviceId,
+				origin: 'local', timestamp: Date.now()
+			});
+			if (semResult.accepted) {
+				this._pushedSemesters.add(id);
+				this._savePushedSemesters();
+			}
+
+			const ramos = local.get<RamosSerial>(`${id}_${KEYS.ramos}`) || [];
+			const schedule = local.get<ScheduleSerial>(`${id}_${KEYS.schedule}`) || [];
+			const escenarios = local.get<EscenariosSerial>(`${id}_${KEYS.escenarios}`) || [];
+
+			for (const [entId, entData] of ramos) {
+				await this._pushEntity(id, 'ramos', entId, entData, deviceId);
+			}
+			for (const [evId, ev] of schedule) {
+				await this._pushEntity(id, 'schedule', evId, ev, deviceId);
+			}
+			for (const [entId, entData] of escenarios) {
+				await this._pushEntity(id, 'escenarios', entId, entData, deviceId);
+			}
+		}
+	}
+
+	private async _pushEntity(
+		semesterId: string, feature: FeatureId,
+		entityId: string, payload: unknown, deviceId: string
+	) {
+		try {
+			await this._adapter.push({
+				feature, action: 'updated',
+				entityId, semesterId,
+				payload, deviceId,
+				origin: 'local', timestamp: Date.now()
+			});
+		} catch (e) {
+			console.warn(`[SyncRouter] push failed for ${feature}:${entityId}`, e);
+		}
+	}
+
+	private _semesterHasRealContent(semesterId: string): boolean {
+		const ramos = local.get<RamosSerial>(`${semesterId}_${KEYS.ramos}`) || [];
+		const schedule = local.get<ScheduleSerial>(`${semesterId}_${KEYS.schedule}`) || [];
+		const escenarios = local.get<EscenariosSerial>(`${semesterId}_${KEYS.escenarios}`) || [];
+		return ramos.length > 0 || schedule.length > 0 || escenarios.length > 0;
 	}
 }
 
