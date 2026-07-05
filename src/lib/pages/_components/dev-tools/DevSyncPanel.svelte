@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { faker } from '@faker-js/faker/locale/es';
-	import { Radio, Send, Sparkles } from '@lucide/svelte';
+	import { Radio, Send } from '@lucide/svelte';
 	import { generateUUID } from '$lib/utils/crypto';
 	import {
 		syncRouter,
@@ -161,7 +161,7 @@
 					bind:value={selectedFeature}
 					class="bg-base-300 border border-base-400 rounded-md px-2 py-1 text-[11px] text-content focus:ring-2 focus:ring-primary-100/30 focus:border-primary-100 focus:outline-none transition-all w-full"
 				>
-					{#each features as f}
+					{#each features as f (f.id)}
 						<option value={f.id}>{f.label}</option>
 					{/each}
 				</select>
@@ -176,7 +176,7 @@
 					bind:value={selectedAction}
 					class="bg-base-300 border border-base-400 rounded-md px-2 py-1 text-[11px] text-content focus:ring-2 focus:ring-primary-100/30 focus:border-primary-100 focus:outline-none transition-all w-full"
 				>
-					{#each actions as a}
+					{#each actions as a (a.id)}
 						<option value={a.id}>{a.label}</option>
 					{/each}
 				</select>
@@ -216,7 +216,7 @@
 				class="bg-base-300/60 border border-base-400 rounded-lg overflow-y-auto max-h-[150px] custom-scroll"
 			>
 				<div class="p-2 space-y-0.5">
-					{#each log as entry, i}
+					{#each log as entry, i (entry)}
 						<div
 							class="text-[10px] text-content/50 font-mono {i === 0 ? 'text-primary-100/80' : ''}"
 						>

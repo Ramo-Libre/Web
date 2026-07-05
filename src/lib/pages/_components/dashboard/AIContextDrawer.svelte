@@ -72,7 +72,7 @@
 	</p>
 
 	<div class="space-y-2">
-		{#each contexts as ctx, i}
+		{#each contexts as ctx, i (i)}
 			<button
 				onclick={() => copy(String(i), ctx.build)}
 				class="flex items-center gap-3 w-full p-3 rounded-lg border border-base-400 bg-base-100 {copied[

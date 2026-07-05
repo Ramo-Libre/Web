@@ -140,7 +140,7 @@
 
 <div class="flex flex-col gap-6">
 	<div class="flex gap-2">
-		{#each Array(totalSteps) as _, i}
+		{#each Array.from({ length: totalSteps }, (_, idx) => idx) as i (i)}
 			<div
 				class="h-1.5 flex-1 rounded-full transition-colors {i < step
 					? 'bg-primary-100'
@@ -238,7 +238,7 @@
 						<span class="text-xs text-content/40 font-mono">3</span>
 					</div>
 					<div class="space-y-2">
-						{#each ramosDummy as ramo}
+						{#each ramosDummy as ramo (ramo.name)}
 							<div
 								class="group flex items-center gap-3 p-3 rounded-lg border transition-all duration-200 bg-base-100 border-base-400"
 							>
@@ -297,7 +297,7 @@
 					</div>
 				</div>
 				<div class="grid grid-cols-7">
-					{#each dayHeaders as d, idx}
+					{#each dayHeaders as d, idx (idx)}
 						<div
 							class="px-1.5 py-2 text-center text-xs font-semibold text-content/40 border-b border-base-300 {idx <
 							6
@@ -307,13 +307,13 @@
 							{d}
 						</div>
 					{/each}
-					{#each dayHeaders as d, idx}
+					{#each dayHeaders as d, idx (idx)}
 						<div
 							class="min-h-[56px] p-1 border-b border-base-300 {idx < 6
 								? 'border-r border-base-300'
 								: ''}"
 						>
-							{#each scheduleDummy[d.slice(0, 1)] ?? [] as block}
+							{#each scheduleDummy[d.slice(0, 1)] ?? [] as block (block.time)}
 								{@const CatIcon = catIconsMap[block.cat] ?? Book}
 								<div
 									class="rounded-md border-l-4 shadow-sm mb-0.5 flex items-center justify-center p-1"
@@ -341,15 +341,15 @@
 					</div>
 				</div>
 				<div class="grid grid-cols-7">
-					{#each dayHeaders as h}
+					{#each dayHeaders as h (h)}
 						<div
 							class="px-1.5 py-2 text-center text-xs font-semibold text-content/40 border-b border-base-300"
 						>
 							{h}
 						</div>
 					{/each}
-					{#each weeks as week}
-						{#each week as cell}
+					{#each weeks as week (week[0].day)}
+						{#each week as cell (cell.day)}
 							<div
 								class="flex flex-col items-start p-1.5 min-h-[48px] border-b border-r border-base-300 transition-colors {cell.isCurrent
 									? ''
@@ -414,7 +414,7 @@
 					>
 				</div>
 				<div class="space-y-1">
-					{#each probRows as ramo}
+					{#each probRows as ramo (ramo.name)}
 						<div
 							class="flex items-center gap-2.5 w-full rounded-lg px-3 py-2 hover:bg-base-200 transition-colors"
 						>
@@ -521,7 +521,7 @@
 					>
 				</div>
 				<svg viewBox="0 0 {cSvgW} {cSvgH}" class="w-full h-auto">
-					{#each chartData as _, i}
+					{#each Array.from({ length: cN }, (_, idx) => idx) as i (i)}
 						{@const x = i === 0 ? cChartL : cChartL + (i / (cN - 1)) * cChartW}
 						<line
 							x1={x}
@@ -572,7 +572,7 @@
 							})
 							.join(' ')}
 					/>
-					{#each chartData as v, i}
+					{#each chartData as v, i (i)}
 						{@const x =
 							i === 0
 								? cChartL + 1.5
@@ -582,7 +582,7 @@
 						{@const y = cChartB - (v / maxV) * cChartH}
 						<circle cx={x} cy={y} r="1.5" fill="var(--color-schedule-100)" />
 					{/each}
-					{#each chartData as _, i}
+					{#each Array.from({ length: cN }, (_, idx) => idx) as i (i)}
 						{@const x =
 							i === 0 ? cChartL : i === cN - 1 ? cChartR : cChartL + (i / (cN - 1)) * cChartW}
 						<text

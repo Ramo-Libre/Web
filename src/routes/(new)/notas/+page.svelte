@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { fly } from 'svelte/transition';
+	import { SvelteMap } from 'svelte/reactivity';
 	import { page } from '$app/state';
 	import { browser } from '$app/environment';
 	import { semestre } from '$lib/infra/semestres.svelte';
@@ -18,14 +19,18 @@
 	import { hashContext } from '$lib/features/notas.svelte';
 
 	let worker: Worker | null = null;
-	let dashboardResults = $state<Map<string, { feasible: boolean; probability: number } | null>>(
-		new Map()
-	);
+	// svelte-ignore non_reactive_update
+	let dashboardResults = new SvelteMap<string, { feasible: boolean; probability: number } | null>();
 
 	onMount(() => {
 		worker = new Worker(new URL('./solver.worker.ts', import.meta.url), { type: 'module' });
 		worker.onmessage = (
-			e: MessageEvent<{ requestId: number; result?: any; error?: string; escenarioId?: string }>
+			e: MessageEvent<{
+				requestId: number;
+				result?: Record<string, unknown>;
+				error?: string;
+				escenarioId?: string;
+			}>
 		) => {
 			const { requestId, result, error, escenarioId } = e.data;
 			if (escenarioId) {
@@ -55,7 +60,7 @@
 						semestre.escenarios.setLastHash(escenarioId, hashContext(full, strategy));
 					}
 				}
-				dashboardResults = new Map(dashboardResults);
+				dashboardResults = new SvelteMap(dashboardResults);
 				return;
 			}
 			if (requestId !== solveRequestId) return;
@@ -234,7 +239,7 @@
 		if (!worker || selectedEscenarioId) return;
 		dashboardSolveTrigger;
 		untrack(() => {
-			dashboardResults = new Map();
+			dashboardResults = new SvelteMap();
 			for (const esc of semestre.escenarios.all()) {
 				const raw = esc.scriptRaw;
 				const entries = esc.variableEntries;

@@ -50,14 +50,14 @@
 	const isEdit = $derived(!!event);
 	const ramos = $derived(semestre.ramos.list);
 
-	let title = $state(event?.title ?? '');
-	let category = $state<ScheduleCategory>(event?.category ?? 'other');
-	let ramoId = $state(event?.ramoId ?? '');
-	let date = $state(event?.date ?? prefillDate ?? '');
-	let showTime = $state(!!(event?.startTime || event?.endTime));
-	let startTime = $state(event?.startTime ?? '');
-	let endTime = $state(event?.endTime ?? '');
-	let description = $state(event?.description ?? '');
+	let title = $derived(event?.title ?? '');
+	let category = $derived<ScheduleCategory>(event?.category ?? 'other');
+	let ramoId = $derived(event?.ramoId ?? '');
+	let date = $derived(event?.date ?? prefillDate ?? '');
+	let showTime = $derived(!!(event?.startTime || event?.endTime));
+	let startTime = $derived(event?.startTime ?? '');
+	let endTime = $derived(event?.endTime ?? '');
+	let description = $derived(event?.description ?? '');
 
 	const selectedRamo = $derived(ramoId ? semestre.ramos.get(ramoId) : null);
 
@@ -86,7 +86,6 @@
 
 <svelte:window onkeydown={handleKeydown} />
 
-<!-- svelte-ignore a11y_click_events_have_key_events a11y_interactive_supports_focus -->
 <div class="fixed inset-0 z-50" role="dialog" aria-modal="true">
 	<button
 		class="absolute inset-0 bg-black/40 backdrop-blur-sm cursor-pointer"
@@ -210,7 +209,7 @@
 						Ramo
 					</div>
 					<div class="flex flex-wrap gap-2">
-						{#each ramos as [id, ramo]}
+						{#each ramos as [id, ramo] (id)}
 							<button
 								type="button"
 								onclick={() => (ramoId = ramoId === id ? '' : id)}
@@ -391,7 +390,7 @@
 						Ramo
 					</div>
 					<div class="flex flex-wrap gap-2">
-						{#each ramos as [id, ramo]}
+						{#each ramos as [id, ramo] (id)}
 							<button
 								type="button"
 								onclick={() => (ramoId = ramoId === id ? '' : id)}

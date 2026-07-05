@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { semestre } from '$lib/infra/semestres.svelte';
 	import type { ScheduleEvent } from '$lib/features/schedule.svelte';
+	import { SvelteMap } from 'svelte/reactivity';
 
 	interface Props {
 		events: ScheduleEvent[];
@@ -27,7 +28,7 @@
 	});
 
 	const byHour = $derived.by(() => {
-		const m = new Map<number, ScheduleEvent[]>();
+		const m = new SvelteMap<number, ScheduleEvent[]>();
 		for (const e of timed) {
 			const h = parseInt(e.startTime!.split(':')[0]);
 			if (!m.has(h)) m.set(h, []);

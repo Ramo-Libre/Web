@@ -1,21 +1,23 @@
 <script lang="ts">
 	import { db } from '$lib';
 	import { Clock } from '@lucide/svelte';
+	import { SvelteDate } from 'svelte/reactivity';
 
 	let isEnabled = $state(db.dev?.timeTravelEnabled || false);
 
 	let datePart = $state(
-		db.dev?.timeTravelDate?.split('T')[0] || new Date().toISOString().split('T')[0]
+		db.dev?.timeTravelDate?.split('T')[0] || new SvelteDate().toISOString().split('T')[0]
 	);
 	let timePart = $state(
-		db.dev?.timeTravelDate?.split('T')[1]?.slice(0, 5) || new Date().toTimeString().slice(0, 5)
+		db.dev?.timeTravelDate?.split('T')[1]?.slice(0, 5) ||
+			new SvelteDate().toTimeString().slice(0, 5)
 	);
 
 	let selectedDate = $derived(`${datePart}T${timePart}`);
 
 	let displayLabel = $derived(
 		(() => {
-			const d = new Date(selectedDate);
+			const d = new SvelteDate(selectedDate);
 			const dd = String(d.getDate()).padStart(2, '0');
 			const mm = String(d.getMonth() + 1).padStart(2, '0');
 			const yyyy = d.getFullYear();
@@ -43,7 +45,7 @@
 	}
 
 	function step(dir: -1 | 1) {
-		const d = new Date(selectedDate);
+		const d = new SvelteDate(selectedDate);
 		switch (unit) {
 			case 'minutos':
 				d.setMinutes(d.getMinutes() + dir * 15);
@@ -61,7 +63,7 @@
 	}
 
 	function stepBig(dir: -1 | 1) {
-		const d = new Date(selectedDate);
+		const d = new SvelteDate(selectedDate);
 		switch (unit) {
 			case 'minutos':
 				d.setMinutes(d.getMinutes() + dir * 60);

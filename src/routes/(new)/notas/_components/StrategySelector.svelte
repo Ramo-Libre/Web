@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { Scale, Minimize2, ShieldCheck, Equal } from '@lucide/svelte';
+	import { Scale, Minimize2, ShieldCheck, Equal, type LucideProps } from '@lucide/svelte';
+	import type { Component } from 'svelte';
 
 	interface Props {
 		selected: string;
@@ -8,7 +9,12 @@
 
 	let { selected, onSelect }: Props = $props();
 
-	const strategies: { id: string; icon: any; label: string; description: string }[] = [
+	const strategies: {
+		id: string;
+		icon: Component<LucideProps>;
+		label: string;
+		description: string;
+	}[] = [
 		{
 			id: 'punto_medio',
 			icon: Scale,
@@ -37,7 +43,7 @@
 </script>
 
 <div class="grid grid-cols-2 lg:grid-cols-4 gap-2">
-	{#each strategies as s}
+	{#each strategies as s, i (i)}
 		<button
 			onclick={() => onSelect(s.id)}
 			class="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg border text-sm font-medium transition-all cursor-pointer w-full {selected ===

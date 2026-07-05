@@ -79,7 +79,7 @@
 
 		<div class="flex gap-{gap}">
 			<div class="w-[10px] shrink-0 bg-base-100 relative z-10">
-				{#each yValues as yv}
+				{#each yValues as yv (yv)}
 					{@const yPct = ((chartB - (yv / maxY) * chartH) / svgH) * 100}
 					<span
 						class="absolute right-1 text-[9px] text-content/40 leading-none"
@@ -94,7 +94,7 @@
 					class="block min-w-[1000px] lg:min-w-0 lg:w-full"
 					preserveAspectRatio="xMidYMid meet"
 				>
-					{#each yValues as yv}
+					{#each yValues as yv (yv)}
 						{@const y = chartB - (yv / maxY) * chartH}
 						<line
 							x1={chartL}
@@ -149,14 +149,14 @@
 							.join(' ')}
 					/>
 
-					{#each monthDays as d, i}
+					{#each monthDays as d, i (i)}
 						{@const x =
 							i === 0 ? chartL + 2 : i === n - 1 ? chartR - 2 : chartL + (i / (n - 1)) * chartW}
 						{@const y = chartB - (d.count / maxY) * chartH}
 						<circle cx={x} cy={y} r="2.5" fill="var(--color-schedule-100)" />
 					{/each}
 
-					{#each monthDays as d, i}
+					{#each monthDays as d, i (i)}
 						{@const x = chartL + (i / (n - 1)) * chartW}
 						{@const anchor = i === 0 ? 'start' : i === n - 1 ? 'end' : 'middle'}
 						<text

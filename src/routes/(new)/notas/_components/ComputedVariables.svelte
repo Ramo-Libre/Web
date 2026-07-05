@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { FunctionSquare } from '@lucide/svelte';
+	import { SquareFunction } from '@lucide/svelte';
 
 	interface Props {
 		plan: Record<string, number> | Map<string, number> | null;
@@ -24,11 +24,11 @@
 {#if computed.length > 0}
 	<div class="bg-base-100 border border-base-400 rounded-xl p-4">
 		<div class="flex items-center gap-2 mb-3">
-			<FunctionSquare class="w-4 h-4 text-content/50" />
+			<SquareFunction class="w-4 h-4 text-content/50" />
 			<h3 class="text-xs font-semibold text-content/50 uppercase tracking-wider">Resultados</h3>
 		</div>
 		<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-			{#each computed as { name, value }}
+			{#each computed as { name, value }, i (i)}
 				<div class="flex items-center gap-2 bg-base-200 rounded-lg px-3 py-2">
 					<span class="text-sm font-medium text-content/60">{name}</span>
 					<span class="text-sm font-bold text-content ml-auto tabular-nums">{value.toFixed(2)}</span

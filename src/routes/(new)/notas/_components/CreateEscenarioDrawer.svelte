@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { X } from '@lucide/svelte';
-	import { fly, fade } from 'svelte/transition';
+	import { fly } from 'svelte/transition';
 	import { semestre } from '$lib/infra/semestres.svelte';
 	interface Props {
 		show: boolean;
@@ -34,7 +34,6 @@
 <svelte:window onkeydown={handleKeydown} />
 
 {#if show}
-	<!-- svelte-ignore a11y_click_events_have_key_events a11y_interactive_supports_focus -->
 	<div class="fixed inset-0 z-50" role="dialog" aria-modal="true" in:fly={{ duration: 200 }}>
 		<button
 			class="absolute inset-0 bg-black/40 backdrop-blur-sm cursor-pointer"
@@ -86,7 +85,7 @@
 							<div class="w-2.5 h-2.5 rounded-full bg-base-300 shrink-0"></div>
 							Ninguno
 						</button>
-						{#each semestre.ramos.list as [id, ramo]}
+						{#each semestre.ramos.list as [id, ramo] (id)}
 							<button
 								onclick={() => (selectedRamoId = id)}
 								class="flex items-center gap-2 px-3 py-2 rounded-lg border transition-all cursor-pointer text-sm font-medium {selectedRamoId ===
@@ -166,7 +165,7 @@
 							<div class="w-2.5 h-2.5 rounded-full bg-base-300 shrink-0"></div>
 							Ninguno
 						</button>
-						{#each semestre.ramos.list as [id, ramo]}
+						{#each semestre.ramos.list as [id, ramo] (id)}
 							<button
 								onclick={() => (selectedRamoId = id)}
 								class="flex items-center gap-2 px-3 py-2 rounded-lg border transition-all cursor-pointer text-sm font-medium {selectedRamoId ===

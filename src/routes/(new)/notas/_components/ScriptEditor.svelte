@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { X, Copy } from '@lucide/svelte';
-	import { fly, fade } from 'svelte/transition';
+	import { fly } from 'svelte/transition';
 	import { semestre } from '$lib/infra/semestres.svelte';
 	import type { RenderType } from '$lib/features/notas.svelte';
 	import { buildAIContextPrompt } from '@ramo-libre/dsl-parser';
@@ -65,7 +65,6 @@
 <svelte:window onkeydown={handleKeydown} />
 
 {#if show}
-	<!-- svelte-ignore a11y_click_events_have_key_events a11y_interactive_supports_focus -->
 	<div class="fixed inset-0 z-50" role="dialog" aria-modal="true" in:fly={{ duration: 200 }}>
 		<button
 			class="absolute inset-0 bg-black/40 backdrop-blur-sm cursor-pointer"
@@ -121,7 +120,7 @@ dominio Cert [0, 100]"
 				<div class="flex items-center gap-3">
 					<span class="text-xs font-semibold text-content/50 uppercase tracking-wider">Mostrar</span
 					>
-					{#each ['assignment', 'constraint', 'domain'] as t}
+					{#each ['assignment', 'constraint', 'domain'] as t, i (i)}
 						{@const type = t as RenderType}
 						<button
 							onclick={() => toggleRenderType(type)}
@@ -203,7 +202,7 @@ dominio Cert [0, 100]"
 				<div class="flex items-center gap-3">
 					<span class="text-xs font-semibold text-content/50 uppercase tracking-wider">Mostrar</span
 					>
-					{#each ['assignment', 'constraint', 'domain'] as t}
+					{#each ['assignment', 'constraint', 'domain'] as t, i (i)}
 						{@const type = t as RenderType}
 						<button
 							onclick={() => toggleRenderType(type)}

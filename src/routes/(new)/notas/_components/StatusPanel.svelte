@@ -2,11 +2,11 @@
 	import {
 		CircleCheck,
 		CircleX,
-		AlertTriangle,
-		BarChart3,
+		TriangleAlert,
+		ChartColumn,
 		Award,
 		LoaderCircle,
-		HelpCircle
+		CircleQuestionMark
 	} from '@lucide/svelte';
 
 	interface Props {
@@ -34,7 +34,7 @@
 	>
 		<div class="flex items-center justify-between mb-2">
 			<div class="flex items-center gap-2 opacity-80">
-				<BarChart3 size={16} />
+				<ChartColumn size={16} />
 				<span class="text-xs font-bold uppercase tracking-widest">Estado</span>
 			</div>
 		</div>
@@ -49,7 +49,7 @@
 			</div>
 		{:else if feasible === null}
 			<div class="relative z-10 flex items-center gap-3">
-				<HelpCircle class="w-8 h-8 text-base-100/50 shrink-0" />
+				<CircleQuestionMark class="w-8 h-8 text-base-100/50 shrink-0" />
 				<div>
 					<div class="text-2xl font-bold italic text-base-100/50">Sin datos</div>
 					<div class="text-sm text-base-100/50">Sin predicción disponible</div>
@@ -89,7 +89,7 @@
 			</div>
 		{/if}
 
-		<BarChart3
+		<ChartColumn
 			class="absolute -right-4 -bottom-4 text-base-100/10 rotate-12 pointer-events-none"
 			size={120}
 		/>
@@ -103,11 +103,11 @@
 		{#if constraintViolations.length > 0}
 			<div class="space-y-1">
 				<div class="flex items-center gap-1.5 text-xs font-medium text-error-100">
-					<AlertTriangle class="w-3.5 h-3.5" />
+					<TriangleAlert class="w-3.5 h-3.5" />
 					Restricciones incumplibles
 				</div>
 				<ul class="space-y-0.5">
-					{#each constraintViolations as violation}
+					{#each constraintViolations as violation, i (i)}
 						<li class="text-xs text-content/50 ml-4 list-disc list-inside">{violation}</li>
 					{/each}
 				</ul>
@@ -118,7 +118,7 @@
 			<div>
 				<p class="text-xs font-medium text-content/50 mb-2">Holgura por restricción</p>
 				<div class="space-y-1">
-					{#each libertad as item}
+					{#each libertad as item, i (i)}
 						<div class="flex items-center gap-3 text-xs">
 							<span class="text-content/40 font-mono w-12 text-right shrink-0"
 								>{item.slack > 0 ? '+' : ''}{item.slack.toFixed(1)}</span

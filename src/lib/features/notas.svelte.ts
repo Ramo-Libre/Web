@@ -81,7 +81,7 @@ export class EscenariosManager implements Serializable<EscenariosSerial> {
 					lastResult: rest.lastResult
 						? {
 								feasible: rest.lastResult.feasible,
-								plan: new Map(rest.lastResult.plan),
+								plan: new SvelteMap(rest.lastResult.plan),
 								probability: rest.lastResult.probability,
 								constraint_violations: rest.lastResult.constraint_violations,
 								libertad: rest.lastResult.libertad
@@ -160,7 +160,7 @@ export class EscenariosManager implements Serializable<EscenariosSerial> {
 			lastResult: data.lastResult
 				? {
 						feasible: data.lastResult.feasible,
-						plan: new Map(data.lastResult.plan),
+						plan: new SvelteMap(data.lastResult.plan),
 						probability: data.lastResult.probability,
 						constraint_violations: data.lastResult.constraint_violations,
 						libertad: data.lastResult.libertad

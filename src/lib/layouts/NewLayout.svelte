@@ -21,6 +21,7 @@
 	import { PUBLIC_SHOW_DEV_TOOLS } from '$env/static/public';
 	import { db } from '$lib';
 	import { onMount } from 'svelte';
+	import { SvelteDate } from 'svelte/reactivity';
 
 	const showDevTools = PUBLIC_SHOW_DEV_TOOLS === 'true';
 	let { children } = $props();
@@ -142,7 +143,7 @@
 
 	function stepTT(dir: -1 | 1) {
 		if (!db.dev?.timeTravelDate) return;
-		const d = new Date(db.dev.timeTravelDate);
+		const d = new SvelteDate(db.dev.timeTravelDate);
 		switch (ttUnit) {
 			case 'minutos':
 				d.setMinutes(d.getMinutes() + dir * 15);
@@ -159,7 +160,7 @@
 
 	function stepBigTT(dir: -1 | 1) {
 		if (!db.dev?.timeTravelDate) return;
-		const d = new Date(db.dev.timeTravelDate);
+		const d = new SvelteDate(db.dev.timeTravelDate);
 		switch (ttUnit) {
 			case 'minutos':
 				d.setMinutes(d.getMinutes() + dir * 60);

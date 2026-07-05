@@ -59,7 +59,7 @@
 <div class="flex flex-col gap-6">
 	<!-- Progress indicator -->
 	<div class="flex gap-2">
-		{#each Array(totalSteps) as _, i}
+		{#each Array.from({ length: totalSteps }, (_, idx) => idx) as i (i)}
 			<div
 				class="h-1.5 flex-1 rounded-full transition-colors {i < step
 					? 'bg-primary-100'
@@ -139,7 +139,7 @@
 						</div>
 						{#if openColorIndex === i}
 							<div class="flex flex-wrap gap-1.5 p-2 bg-base-200 rounded-lg border border-base-300">
-								{#each ColorUtils.COLORS as color}
+								{#each ColorUtils.COLORS as color (color)}
 									<button
 										class="w-7 h-7 rounded-lg border-2 transition-all hover:scale-110 {ramo.color ===
 										color

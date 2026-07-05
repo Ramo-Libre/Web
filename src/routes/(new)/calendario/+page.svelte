@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { fly } from 'svelte/transition';
 	import { page } from '$app/state';
-	import { SvelteSet } from 'svelte/reactivity';
+	import { SvelteSet, SvelteDate } from 'svelte/reactivity';
 	import { semestre } from '$lib/infra/semestres.svelte';
 	import { getNow } from '$lib/utils/date';
 	import type { ScheduleEvent, ScheduleCategory } from '$lib/features/schedule.svelte';
@@ -14,7 +14,7 @@
 	import DayTimeline from './_components/DayTimeline.svelte';
 
 	let selectedRamo = $state<string | null>(null);
-	let selectedCategories = $state<Set<ScheduleCategory>>(new SvelteSet());
+	let selectedCategories: Set<ScheduleCategory> = new SvelteSet();
 	let selectedDate = $state<string | null>(
 		(() => {
 			const d = getNow();
@@ -55,14 +55,14 @@
 	function getNextDateForDow(dows: number[]): string {
 		const today = getNow();
 		for (let i = 0; i < 60; i++) {
-			const d = new Date(today);
+			const d = new SvelteDate(today);
 			d.setDate(d.getDate() + i);
 			const dow = d.getDay() === 0 ? 7 : d.getDay();
 			if (dows.includes(dow)) {
 				return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 			}
 		}
-		const d = new Date(today);
+		const d = new SvelteDate(today);
 		return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 	}
 

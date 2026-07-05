@@ -1,6 +1,6 @@
 import init, { solve } from '@ramo-libre/solver';
 
-let ready = init();
+const ready = init();
 
 self.onmessage = async (
 	e: MessageEvent<{ fs: string; strategy: string; requestId: number; escenarioId?: string }>

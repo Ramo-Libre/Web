@@ -1,4 +1,4 @@
-import type { EntityChange, FeatureId } from './changes.svelte';
+import type { EntityChange } from './changes.svelte';
 
 export type AdapterId = 'noop' | 'polling' | 'realtime';
 

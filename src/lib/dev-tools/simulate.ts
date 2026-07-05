@@ -81,7 +81,7 @@ export async function simulate(
 	const totalEscenarios = logs.filter((l) => l.icon === '🎯').length;
 
 	logs.push({
-		id: id++,
+		id: id,
 		icon: '✅',
 		label: 'Simulación completada',
 		detail: `${data.semestres.length} semestre(s), ${totalRamos} ramo(s), ${totalOneoff} oneoff(s), ${totalRecurrent} recurrente(s), ${totalEscenarios} escenario(s). Ningún cambio aplicado.`,

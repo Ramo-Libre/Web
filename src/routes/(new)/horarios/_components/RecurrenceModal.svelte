@@ -53,16 +53,16 @@
 
 	let { event, prefillDay, onClose, onSave, onDelete }: Props = $props();
 
-	let title = $state(event?.title ?? '');
-	let category = $state<ScheduleCategory>(event?.category ?? 'exam');
-	let ramoId = $state(event?.ramoId ?? '');
-	let daysOfWeek = $state<number[]>(event?.daysOfWeek ?? (prefillDay ? [prefillDay] : []));
-	let startTime = $state(event?.startTime ?? '08:00');
-	let endTime = $state(event?.endTime ?? '09:30');
-	let description = $state(event?.description ?? '');
-	let recurrenceStart = $state(event?.recurrenceStart ?? '');
-	let recurrenceEnd = $state(event?.recurrenceEnd ?? '');
-	let showRecurrence = $state(!!(event?.recurrenceStart || event?.recurrenceEnd));
+	let title = $derived(event?.title ?? '');
+	let category = $derived<ScheduleCategory>(event?.category ?? 'exam');
+	let ramoId = $derived(event?.ramoId ?? '');
+	let daysOfWeek = $derived<number[]>(event?.daysOfWeek ?? (prefillDay ? [prefillDay] : []));
+	let startTime = $derived(event?.startTime ?? '08:00');
+	let endTime = $derived(event?.endTime ?? '09:30');
+	let description = $derived(event?.description ?? '');
+	let recurrenceStart = $derived(event?.recurrenceStart ?? '');
+	let recurrenceEnd = $derived(event?.recurrenceEnd ?? '');
+	let showRecurrence = $derived(!!(event?.recurrenceStart || event?.recurrenceEnd));
 
 	const ramos = $derived(semestre.ramos.list);
 
@@ -100,7 +100,6 @@
 	}
 </script>
 
-<!-- svelte-ignore a11y_click_events_have_key_events a11y_interactive_supports_focus -->
 <div class="fixed inset-0 z-50" role="dialog" aria-modal="true">
 	<button
 		class="absolute inset-0 bg-black/40 backdrop-blur-sm cursor-pointer"
@@ -154,7 +153,7 @@
 						Días
 					</div>
 					<div class="flex gap-1.5">
-						{#each DOW_LABELS as label, i}
+						{#each DOW_LABELS as label, i (i)}
 							<button
 								type="button"
 								onclick={() => toggleDow(i + 1)}
@@ -215,7 +214,7 @@
 						Ramo
 					</div>
 					<div class="flex flex-wrap gap-2">
-						{#each ramos as [id, ramo]}
+						{#each ramos as [id, ramo] (id)}
 							<button
 								type="button"
 								onclick={() => (ramoId = ramoId === id ? '' : id)}
@@ -367,7 +366,7 @@
 						Días
 					</div>
 					<div class="flex gap-1.5">
-						{#each DOW_LABELS as label, i}
+						{#each DOW_LABELS as label, i (i)}
 							<button
 								type="button"
 								onclick={() => toggleDow(i + 1)}
@@ -428,7 +427,7 @@
 						Ramo
 					</div>
 					<div class="flex flex-wrap gap-2">
-						{#each ramos as [id, ramo]}
+						{#each ramos as [id, ramo] (id)}
 							<button
 								type="button"
 								onclick={() => (ramoId = ramoId === id ? '' : id)}

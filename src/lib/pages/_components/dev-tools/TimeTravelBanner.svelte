@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { db } from '$lib';
-	import { Clock, ExternalLink } from '@lucide/svelte';
+	import { ExternalLink } from '@lucide/svelte';
 	import { goto } from '$app/navigation';
 
 	let active = $derived(!!db.dev?.timeTravelEnabled && !!db.dev?.timeTravelDate);

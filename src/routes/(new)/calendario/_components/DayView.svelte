@@ -11,6 +11,7 @@
 		Ellipsis
 	} from '@lucide/svelte';
 	import type { ScheduleEvent } from '$lib/features/schedule.svelte';
+	import { SvelteMap } from 'svelte/reactivity';
 
 	const categoryIcons: Record<string, typeof Book> = {
 		exam: Presentation,
@@ -63,7 +64,7 @@
 	});
 
 	const eventsByHour = $derived.by(() => {
-		const map = new Map<number, ScheduleEvent[]>();
+		const map = new SvelteMap<number, ScheduleEvent[]>();
 		for (const e of timed) {
 			const h = parseInt(e.startTime!.split(':')[0]);
 			if (!map.has(h)) map.set(h, []);

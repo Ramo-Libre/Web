@@ -66,7 +66,7 @@
 		<p class="text-sm text-content/30 text-center py-4">No hay evaluaciones pendientes.</p>
 	{:else}
 		<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-			{#each [...freeVariables].sort() as variable}
+			{#each [...freeVariables].sort() as variable, i (i)}
 				{@const value = draftValues[variable] ?? ''}
 				<div class="flex items-center gap-2 bg-base-200 rounded-lg px-3 py-2">
 					<span class="text-sm font-medium text-content/60 shrink-0">{variable}</span>
