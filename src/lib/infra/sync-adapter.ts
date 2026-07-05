@@ -25,6 +25,7 @@ export interface PullResult {
 
 export interface SyncAdapter {
 	readonly id: AdapterId;
+	readonly connected: boolean;
 	connect(): Promise<void>;
 	disconnect(): void;
 	push(entity: EntityChange): Promise<PushResult>;

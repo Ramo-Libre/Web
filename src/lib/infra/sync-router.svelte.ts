@@ -24,7 +24,7 @@ class SyncRouter {
 		return this._adapter;
 	}
 
-	setAdapter(adapter: SyncAdapter) {
+	async setAdapter(adapter: SyncAdapter) {
 		if (this._adapter.id === adapter.id) return;
 
 		if (this._adapter.id !== 'noop') {
@@ -38,7 +38,7 @@ class SyncRouter {
 		this._adapter = adapter;
 
 		if (this._init) {
-			this._adapter.connect();
+			await this._adapter.connect();
 			this._unsubscribeRemote = this._adapter.onRemoteChanges(
 				(events) => this._handleRemoteEvents(events)
 			);
