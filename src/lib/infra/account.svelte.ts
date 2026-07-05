@@ -1,6 +1,9 @@
 import { browser } from '$app/environment';
 import type { Provider, User } from '@supabase/supabase-js';
 import { supabase } from '$lib/supabase/client';
+import { syncRouter } from './sync-router.svelte';
+import { noopAdapter } from './sync-noop.svelte';
+import { pollingAdapter } from './sync-polling.svelte';
 
 class AccountManager {
 	private _user = $state<User | null>(null);
@@ -16,10 +19,20 @@ class AccountManager {
 		const { data } = await supabase.auth.getUser();
 		this._user = data.user;
 		this._isLoading = false;
+		this._syncAdapter();
 
 		supabase.auth.onAuthStateChange((_event, session) => {
 			this._user = session?.user ?? null;
+			this._syncAdapter();
 		});
+	}
+
+	private _syncAdapter() {
+		if (this._user) {
+			syncRouter.setAdapter(pollingAdapter);
+		} else {
+			syncRouter.setAdapter(noopAdapter);
+		}
 	}
 
 	get user() {

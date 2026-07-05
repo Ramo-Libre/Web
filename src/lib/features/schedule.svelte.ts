@@ -42,6 +42,19 @@ export class ScheduleManager implements Serializable<ScheduleSerial> {
 		return this._events.size === 0;
 	}
 
+	toOne(id: string): ScheduleEvent | null {
+		const event = this._events.get(id);
+		return event ? { ...event } : null;
+	}
+
+	fromOne(id: string, data: ScheduleEvent) {
+		this._events.set(id, data);
+	}
+
+	removeSilent(id: string) {
+		this._events.delete(id);
+	}
+
 	add(event: Omit<ScheduleEvent, 'id'> & { id?: string }): string {
 		const id = event.id ?? generateUUID();
 		this._events.set(id, { ...event, id });

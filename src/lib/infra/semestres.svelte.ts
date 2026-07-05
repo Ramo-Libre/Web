@@ -94,6 +94,23 @@ class SemestresManager {
 		changeBus.emit('semesters', 'deleted', id);
 	}
 
+	toOne(id: string): SemestreData | null {
+		const s = this._semestres.get(id);
+		return s ? { ...s } : null;
+	}
+
+	fromOne(id: string, data: SemestreData) {
+		this._semestres.set(id, data);
+	}
+
+	removeSilent(id: string) {
+		this._semestres.delete(id);
+		if (this._active === id) {
+			this._active = '';
+			this.loadCurrentSemester();
+		}
+	}
+
 	select(id: string) {
 		if (!this._semestres.has(id)) return;
 		this._active = id;
@@ -136,12 +153,6 @@ class SemestresManager {
 			case 'escenarios': return this._escenarios;
 			case 'semesters': throw new Error('semesters has no manager');
 		}
-	}
-
-	applySemestersSnapshot(payload: { semestres: [string, SemestreData][]; active: string }) {
-		this._semestres = new SvelteMap(payload.semestres);
-		this._active = payload.active;
-		this.loadCurrentSemester();
 	}
 
 	applyMock(data: MockDataOutputV2) {

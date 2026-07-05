@@ -196,8 +196,6 @@ class PollingAdapter implements SyncAdapter {
 		const changes: EntityChange[] = [];
 
 		for (const row of rows) {
-			if (row.payload === null) continue;
-
 			changes.push({
 				semesterId: row.semester_id,
 				feature: row.feature as FeatureId,
@@ -221,6 +219,19 @@ class PollingAdapter implements SyncAdapter {
 		return () => {
 			this._remoteHandler = null;
 		};
+	}
+
+	async simulateReceiveEvents(events: EntityChange[]) {
+		if (!this._remoteHandler) return;
+
+		for (const event of events) {
+			if (event.payload !== undefined) {
+				setLastKnownSequence(event.semesterId, event.feature, event.entityId, 0);
+				setLastKnownPayload(event.semesterId, event.feature, event.entityId, event.payload);
+			}
+		}
+
+		this._remoteHandler(events);
 	}
 }
 

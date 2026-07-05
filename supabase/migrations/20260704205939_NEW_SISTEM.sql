@@ -49,4 +49,7 @@ create trigger trg_bump_watermark
 after insert or update on sync_entities
 for each row execute function bump_watermark();
 
-alter PUBLICATION supabase_realtime add table public.sync_entities;
+alter publication supabase_realtime add table sync_entities;
+
+grant all on sync_entities to authenticated;
+grant all on user_sync_watermark to authenticated;

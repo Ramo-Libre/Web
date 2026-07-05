@@ -39,6 +39,20 @@ export class RamosManager implements Serializable<RamosSerial> {
 		return this._ramos.size === 0;
 	}
 
+	toOne(id: string): { name: string; color: string } | null {
+		const ramo = this._ramos.get(id);
+		return ramo ? { ...ramo } : null;
+	}
+
+	fromOne(id: string, data: { name: string; color: string }) {
+		this._ramos.set(id, data);
+	}
+
+	removeSilent(id: string) {
+		this._ramos.delete(id);
+		this._onRemove?.(id);
+	}
+
 	add(ramo: Ramo) {
 		const id = generateUUID();
 		this._ramos.set(id, ramo);

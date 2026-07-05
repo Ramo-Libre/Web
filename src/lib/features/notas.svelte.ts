@@ -126,6 +126,55 @@ export class EscenariosManager implements Serializable<EscenariosSerial> {
 		return this._data.size === 0;
 	}
 
+	toOne(id: string): EscenariosSerial[number][1] | null {
+		const e = this._data.get(id);
+		if (!e) return null;
+		return {
+			ramoId: e.ramoId,
+			name: e.name,
+			scriptRaw: e.scriptRaw,
+			variableEntries: e.variableEntries,
+			renderTypes: e.renderTypes,
+			lastResult: e.lastResult
+				? {
+						feasible: e.lastResult.feasible,
+						plan: Array.from(e.lastResult.plan),
+						probability: e.lastResult.probability,
+						constraint_violations: e.lastResult.constraint_violations,
+						libertad: e.lastResult.libertad
+					}
+				: null,
+			lastStrategy: e.lastStrategy,
+			lastHash: e.lastHash
+		};
+	}
+
+	fromOne(id: string, data: EscenariosSerial[number][1]) {
+		this._data.set(id, {
+			id,
+			ramoId: data.ramoId,
+			name: data.name,
+			scriptRaw: data.scriptRaw,
+			variableEntries: data.variableEntries,
+			renderTypes: data.renderTypes,
+			lastResult: data.lastResult
+				? {
+						feasible: data.lastResult.feasible,
+						plan: new Map(data.lastResult.plan),
+						probability: data.lastResult.probability,
+						constraint_violations: data.lastResult.constraint_violations,
+						libertad: data.lastResult.libertad
+					}
+				: null,
+			lastStrategy: data.lastStrategy ?? 'punto_medio',
+			lastHash: data.lastHash ?? ''
+		});
+	}
+
+	removeSilent(id: string) {
+		this._data.delete(id);
+	}
+
 	create(ramoId: string | undefined, name: string, scriptRaw = ''): string {
 		const id = generateUUID();
 		this._data.set(id, {
