@@ -9,7 +9,6 @@
 	import AcademicHealth from './_components/dashboard/AcademicHealth.svelte';
 	import UpcomingEvents from './_components/dashboard/UpcomingEvents.svelte';
 	import SemestreProgress from './_components/dashboard/SemestreProgress.svelte';
-	import WelcomeBar from './_components/dashboard/WelcomeBar.svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 
@@ -40,8 +39,6 @@
 {:else}
 	<div in:fly={{ y: 10, duration: 300, delay: 100 }} class="flex flex-col sm:h-full w-full min-w-0">
 		<div class="flex flex-col gap-6 w-full min-w-0">
-			<WelcomeBar />
-
 			<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full min-w-0 items-start">
 				<div class="flex flex-col gap-6 w-full min-w-0">
 					<div class="w-full min-w-0"><NextClass /></div>

@@ -3,10 +3,8 @@
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
 	import Semestres from './_components/configuracion/Semestres.svelte';
-	import Sincronizacion from './_components/configuracion/Sincronizacion.svelte';
 	import Aparicencia from './_components/configuracion/Apariencia.svelte';
 	import About from './_components/configuracion/About.svelte';
-	import Privacidad from './_components/configuracion/Privacidad.svelte';
 	import Resumen from './_components/shared/Resumen.svelte';
 
 	let highlightedComponent = $state('');
@@ -43,30 +41,12 @@
 		</div>
 
 		<div
-			id="sync"
-			class="break-inside-avoid transition-all duration-500 {highlightedComponent === 'sync'
-				? 'shine-effect'
-				: ''}"
-		>
-			<Sincronizacion />
-		</div>
-
-		<div
 			id="tutorials"
 			class="break-inside-avoid transition-all duration-500 {highlightedComponent === 'tutorials'
 				? 'shine-effect'
 				: ''}"
 		>
 			<Resumen />
-		</div>
-
-		<div
-			id="privacy"
-			class="break-inside-avoid transition-all duration-500 {highlightedComponent === 'privacy'
-				? 'shine-effect'
-				: ''}"
-		>
-			<Privacidad />
 		</div>
 
 		<div
