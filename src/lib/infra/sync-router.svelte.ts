@@ -5,11 +5,13 @@ import { noopAdapter } from './sync-noop.svelte';
 import { semestre } from './semestres.svelte';
 import type { Serializable } from '$lib/types/state';
 import { local } from './persistence.svelte';
-import { SYNC_POLICIES, KEYS } from './sync-policies';
+import { SYNC_POLICIES, KEYS, lksSeqKey } from './sync-policies';
 import type { RamosSerial } from '$lib/features/ramos.svelte';
 import type { ScheduleSerial } from '$lib/features/schedule.svelte';
 import type { EscenariosSerial } from '$lib/features/notas.svelte';
 import { network } from './network.svelte';
+import { supabase } from '$lib/supabase/client';
+import { batchInsertEntities } from './sync-entities-store';
 
 type SyncStatus = 'offline' | 'disconnected' | 'connecting' | 'syncing' | 'idle' | 'error';
 
@@ -403,9 +405,22 @@ class SyncRouter {
 		if (this._syncingCount === 1) this._status = 'syncing';
 
 		const { deviceId } = await import('$lib/utils/device');
+		const {
+			data: { user }
+		} = await supabase.auth.getUser();
+		if (!user) {
+			this._syncingCount--;
+			if (this._syncingCount === 0) {
+				this._status = this._lastErrorMessage ? 'error' : 'idle';
+			}
+			return;
+		}
 
 		try {
 			for (const [id, data] of semestre.semestres) {
+				const semSeqKey = lksSeqKey(id, 'semesters', id);
+				if ((local.get<number>(semSeqKey) ?? 0) > 0) continue;
+
 				const semResult = await this._trackedPush({
 					feature: 'semesters',
 					action: 'updated',
@@ -425,14 +440,41 @@ class SyncRouter {
 				const schedule = local.get<ScheduleSerial>(`${id}_${KEYS.schedule}`) || [];
 				const escenarios = local.get<EscenariosSerial>(`${id}_${KEYS.escenarios}`) || [];
 
-				for (const [entId, entData] of ramos) {
-					await this._pushEntity(id, 'ramos', entId, entData, deviceId);
-				}
-				for (const [evId, ev] of schedule) {
-					await this._pushEntity(id, 'schedule', evId, ev, deviceId);
-				}
-				for (const [entId, entData] of escenarios) {
-					await this._pushEntity(id, 'escenarios', entId, entData, deviceId);
+				const pendientesRamos: [string, unknown][] = ramos.filter(
+					([entId]) => (local.get<number>(lksSeqKey(id, 'ramos', entId)) ?? 0) === 0
+				);
+				const pendientesSchedule: [string, unknown][] = schedule.filter(
+					([evId]) => (local.get<number>(lksSeqKey(id, 'schedule', evId)) ?? 0) === 0
+				);
+				const pendientesEscenarios: [string, unknown][] = escenarios.filter(
+					([entId]) => (local.get<number>(lksSeqKey(id, 'escenarios', entId)) ?? 0) === 0
+				);
+
+				for (const [feature, pendientes] of [
+					['ramos', pendientesRamos] as const,
+					['schedule', pendientesSchedule] as const,
+					['escenarios', pendientesEscenarios] as const
+				]) {
+					if (pendientes.length === 0) continue;
+
+					const { inserted, alreadyExisted } = await batchInsertEntities(
+						user.id,
+						id,
+						feature,
+						pendientes.map(([entId, payload]) => ({ entityId: entId, payload })),
+						deviceId
+					);
+
+					for (const [entId, sequence] of inserted) {
+						local.save(lksSeqKey(id, feature, entId), sequence);
+					}
+
+					for (const entId of alreadyExisted) {
+						const payload = pendientes.find(([eid]) => eid === entId)?.[1];
+						if (payload !== undefined) {
+							await this._pushEntity(id, feature as FeatureId, entId, payload, deviceId);
+						}
+					}
 				}
 			}
 		} finally {

@@ -4,7 +4,7 @@ import type { EntityChange, FeatureId } from './changes.svelte';
 import type { SyncAdapter, PushResult, PullResult, ConflictEvent } from './sync-adapter';
 import {
 	tryUpdate,
-	insertEntity,
+	insertEntityOrNothing,
 	fetchEntity,
 	fetchWatermark,
 	fetchChangesSince
@@ -13,27 +13,28 @@ import { merge } from './conflict-resolver';
 import { local } from './persistence.svelte';
 import { supabase } from '$lib/supabase/client';
 import { network } from './network.svelte';
+import { lksSeqKey } from './sync-policies';
 
 const POLL_INTERVAL = parseInt(env.PUBLIC_CLOUD_SYNC_POLL_INTERVAL ?? '') || 10000;
 
-const LKS_SEQ_PREFIX = 'RAMOLIBRE_V2_LKS_SEQ_';
 const LKS_PAYLOAD_PREFIX = 'RAMOLIBRE_V2_LKS_PAYLOAD_';
 const CONFLICT_QUEUE_KEY = 'RAMOLIBRE_V2_UNRESOLVED_CONFLICTS';
-
-function lksKey(prefix: string, semesterId: string, feature: string, entityId: string): string {
-	return `${prefix}${semesterId}_${feature}_${entityId}`;
-}
+const WATERMARK_KEY_PREFIX = 'RAMOLIBRE_V2_WATERMARK_';
 
 function getLastKnownSequence(semesterId: string, feature: string, entityId: string): number {
-	return local.get<number>(lksKey(LKS_SEQ_PREFIX, semesterId, feature, entityId)) ?? 0;
+	return local.get<number>(lksSeqKey(semesterId, feature, entityId)) ?? 0;
 }
 
 function setLastKnownSequence(semesterId: string, feature: string, entityId: string, seq: number) {
-	local.save(lksKey(LKS_SEQ_PREFIX, semesterId, feature, entityId), seq);
+	local.save(lksSeqKey(semesterId, feature, entityId), seq);
+}
+
+function lksPayloadKey(semesterId: string, feature: string, entityId: string): string {
+	return `${LKS_PAYLOAD_PREFIX}${semesterId}_${feature}_${entityId}`;
 }
 
 function getLastKnownPayload(semesterId: string, feature: string, entityId: string): unknown {
-	return local.get<unknown>(lksKey(LKS_PAYLOAD_PREFIX, semesterId, feature, entityId));
+	return local.get<unknown>(lksPayloadKey(semesterId, feature, entityId));
 }
 
 function setLastKnownPayload(
@@ -42,7 +43,7 @@ function setLastKnownPayload(
 	entityId: string,
 	payload: unknown
 ) {
-	local.save(lksKey(LKS_PAYLOAD_PREFIX, semesterId, feature, entityId), payload);
+	local.save(lksPayloadKey(semesterId, feature, entityId), payload);
 }
 
 function persistConflict(conflict: ConflictEvent) {
@@ -79,8 +80,13 @@ class PollingAdapter implements SyncAdapter {
 			return;
 		}
 		this._userId = user.id;
+		const saved = local.get<number>(`${WATERMARK_KEY_PREFIX}${user.id}`);
+		this._deviceWatermark = saved ?? 0;
 		this._connected = true;
-		console.log('[Sync:Polling] connect', { userId: this._userId });
+		console.log('[Sync:Polling] connect', {
+			userId: this._userId,
+			deviceWatermark: this._deviceWatermark
+		});
 
 		await this._tick();
 
@@ -92,6 +98,9 @@ class PollingAdapter implements SyncAdapter {
 		if (this._timer) {
 			clearInterval(this._timer);
 			this._timer = null;
+		}
+		if (this._deviceWatermark > 0 && this._userId) {
+			local.save(`${WATERMARK_KEY_PREFIX}${this._userId}`, this._deviceWatermark);
 		}
 		this._connected = false;
 		this._userId = null;
@@ -105,8 +114,9 @@ class PollingAdapter implements SyncAdapter {
 			const result = await this.pull(this._deviceWatermark);
 
 			if (result.changes.length > 0) {
-				this._deviceWatermark = result.watermark;
 				this._remoteHandler?.(result.changes);
+				this._deviceWatermark = result.watermark;
+				local.save(`${WATERMARK_KEY_PREFIX}${this._userId}`, this._deviceWatermark);
 			}
 		} catch (e) {
 			console.warn('[Sync:Polling] _tick error', e);
@@ -140,7 +150,7 @@ class PollingAdapter implements SyncAdapter {
 			}
 
 			if (lastKnown === 0) {
-				const insertResult = await insertEntity(
+				const insertResult = await insertEntityOrNothing(
 					this._userId,
 					semesterId,
 					feature,
@@ -154,8 +164,6 @@ class PollingAdapter implements SyncAdapter {
 					setLastKnownPayload(semesterId, feature, entityId, payload);
 					return { accepted: true, serverSequence: insertResult.sequence };
 				}
-
-				return { accepted: false, serverSequence: 0 };
 			}
 
 			const current = await fetchEntity(this._userId, semesterId, feature, entityId);
