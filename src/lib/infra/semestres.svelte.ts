@@ -11,6 +11,7 @@ import { syncRouter } from './sync-router.svelte';
 import { KEYS } from './sync-policies';
 import type { MockDataOutputV2 } from '$lib/dev-tools/types-v2';
 import type { Serializable } from '$lib/types/state';
+import { detectLegacy, runMigration, cleanupLegacy, type LegacyCounts } from './migrate-legacy';
 
 export interface SemestreData {
 	name: string;
@@ -21,6 +22,7 @@ type SemestresSerial = [string, SemestreData][];
 class SemestresManager {
 	private _active = $state<string>('');
 	private _semestres = $state<SvelteMap<string, SemestreData>>(new SvelteMap());
+	private _legacyData = $state<LegacyCounts | null>(null);
 
 	private _preferences = new PreferencesManager();
 	private _schedule = new ScheduleManager();
@@ -38,11 +40,23 @@ class SemestresManager {
 		}
 	}
 
+	get legacyData() {
+		return this._legacyData;
+	}
+
 	private prefix(id_key: string) {
 		return this._active + '_' + id_key;
 	}
 
 	private load() {
+		if (browser) {
+			const legacy = detectLegacy();
+			if (legacy) {
+				this._legacyData = legacy;
+				return;
+			}
+		}
+
 		this._active = local.get<string>(KEYS.active) || '';
 		const raw = local.get<SemestresSerial>(KEYS.semesters);
 		this._semestres = new SvelteMap(raw ?? []);
@@ -64,6 +78,13 @@ class SemestresManager {
 		local.save(KEYS.semesters, Array.from(this._semestres.entries()));
 
 		this.loadCurrentSemester();
+	}
+
+	afterLegacyDecision(action: 'migrate' | 'discard') {
+		if (action === 'migrate') runMigration();
+		cleanupLegacy();
+		this._legacyData = null;
+		this.load();
 	}
 
 	ensureActive() {
