@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { parseScript, toLatex } from '@ramo-libre/dsl-parser';
 	import type { RenderType } from '$lib/features/notas.svelte';
-	import katex from 'katex';
 	import 'katex/dist/katex.min.css';
+	import { onMount } from 'svelte';
 
 	interface Props {
 		scriptRaw: string;
@@ -12,6 +12,14 @@
 
 	let { scriptRaw, renderTypes, onEdit }: Props = $props();
 
+	let katexInstance: { renderToString: (tex: string, options?: object) => string } | null =
+		$state(null);
+
+	onMount(async () => {
+		const mod = await import('katex');
+		katexInstance = mod.default;
+	});
+
 	const statements = $derived(parseScript(scriptRaw));
 
 	const visibleStatements = $derived(
@@ -20,7 +28,11 @@
 
 	function renderStmtHtml(stmt: (typeof statements)[number]): string | null {
 		try {
-			return katex.renderToString(toLatex(stmt), { displayMode: true, throwOnError: false });
+			if (!katexInstance) return null;
+			return katexInstance.renderToString(toLatex(stmt), {
+				displayMode: true,
+				throwOnError: false
+			});
 		} catch {
 			return null;
 		}
