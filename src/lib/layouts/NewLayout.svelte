@@ -66,18 +66,18 @@
 			path: `${prefix}/calendario/`
 		},
 		{
-			id: 'ramos',
-			label: 'Ramos',
-			color: 'var(--color-classes-100)',
-			icon: BookMarked,
-			path: `${prefix}/ramos/`
-		},
-		{
 			id: 'pendientes',
 			label: 'Pendientes',
 			color: 'var(--color-todos-100)',
 			icon: Star,
 			path: `${prefix}/pendientes/`
+		},
+		{
+			id: 'ramos',
+			label: 'Ramos',
+			color: 'var(--color-classes-100)',
+			icon: BookMarked,
+			path: `${prefix}/ramos/`
 		},
 		{
 			id: 'config',
@@ -101,8 +101,8 @@
 
 	const bottomNavIds = ['ramolibre', 'horarios', 'notas', 'calendario'];
 	const sheetIds = showDevTools
-		? ['ramos', 'pendientes', 'config', 'dev-tools']
-		: ['ramos', 'pendientes', 'config'];
+		? ['pendientes', 'ramos', 'config', 'dev-tools']
+		: ['pendientes', 'ramos', 'config'];
 
 	const bottomNav = sections.filter((s) => bottomNavIds.includes(s.id));
 	const sheetSections = sections.filter((s) => sheetIds.includes(s.id));
