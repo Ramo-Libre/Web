@@ -1,11 +1,9 @@
-import { db } from '$lib/state/index.svelte';
+import { timeTravel } from '$lib/pages/_components/dev-tools/dev-tools-time.svelte';
 
 export function getNow(): Date {
-	if (db.dev?.timeTravelDate) {
-		const timeTravelDate = new Date(db.dev.timeTravelDate);
-		if (!isNaN(timeTravelDate.getTime())) {
-			return timeTravelDate;
-		}
+	if (timeTravel.enabled && timeTravel.date) {
+		const d = new Date(timeTravel.date);
+		if (!isNaN(d.getTime())) return d;
 	}
 	return new Date();
 }

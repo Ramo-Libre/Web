@@ -1,16 +1,13 @@
 <script lang="ts">
-	import { db } from '$lib';
 	import { Clock } from '@lucide/svelte';
 	import { SvelteDate } from 'svelte/reactivity';
-
-	let isEnabled = $state(db.dev?.timeTravelEnabled || false);
+	import { timeTravel } from './dev-tools-time.svelte';
 
 	let datePart = $state(
-		db.dev?.timeTravelDate?.split('T')[0] || new SvelteDate().toISOString().split('T')[0]
+		timeTravel.date?.split('T')[0] || new SvelteDate().toISOString().split('T')[0]
 	);
 	let timePart = $state(
-		db.dev?.timeTravelDate?.split('T')[1]?.slice(0, 5) ||
-			new SvelteDate().toTimeString().slice(0, 5)
+		timeTravel.date?.split('T')[1]?.slice(0, 5) || new SvelteDate().toTimeString().slice(0, 5)
 	);
 
 	let selectedDate = $derived(`${datePart}T${timePart}`);
@@ -31,17 +28,11 @@
 	let unit = $state<Unit>('horas');
 
 	function activate() {
-		if (!db.dev) return;
-		isEnabled = true;
-		db.dev.timeTravelEnabled = true;
-		db.dev.timeTravelDate = selectedDate;
+		timeTravel.activate(selectedDate);
 	}
 
 	function deactivate() {
-		if (!db.dev) return;
-		isEnabled = false;
-		db.dev.timeTravelEnabled = false;
-		db.dev.timeTravelDate = null;
+		timeTravel.deactivate();
 	}
 
 	function step(dir: -1 | 1) {
@@ -59,7 +50,7 @@
 		}
 		datePart = d.toISOString().split('T')[0];
 		timePart = d.toTimeString().slice(0, 5);
-		if (!isEnabled) activate();
+		if (!timeTravel.enabled) activate();
 	}
 
 	function stepBig(dir: -1 | 1) {
@@ -77,7 +68,7 @@
 		}
 		datePart = d.toISOString().split('T')[0];
 		timePart = d.toTimeString().slice(0, 5);
-		if (!isEnabled) activate();
+		if (!timeTravel.enabled) activate();
 	}
 </script>
 
@@ -91,14 +82,14 @@
 		</div>
 		<div class="flex items-center gap-1.5">
 			<span
-				class="text-[9px] font-bold uppercase tracking-wider {isEnabled
+				class="text-[9px] font-bold uppercase tracking-wider {timeTravel.enabled
 					? 'text-primary-100'
 					: 'text-content/30'}"
 			>
-				{isEnabled ? 'Activo' : 'Off'}
+				{timeTravel.enabled ? 'Activo' : 'Off'}
 			</span>
 			<span
-				class="w-1.5 h-1.5 rounded-full {isEnabled
+				class="w-1.5 h-1.5 rounded-full {timeTravel.enabled
 					? 'bg-primary-100 animate-pulse'
 					: 'bg-base-300'}"
 			></span>
@@ -110,7 +101,7 @@
 			class="bg-base-300/80 border border-base-300 rounded-lg px-4 py-2.5 flex items-center justify-center min-h-[40px]"
 		>
 			<span
-				class="text-sm font-mono font-bold tracking-[0.1em] {isEnabled
+				class="text-sm font-mono font-bold tracking-[0.1em] {timeTravel.enabled
 					? 'text-primary-100'
 					: 'text-content/40'}">{displayLabel}</span
 			>
@@ -150,7 +141,7 @@
 			<button
 				onclick={() => stepBig(-1)}
 				class="h-10 text-lg font-bold rounded-md border-2 cursor-pointer transition-all duration-75 select-none flex items-center justify-center
-					{isEnabled
+					{timeTravel.enabled
 					? 'bg-primary-100/15 border-primary-200/30 shadow-inner text-primary-100'
 					: 'bg-base-100 border-base-300 shadow-sm text-content/40 hover:border-primary-200/20 hover:text-primary-100'}"
 			>
@@ -159,7 +150,7 @@
 			<button
 				onclick={() => step(-1)}
 				class="h-10 text-lg font-bold rounded-md border-2 cursor-pointer transition-all duration-75 select-none flex items-center justify-center
-					{isEnabled
+					{timeTravel.enabled
 					? 'bg-primary-100/15 border-primary-200/30 shadow-inner text-primary-100'
 					: 'bg-base-100 border-base-300 shadow-sm text-content/40 hover:border-primary-200/20 hover:text-primary-100'}"
 			>
@@ -168,7 +159,7 @@
 			<button
 				onclick={() => step(1)}
 				class="h-10 text-lg font-bold rounded-md border-2 cursor-pointer transition-all duration-75 select-none flex items-center justify-center
-					{isEnabled
+					{timeTravel.enabled
 					? 'bg-primary-100/15 border-primary-200/30 shadow-inner text-primary-100'
 					: 'bg-base-100 border-base-300 shadow-sm text-content/40 hover:border-primary-200/20 hover:text-primary-100'}"
 			>
@@ -177,7 +168,7 @@
 			<button
 				onclick={() => stepBig(1)}
 				class="h-10 text-lg font-bold rounded-md border-2 cursor-pointer transition-all duration-75 select-none flex items-center justify-center
-					{isEnabled
+					{timeTravel.enabled
 					? 'bg-primary-100/15 border-primary-200/30 shadow-inner text-primary-100'
 					: 'bg-base-100 border-base-300 shadow-sm text-content/40 hover:border-primary-200/20 hover:text-primary-100'}"
 			>
@@ -201,19 +192,21 @@
 			<button
 				onclick={activate}
 				class="flex-1 h-8 flex items-center justify-center gap-1.5 text-[10px] font-bold uppercase tracking-wider rounded-md border-2 cursor-pointer transition-all duration-75 select-none
-					{isEnabled
+					{timeTravel.enabled
 					? 'bg-red-900/30 border-red-500/20 shadow-inner text-red-400'
 					: 'bg-base-100 border-base-300 shadow-sm text-content/40 hover:border-primary-200/20 hover:text-primary-100'}"
 			>
 				<span
-					class="w-2 h-2 rounded-full {isEnabled ? 'bg-red-400 animate-pulse' : 'bg-transparent'}"
+					class="w-2 h-2 rounded-full {timeTravel.enabled
+						? 'bg-red-400 animate-pulse'
+						: 'bg-transparent'}"
 				></span>
 				Viajar
 			</button>
 			<button
 				onclick={deactivate}
 				class="flex-1 h-8 text-[10px] font-bold uppercase tracking-wider rounded-md border-2 cursor-pointer transition-all duration-75 select-none
-					{!isEnabled
+					{!timeTravel.enabled
 					? 'bg-base-300 border-base-400 shadow-inner text-content/50'
 					: 'bg-base-100 border-base-300 shadow-sm text-content/40 hover:border-primary-200/20 hover:text-primary-100'}"
 			>

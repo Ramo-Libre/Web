@@ -19,9 +19,8 @@
 	import { ramoDrawer } from '$lib/features/ramosDrawer.svelte';
 	import RamoDrawer from '$lib/pages/RamoDrawer.svelte';
 	import { PUBLIC_SHOW_DEV_TOOLS } from '$env/static/public';
-	import { db } from '$lib';
 	import { onMount } from 'svelte';
-	import { SvelteDate } from 'svelte/reactivity';
+	import { timeTravel } from '$lib/pages/_components/dev-tools/dev-tools-time.svelte';
 
 	const showDevTools = PUBLIC_SHOW_DEV_TOOLS === 'true';
 	let { children } = $props();
@@ -117,11 +116,11 @@
 		sheetOpen = false;
 	}
 
-	let ttActive = $derived(!!db.dev?.timeTravelEnabled && !!db.dev?.timeTravelDate);
+	let ttActive = $derived(!!timeTravel.enabled && !!timeTravel.date);
 	let ttLabel = $derived(
-		db.dev?.timeTravelDate
+		timeTravel.date
 			? (() => {
-					const d = new Date(db.dev.timeTravelDate);
+					const d = new Date(timeTravel.date);
 					const dd = String(d.getDate()).padStart(2, '0');
 					const mm = String(d.getMonth() + 1).padStart(2, '0');
 					const yyyy = d.getFullYear();
@@ -132,48 +131,8 @@
 			: ''
 	);
 
-	function disableTT() {
-		if (!db.dev) return;
-		db.dev.timeTravelEnabled = false;
-		db.dev.timeTravelDate = null;
-	}
-
 	type Unit = 'minutos' | 'horas' | 'dias';
 	let ttUnit = $state<Unit>('horas');
-
-	function stepTT(dir: -1 | 1) {
-		if (!db.dev?.timeTravelDate) return;
-		const d = new SvelteDate(db.dev.timeTravelDate);
-		switch (ttUnit) {
-			case 'minutos':
-				d.setMinutes(d.getMinutes() + dir * 15);
-				break;
-			case 'horas':
-				d.setHours(d.getHours() + dir);
-				break;
-			case 'dias':
-				d.setDate(d.getDate() + dir);
-				break;
-		}
-		db.dev.timeTravelDate = d.toISOString();
-	}
-
-	function stepBigTT(dir: -1 | 1) {
-		if (!db.dev?.timeTravelDate) return;
-		const d = new SvelteDate(db.dev.timeTravelDate);
-		switch (ttUnit) {
-			case 'minutos':
-				d.setMinutes(d.getMinutes() + dir * 60);
-				break;
-			case 'horas':
-				d.setHours(d.getHours() + dir * 6);
-				break;
-			case 'dias':
-				d.setDate(d.getDate() + dir * 7);
-				break;
-		}
-		db.dev.timeTravelDate = d.toISOString();
-	}
 
 	onMount(() => {
 		semestre.preferences.applyTheme();
@@ -286,29 +245,29 @@
 								>{ttLabel}</span
 							>
 							<button
-								onclick={disableTT}
+								onclick={() => timeTravel.deactivate()}
 								class="h-5 w-5 flex items-center justify-center rounded border border-base-400 bg-base-200 text-[9px] font-bold text-content/30 hover:text-error-100 cursor-pointer transition-colors"
 								title="Desactivar">X</button
 							>
 						</div>
 						<div class="flex gap-1">
 							<button
-								onclick={() => stepBigTT(-1)}
+								onclick={() => timeTravel.stepBig(-1, ttUnit)}
 								class="flex-1 h-6 flex items-center justify-center rounded border border-base-400 bg-base-200 text-[10px] text-content/40 hover:text-content cursor-pointer transition-colors"
 								>◄◄</button
 							>
 							<button
-								onclick={() => stepTT(-1)}
+								onclick={() => timeTravel.step(-1, ttUnit)}
 								class="flex-1 h-6 flex items-center justify-center rounded border border-base-400 bg-base-200 text-[10px] text-content/40 hover:text-content cursor-pointer transition-colors"
 								>◄</button
 							>
 							<button
-								onclick={() => stepTT(1)}
+								onclick={() => timeTravel.step(1, ttUnit)}
 								class="flex-1 h-6 flex items-center justify-center rounded border border-base-400 bg-base-200 text-[10px] text-content/40 hover:text-content cursor-pointer transition-colors"
 								>►</button
 							>
 							<button
-								onclick={() => stepBigTT(1)}
+								onclick={() => timeTravel.stepBig(1, ttUnit)}
 								class="flex-1 h-6 flex items-center justify-center rounded border border-base-400 bg-base-200 text-[10px] text-content/40 hover:text-content cursor-pointer transition-colors"
 								>►►</button
 							>
