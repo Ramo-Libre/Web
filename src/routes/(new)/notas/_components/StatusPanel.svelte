@@ -8,6 +8,7 @@
 		LoaderCircle,
 		CircleQuestionMark
 	} from '@lucide/svelte';
+	import { SuiteFavicons } from '@ramo-libre/ui-themes';
 
 	interface Props {
 		feasible: boolean | null;
@@ -15,9 +16,11 @@
 		constraintViolations: string[];
 		libertad: { label?: string; raw: string; slack: number; penalty: number }[];
 		isSolving: boolean;
+		labExport?: { show: boolean; onExport: () => void };
 	}
 
-	let { feasible, probability, constraintViolations, libertad, isSolving }: Props = $props();
+	let { feasible, probability, constraintViolations, libertad, isSolving, labExport }: Props =
+		$props();
 
 	const guaranteed = $derived(feasible === true && probability !== null && probability >= 0.9999);
 </script>
@@ -37,6 +40,17 @@
 				<ChartColumn size={16} />
 				<span class="text-xs font-bold uppercase tracking-widest">Estado</span>
 			</div>
+			{#if labExport?.show}
+				<div class="relative z-10">
+					<button
+						onclick={labExport.onExport}
+						class="flex items-center gap-1.5 text-xs font-semibold text-base-100/70 hover:text-base-100 transition-colors cursor-pointer"
+					>
+						<img src={SuiteFavicons.lab} alt="" class="w-4 h-4" />
+						Probar en Lab
+					</button>
+				</div>
+			{/if}
 		</div>
 
 		{#if isSolving}
