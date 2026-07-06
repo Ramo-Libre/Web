@@ -83,7 +83,10 @@ class PollingAdapter implements SyncAdapter {
 		const saved = local.get<number>(`${WATERMARK_KEY_PREFIX}${user.id}`);
 		this._deviceWatermark = saved ?? 0;
 		this._connected = true;
-		console.log('[Sync:Polling] connect', { userId: this._userId, deviceWatermark: this._deviceWatermark });
+		console.log('[Sync:Polling] connect', {
+			userId: this._userId,
+			deviceWatermark: this._deviceWatermark
+		});
 
 		await this._tick();
 
