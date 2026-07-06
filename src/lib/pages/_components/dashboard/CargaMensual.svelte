@@ -1,12 +1,16 @@
 <script lang="ts">
 	import { semestre } from '$lib/infra/semestres.svelte';
-	import { Activity } from '@lucide/svelte';
+	import { Activity, ChevronLeft, ChevronRight } from '@lucide/svelte';
 
 	let { now }: { now: Date } = $props();
 
+	let monthOffset = $state(0);
+
+	const viewDate = $derived(new Date(now.getFullYear(), now.getMonth() + monthOffset, 1));
+
 	const monthDays = $derived.by(() => {
-		const y = now.getFullYear();
-		const m = now.getMonth() + 1;
+		const y = viewDate.getFullYear();
+		const m = viewDate.getMonth() + 1;
 		const total = new Date(y, m, 0).getDate();
 		const days: { date: string; day: number; count: number }[] = [];
 		for (let d = 1; d <= total; d++) {
@@ -19,14 +23,26 @@
 	const maxLoad = $derived(Math.max(1, ...monthDays.map((d) => d.count)));
 
 	const monthLabel = $derived(
-		new Date(now.getFullYear(), now.getMonth()).toLocaleDateString('es-ES', {
+		new Date(viewDate.getFullYear(), viewDate.getMonth()).toLocaleDateString('es-ES', {
 			month: 'long',
 			year: 'numeric'
 		})
 	);
 
+	const monthLabelShort = $derived(
+		new Date(viewDate.getFullYear(), viewDate.getMonth()).toLocaleDateString('es-ES', {
+			month: 'short',
+			year: 'numeric'
+		})
+	);
+
+	const isCurrentMonth = $derived(
+		now.getFullYear() === viewDate.getFullYear() && now.getMonth() === viewDate.getMonth()
+	);
+
 	const todayIdx = $derived(now.getDate() - 1);
 	const todayX = $derived.by(() => {
+		if (!isCurrentMonth) return 0;
 		const n = monthDays.length;
 		if (n === 0) return 0;
 		const chartL = 10;
@@ -39,12 +55,16 @@
 	let chartMonthKey = '';
 	$effect(() => {
 		const el = chartScroll;
-		const monthKey = `${now.getFullYear()}-${now.getMonth()}`;
+		const monthKey = `${viewDate.getFullYear()}-${viewDate.getMonth()}`;
 		if (el && monthDays.length > 0 && monthKey !== chartMonthKey) {
 			chartMonthKey = monthKey;
 			requestAnimationFrame(() => {
-				const target = todayX - el.clientWidth / 2;
-				el.scrollLeft = Math.max(0, Math.min(target, el.scrollWidth - el.clientWidth));
+				if (isCurrentMonth) {
+					const target = todayX - el.clientWidth / 2;
+					el.scrollLeft = Math.max(0, Math.min(target, el.scrollWidth - el.clientWidth));
+				} else {
+					el.scrollLeft = 0;
+				}
 			});
 		}
 	});
@@ -52,11 +72,34 @@
 
 <div class="bg-base-100 border border-base-400 rounded-xl p-4 shadow-sm lg:col-span-2">
 	<div class="flex items-center gap-1.5 mb-3">
-		<Activity class="h-4 w-4 text-schedule-100" />
-		<h3 class="text-xs font-bold text-content/50 uppercase tracking-widest">Carga Mensual</h3>
-		<span class="text-xs font-bold text-content/60 bg-base-300 px-2 py-0.5 rounded-md ml-auto"
-			>{monthLabel}</span
-		>
+		<Activity class="h-4 w-4 shrink-0 text-schedule-100" />
+		<h3 class="block text-xs font-bold text-content/50 uppercase tracking-widest">Carga Mensual</h3>
+		<div class="flex items-center gap-0.5 ml-auto">
+			<button
+				type="button"
+				class="p-1 cursor-pointer rounded-md hover:bg-base-300 text-content/50 hover:text-content transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
+				disabled={monthOffset <= -12}
+				onclick={() => monthOffset--}
+			>
+				<ChevronLeft class="h-3.5 w-3.5" />
+			</button>
+			<span
+				class="sm:hidden text-xs pointer-events-none select-none font-bold text-content/60 bg-base-300 px-2 py-0.5 rounded-md min-w-[4.5rem] text-center"
+				>{monthLabelShort}</span
+			>
+			<span
+				class="hidden sm:inline text-xs pointer-events-none select-none font-bold text-content/60 bg-base-300 px-2 py-0.5 rounded-md min-w-[8rem] text-center"
+				>{monthLabel}</span
+			>
+			<button
+				type="button"
+				class="p-1 cursor-pointer rounded-md hover:bg-base-300 text-content/50 hover:text-content transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
+				disabled={monthOffset >= 12}
+				onclick={() => monthOffset++}
+			>
+				<ChevronRight class="h-3.5 w-3.5" />
+			</button>
+		</div>
 	</div>
 
 	{#if monthDays.length > 0}
@@ -169,15 +212,17 @@
 						>
 					{/each}
 
-					<line
-						x1={todayX}
-						x2={todayX}
-						y1={chartT}
-						y2={chartB}
-						stroke="var(--color-red-500)"
-						stroke-width="1.5"
-						stroke-dasharray="4 3"
-					/>
+					{#if isCurrentMonth}
+						<line
+							x1={todayX}
+							x2={todayX}
+							y1={chartT}
+							y2={chartB}
+							stroke="var(--color-red-500)"
+							stroke-width="1.5"
+							stroke-dasharray="4 3"
+						/>
+					{/if}
 				</svg>
 			</div>
 		</div>
