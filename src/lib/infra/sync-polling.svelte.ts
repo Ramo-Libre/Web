@@ -19,6 +19,7 @@ const POLL_INTERVAL = parseInt(env.PUBLIC_CLOUD_SYNC_POLL_INTERVAL ?? '') || 100
 
 const LKS_PAYLOAD_PREFIX = 'RAMOLIBRE_V2_LKS_PAYLOAD_';
 const CONFLICT_QUEUE_KEY = 'RAMOLIBRE_V2_UNRESOLVED_CONFLICTS';
+const WATERMARK_KEY_PREFIX = 'RAMOLIBRE_V2_WATERMARK_';
 
 function getLastKnownSequence(semesterId: string, feature: string, entityId: string): number {
 	return local.get<number>(lksSeqKey(semesterId, feature, entityId)) ?? 0;
@@ -79,8 +80,10 @@ class PollingAdapter implements SyncAdapter {
 			return;
 		}
 		this._userId = user.id;
+		const saved = local.get<number>(`${WATERMARK_KEY_PREFIX}${user.id}`);
+		this._deviceWatermark = saved ?? 0;
 		this._connected = true;
-		console.log('[Sync:Polling] connect', { userId: this._userId });
+		console.log('[Sync:Polling] connect', { userId: this._userId, deviceWatermark: this._deviceWatermark });
 
 		await this._tick();
 
@@ -92,6 +95,9 @@ class PollingAdapter implements SyncAdapter {
 		if (this._timer) {
 			clearInterval(this._timer);
 			this._timer = null;
+		}
+		if (this._deviceWatermark > 0 && this._userId) {
+			local.save(`${WATERMARK_KEY_PREFIX}${this._userId}`, this._deviceWatermark);
 		}
 		this._connected = false;
 		this._userId = null;
@@ -105,8 +111,9 @@ class PollingAdapter implements SyncAdapter {
 			const result = await this.pull(this._deviceWatermark);
 
 			if (result.changes.length > 0) {
-				this._deviceWatermark = result.watermark;
 				this._remoteHandler?.(result.changes);
+				this._deviceWatermark = result.watermark;
+				local.save(`${WATERMARK_KEY_PREFIX}${this._userId}`, this._deviceWatermark);
 			}
 		} catch (e) {
 			console.warn('[Sync:Polling] _tick error', e);
