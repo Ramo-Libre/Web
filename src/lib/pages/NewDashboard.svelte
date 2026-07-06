@@ -19,8 +19,10 @@
 	<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
 		<NextClassCard {now} />
 		<CargaMensual {now} />
+	</div>
+	<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
 		<ProbabilidadesCard />
-		<UpcomingEventsCard {now} />
+		<UpcomingEventsCard {now} class="lg:row-span-2" />
 		<QuickActions />
 	</div>
 </div>

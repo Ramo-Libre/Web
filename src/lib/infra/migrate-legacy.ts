@@ -156,6 +156,14 @@ export function runMigration(): void {
 			continue;
 		}
 
+		// Build ramoId → name map for horario titles
+		const ramoNameMap = new Map<string, string>();
+		if (root.ramos) {
+			for (const [id, r] of root.ramos) {
+				ramoNameMap.set(id, r.nombre);
+			}
+		}
+
 		// Ramos (legacy `nombre` → new `name`)
 		if (root.ramos && root.ramos.length > 0) {
 			const mapped = root.ramos.map(
@@ -175,7 +183,7 @@ export function runMigration(): void {
 						id: hid,
 						ramoId: h.ramoId,
 						category: h.type,
-						title: h.type,
+						title: ramoNameMap.get(h.ramoId ?? '') ?? h.type,
 						startTime: h.start,
 						endTime: h.end,
 						daysOfWeek: [DAY_MAP[h.day] ?? 1],

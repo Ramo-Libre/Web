@@ -157,19 +157,22 @@
 						onclick={() => account.loginWith('github')}
 						class="cursor-pointer inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-base-200 border border-base-400 text-content rounded-lg text-xs font-semibold hover:bg-base-300 transition-all active:scale-95 shadow-sm"
 					>
-						<Icon icon="mdi:github" width={16} /> GitHub
+						<Icon icon="mdi:github" width={18} />
+						<p class="max-[400px]:hidden">GitHub</p>
 					</button>
 					<button
 						onclick={() => account.loginWith('google')}
 						class="cursor-pointer inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-base-200 border border-base-400 text-content rounded-lg text-xs font-semibold hover:bg-base-300 transition-all active:scale-95 shadow-sm"
 					>
-						<Icon icon="mdi:google" width={16} /> Google
+						<Icon icon="mdi:google" width={18} />
+						<p class="max-[400px]:hidden">Google</p>
 					</button>
 					<button
 						onclick={() => account.loginWith('discord')}
 						class="cursor-pointer inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#5865F2] text-white rounded-lg text-xs font-semibold hover:bg-[#4752c4] transition-all active:scale-95 shadow-sm"
 					>
-						<Icon icon="mdi:discord" width={16} /> Discord
+						<Icon icon="mdi:discord" width={18} />
+						<p class="max-[400px]:hidden">Discord</p>
 					</button>
 				</div>
 			</div>

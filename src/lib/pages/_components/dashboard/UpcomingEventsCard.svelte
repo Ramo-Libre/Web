@@ -13,6 +13,8 @@
 		Clock
 	} from '@lucide/svelte';
 
+	let { now, class: className = '' }: { now: Date; class?: string } = $props();
+
 	const categoryIcons: Record<string, typeof Book> = {
 		exam: Presentation,
 		urgent: CircleAlert,
@@ -31,8 +33,6 @@
 		taller: 'Taller',
 		exam: 'Examen'
 	};
-
-	let { now }: { now: Date } = $props();
 
 	const todayStr = $derived(now.toISOString().slice(0, 10));
 	const weekEndStr = $derived(
@@ -57,7 +57,7 @@
 	}
 </script>
 
-<div class="bg-base-100 border border-base-400 rounded-xl p-4 shadow-sm lg:self-start">
+<div class="bg-base-100 border border-base-400 rounded-xl p-4 shadow-sm lg:self-start {className}">
 	<div class="flex items-center justify-between mb-3">
 		<div class="flex items-center gap-1.5">
 			<CalendarDays class="h-4 w-4 text-calendar-100" />
