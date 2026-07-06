@@ -1,6 +1,6 @@
 import { deviceId } from '$lib/utils/device';
 
-export type FeatureId = 'preferences' | 'ramos' | 'schedule' | 'escenarios' | 'semesters';
+export type FeatureId = 'preferences' | 'ramos' | 'schedule' | 'escenarios' | 'semesters' | 'todos';
 export type ChangeAction = 'created' | 'updated' | 'deleted';
 
 export interface EntityChange {
@@ -47,7 +47,14 @@ class ChangeBus {
 	}
 
 	subscribeAll(handler: (event: EntityChange) => void): () => void {
-		const features: FeatureId[] = ['preferences', 'ramos', 'schedule', 'escenarios', 'semesters'];
+		const features: FeatureId[] = [
+			'preferences',
+			'ramos',
+			'schedule',
+			'escenarios',
+			'semesters',
+			'todos'
+		];
 		const unsubs = features.map((f) => this.subscribe(f, handler));
 		return () => unsubs.forEach((u) => u());
 	}

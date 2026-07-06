@@ -10,7 +10,8 @@
 		PanelLeftOpen,
 		Ellipsis,
 		X,
-		Bone
+		Bone,
+		Star
 	} from '@lucide/svelte';
 	import type { LucideIcon } from '@lucide/svelte';
 	import { goto } from '$app/navigation';
@@ -72,6 +73,13 @@
 			path: `${prefix}/ramos/`
 		},
 		{
+			id: 'pendientes',
+			label: 'Pendientes',
+			color: 'var(--color-todos-100)',
+			icon: Star,
+			path: `${prefix}/pendientes/`
+		},
+		{
 			id: 'config',
 			label: 'Config',
 			color: 'var(--color-config-100)',
@@ -92,7 +100,9 @@
 	];
 
 	const bottomNavIds = ['ramolibre', 'horarios', 'notas', 'calendario'];
-	const sheetIds = showDevTools ? ['ramos', 'config', 'dev-tools'] : ['ramos', 'config'];
+	const sheetIds = showDevTools
+		? ['ramos', 'pendientes', 'config', 'dev-tools']
+		: ['ramos', 'pendientes', 'config'];
 
 	const bottomNav = sections.filter((s) => bottomNavIds.includes(s.id));
 	const sheetSections = sections.filter((s) => sheetIds.includes(s.id));

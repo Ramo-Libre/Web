@@ -15,7 +15,8 @@ export const SYNC_POLICIES: Record<FeatureId, SyncPolicy> = {
 	ramos: { persist: true, sync: true },
 	schedule: { persist: true, sync: true },
 	escenarios: { persist: true, sync: true },
-	semesters: { persist: true, sync: true }
+	semesters: { persist: true, sync: true },
+	todos: { persist: true, sync: true }
 };
 
 export const KEYS: Record<string, string> = {
@@ -24,6 +25,7 @@ export const KEYS: Record<string, string> = {
 	schedule: 'SCH',
 	escenarios: 'ESC',
 	semesters: 'SEM',
+	todos: 'TOD',
 	active: 'ACT',
 	pushed: 'PSH'
 };
