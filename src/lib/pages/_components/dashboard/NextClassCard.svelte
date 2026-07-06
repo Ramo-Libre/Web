@@ -35,9 +35,13 @@
 		return hh * 60 + mm;
 	};
 
+	const todayStr = $derived(
+		`${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
+	);
+
 	const todayEvents = $derived(
 		semestre.schedule
-			.getByDayOfWeek(currentDow)
+			.getByDayOfWeek(currentDow, todayStr)
 			.filter((e) => e.startTime)
 			.sort((a, b) => (a.startTime ?? '').localeCompare(b.startTime ?? ''))
 	);

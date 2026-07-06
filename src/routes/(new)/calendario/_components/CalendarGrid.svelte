@@ -60,19 +60,6 @@
 		return new Date(y, m, 0).getDate();
 	}
 
-	function isActiveOnDate(event: ScheduleEvent, date: string): boolean {
-		if (event.date === date) return true;
-		if (event.daysOfWeek && event.daysOfWeek.length > 0) {
-			const d = new Date(date + 'T12:00:00');
-			const dow = d.getDay() === 0 ? 7 : d.getDay();
-			if (!event.daysOfWeek.includes(dow)) return false;
-			const start = event.recurrenceStart ?? '1970-01-01';
-			const end = event.recurrenceEnd ?? '2099-12-31';
-			return date >= start && date <= end;
-		}
-		return false;
-	}
-
 	function ramoColor(ramoId?: string): string {
 		if (!ramoId) return 'var(--color-primary-100)';
 		const r = semestre.ramos.get(ramoId);
@@ -99,7 +86,7 @@
 				day: d,
 				dateStr: s,
 				isCurrent: false,
-				events: events.filter((e) => isActiveOnDate(e, s))
+				events: events.filter((e) => semestre.schedule.isActiveOnDate(e, s))
 			});
 		}
 		for (let d = 1; d <= totalDays; d++) {
@@ -108,7 +95,7 @@
 				day: d,
 				dateStr: s,
 				isCurrent: true,
-				events: events.filter((e) => isActiveOnDate(e, s))
+				events: events.filter((e) => semestre.schedule.isActiveOnDate(e, s))
 			});
 		}
 		let nd = 1;
@@ -118,7 +105,7 @@
 				day: nd,
 				dateStr: s,
 				isCurrent: false,
-				events: events.filter((e) => isActiveOnDate(e, s))
+				events: events.filter((e) => semestre.schedule.isActiveOnDate(e, s))
 			});
 			nd++;
 		}

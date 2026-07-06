@@ -99,17 +99,21 @@ export class ScheduleManager implements Serializable<ScheduleSerial> {
 		}
 	}
 
-	private isActiveOnDate(event: ScheduleEvent, date: string): boolean {
+	isActiveOnDate(event: ScheduleEvent, date: string): boolean {
 		if (event.date === date) return true;
 
 		if (event.daysOfWeek && event.daysOfWeek.length > 0) {
-			const d = new SvelteDate(date + 'T12:00:00');
-			const dow = d.getDay() === 0 ? 7 : d.getDay();
+			const [y, m, d] = date.split('-').map(Number);
+			const dow = new SvelteDate(y, m - 1, d).getDay() || 7;
 			if (!event.daysOfWeek.includes(dow)) return false;
 
-			const start = event.recurrenceStart ?? '1970-01-01';
-			const end = event.recurrenceEnd ?? '2099-12-31';
-			return date >= start && date <= end;
+			const parse = (s: string) => s.split('-').map(Number);
+			const [sy, sm, sd] = event.recurrenceStart ? parse(event.recurrenceStart) : [1970, 1, 1];
+			const [ey, em, ed] = event.recurrenceEnd ? parse(event.recurrenceEnd) : [2099, 12, 31];
+			const target = new SvelteDate(y, m - 1, d, 12);
+			const rangeStart = new SvelteDate(sy, sm - 1, sd);
+			const rangeEnd = new SvelteDate(ey, em - 1, ed, 23, 59, 59, 999);
+			return +target >= +rangeStart && +target <= +rangeEnd;
 		}
 
 		return false;
@@ -123,10 +127,11 @@ export class ScheduleManager implements Serializable<ScheduleSerial> {
 		return result;
 	}
 
-	getByDayOfWeek(day: number): ScheduleEvent[] {
+	getByDayOfWeek(day: number, date?: string): ScheduleEvent[] {
 		const result: ScheduleEvent[] = [];
 		for (const [, event] of this._events) {
-			if (event.daysOfWeek?.includes(day)) result.push(event);
+			if (event.daysOfWeek?.includes(day) && (!date || this.isActiveOnDate(event, date)))
+				result.push(event);
 		}
 		return result;
 	}
@@ -139,10 +144,15 @@ export class ScheduleManager implements Serializable<ScheduleSerial> {
 		return result;
 	}
 
-	getRecurring(): ScheduleEvent[] {
+	getRecurring(date?: string): ScheduleEvent[] {
 		const result: ScheduleEvent[] = [];
 		for (const [, event] of this._events) {
-			if (event.daysOfWeek && event.daysOfWeek.length > 0) result.push(event);
+			if (
+				event.daysOfWeek &&
+				event.daysOfWeek.length > 0 &&
+				(!date || this.isActiveOnDate(event, date))
+			)
+				result.push(event);
 		}
 		return result;
 	}

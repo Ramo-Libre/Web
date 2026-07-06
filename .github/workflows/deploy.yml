@@ -46,7 +46,6 @@ jobs:
         run: bun run build
         env:
           PUBLIC_SHOW_DEV_TOOLS: ${{ vars.PUBLIC_SHOW_DEV_TOOLS }}
-          PUBLIC_CLOUD_SYNC_DEBOUNCE: ${{ vars.PUBLIC_CLOUD_SYNC_DEBOUNCE }}
           PUBLIC_SUPABASE_URL: ${{ secrets.PUBLIC_SUPABASE_URL }}
           PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
 

@@ -199,7 +199,7 @@ dominio Cert [0, 100]"
 					class="w-full h-[300px] px-4 py-3 rounded-lg border border-base-400 bg-base-50 text-sm font-mono text-content focus:outline-none focus:border-primary-100 resize-none"
 					spellcheck="false"></textarea>
 
-				<div class="flex items-center gap-3">
+				<div class="flex flex-wrap items-center gap-3">
 					<span class="text-xs font-semibold text-content/50 uppercase tracking-wider">Mostrar</span
 					>
 					{#each ['assignment', 'constraint', 'domain'] as t, i (i)}

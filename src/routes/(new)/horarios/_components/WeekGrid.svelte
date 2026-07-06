@@ -189,11 +189,15 @@
 		const out: Record<number, LaidEvent[]> = {};
 		for (const day of weekDays) out[day.dow] = [];
 
+		const dayDates = new Map(days.map((d) => [d.dow, d.dateStr]));
+
 		for (const ev of recurringEvents) {
 			if (!ev.startTime || !ev.daysOfWeek) continue;
 			const color = ev.ramoId ? (semestre.ramos.get(ev.ramoId)?.color ?? '#64748b') : '#64748b';
 			const ramoName = ev.ramoId ? (semestre.ramos.get(ev.ramoId)?.name ?? 'Sin Ramo') : 'Sin Ramo';
 			for (const dow of ev.daysOfWeek) {
+				const dateStr = dayDates.get(dow);
+				if (!dateStr || !semestre.schedule.isActiveOnDate(ev, dateStr)) continue;
 				out[dow].push({
 					id: ev.id + '-' + dow,
 					startMin: toMinutes(ev.startTime),

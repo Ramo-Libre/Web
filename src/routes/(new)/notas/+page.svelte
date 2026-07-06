@@ -18,6 +18,8 @@
 	import type { RenderType, Escenario } from '$lib/features/notas.svelte';
 	import { hashContext } from '$lib/features/notas.svelte';
 	import type { SolverWorkerMessage } from './solver.worker';
+	import { encodeUrlData } from '$lib/utils/share-url';
+	import { env } from '$env/dynamic/public';
 
 	let worker: Worker | null = null;
 	let dashboardResults = $state(
@@ -162,6 +164,25 @@
 		solveError = null;
 		dashboardSolveTrigger++;
 		if (browser) window.location.hash = '';
+	}
+
+	function handleExportToLab() {
+		if (!selectedEscenarioId) return;
+		const esc = semestre.escenarios.get(selectedEscenarioId);
+		if (!esc) return;
+		const payload = encodeUrlData({
+			id: esc.id,
+			name: esc.name,
+			scriptRaw: esc.scriptRaw,
+			variables: Object.fromEntries(
+				Object.entries(esc.variableEntries).filter((e) => e[1] !== null)
+			) as Record<string, number>,
+			modo: 'script',
+			activeStatementRaw: '',
+			date: new Date().toISOString()
+		});
+		const labUrl = env.PUBLIC_RAMOLIBRE_LAB_URL ?? 'https://lab.ramolibre.app';
+		window.open(`${labUrl}?share=${payload}`, '_blank');
 	}
 
 	function handleGradeChange(variable: string, value: number | null) {
@@ -442,6 +463,7 @@
 			constraintViolations={solverResult?.constraint_violations ?? []}
 			libertad={solverResult?.libertad ?? []}
 			{isSolving}
+			labExport={{ show: scriptRaw.trim().length > 0, onExport: handleExportToLab }}
 		/>
 
 		<StrategySelector selected={selectedStrategy} onSelect={handleStrategyChange} />

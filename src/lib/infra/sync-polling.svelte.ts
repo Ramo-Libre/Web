@@ -247,16 +247,18 @@ class PollingAdapter implements SyncAdapter {
 			const changes: EntityChange[] = [];
 
 			for (const row of rows) {
-				changes.push({
-					semesterId: row.semester_id,
-					feature: row.feature as FeatureId,
-					entityId: row.entity_id,
-					action: 'updated',
-					payload: row.payload,
-					deviceId: row.device_id,
-					origin: 'remote',
-					timestamp: new Date(row.updated_at).getTime()
-				});
+				if (row.device_id !== deviceId) {
+					changes.push({
+						semesterId: row.semester_id,
+						feature: row.feature as FeatureId,
+						entityId: row.entity_id,
+						action: 'updated',
+						payload: row.payload,
+						deviceId: row.device_id,
+						origin: 'remote',
+						timestamp: new Date(row.updated_at).getTime()
+					});
+				}
 
 				setLastKnownSequence(row.semester_id, row.feature, row.entity_id, row.sequence);
 				setLastKnownPayload(row.semester_id, row.feature, row.entity_id, row.payload);
