@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { semestre } from '$lib/infra/semestres.svelte';
 	import { themes, type Theme } from '@ramo-libre/ui-themes';
-	import { Check } from '@lucide/svelte';
 
 	let currentTheme = $derived<Theme>(semestre.preferences.theme);
 
@@ -20,7 +19,7 @@
 			<p class="text-sm text-content/60">Elige el tema visual de la interfaz.</p>
 		</div>
 
-		<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+		<div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
 			{#each themes as theme (theme.id)}
 				{@const isSelected = currentTheme === theme.id}
 				<button
@@ -32,14 +31,8 @@
 				>
 					<div class="flex items-center gap-3 min-w-0">
 						<theme.icon size={18} class="shrink-0" strokeWidth={isSelected ? 2.5 : 2} />
-						<span class="font-semibold text-sm truncate">{theme.label}</span>
+						<span class="font-semibold text-sm max-sm:truncate">{theme.label}</span>
 					</div>
-
-					{#if isSelected}
-						<div class="bg-primary-100 text-base-100 rounded-full p-0.5 shrink-0">
-							<Check size={12} strokeWidth={4} />
-						</div>
-					{/if}
 				</button>
 			{/each}
 		</div>
