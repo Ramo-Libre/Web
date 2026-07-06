@@ -63,6 +63,7 @@
 			<CalendarDays class="h-4 w-4 text-calendar-100" />
 			<h3 class="text-xs font-bold text-content/50 uppercase tracking-widest">Próximos Eventos</h3>
 		</div>
+		<span class="text-xs font-bold text-content/60 bg-base-300 px-2 py-0.5 rounded-md">7d</span>
 	</div>
 
 	{#if upcomingEvents.length > 0}
