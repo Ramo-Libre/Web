@@ -1,4 +1,9 @@
-import type { FeatureId } from '$lib/infra/sync.svelte';
+import type { FeatureId } from './changes.svelte';
+const LKS_SEQ_PREFIX = 'RAMOLIBRE_V2_LKS_SEQ_';
+
+export function lksSeqKey(semesterId: string, feature: string, entityId: string): string {
+	return `${LKS_SEQ_PREFIX}${semesterId}_${feature}_${entityId}`;
+}
 
 export interface SyncPolicy {
 	persist: boolean;

@@ -85,7 +85,7 @@ export async function tryUpdate(
 	return data as { sequence: number } | null;
 }
 
-export async function insertEntity(
+export async function insertEntityOrNothing(
 	userId: string,
 	semesterId: string,
 	feature: string,
@@ -95,17 +95,62 @@ export async function insertEntity(
 ): Promise<{ sequence: number } | null> {
 	const { data } = await supabase
 		.from('sync_entities')
-		.insert({
-			user_id: userId,
-			semester_id: semesterId,
-			feature,
-			entity_id: entityId,
-			payload,
-			device_id: deviceId,
-			updated_at: new Date().toISOString()
-		})
+		.upsert(
+			{
+				user_id: userId,
+				semester_id: semesterId,
+				feature,
+				entity_id: entityId,
+				payload,
+				device_id: deviceId,
+				updated_at: new Date().toISOString()
+			},
+			{
+				onConflict: 'user_id,semester_id,feature,entity_id',
+				ignoreDuplicates: true
+			}
+		)
 		.select('sequence')
-		.single();
+		.maybeSingle();
 
 	return data as { sequence: number } | null;
+}
+
+export async function batchInsertEntities(
+	userId: string,
+	semesterId: string,
+	feature: string,
+	entities: { entityId: string; payload: unknown }[],
+	deviceId: string
+): Promise<{ inserted: Map<string, number>; alreadyExisted: string[] }> {
+	if (entities.length === 0) {
+		return { inserted: new Map(), alreadyExisted: [] };
+	}
+
+	const rows = entities.map((e) => ({
+		user_id: userId,
+		semester_id: semesterId,
+		feature,
+		entity_id: e.entityId,
+		payload: e.payload,
+		device_id: deviceId,
+		updated_at: new Date().toISOString()
+	}));
+
+	const { data } = await supabase
+		.from('sync_entities')
+		.upsert(rows, {
+			onConflict: 'user_id,semester_id,feature,entity_id',
+			ignoreDuplicates: true
+		})
+		.select('entity_id, sequence');
+
+	const inserted = new Map<string, number>();
+	for (const row of data ?? []) {
+		inserted.set(row.entity_id, row.sequence);
+	}
+
+	const alreadyExisted = entities.filter((e) => !inserted.has(e.entityId)).map((e) => e.entityId);
+
+	return { inserted, alreadyExisted };
 }
