@@ -1,140 +1,223 @@
 <script lang="ts">
-	import { db } from '$lib';
-	import { Clock, Calendar, RotateCcw } from '@lucide/svelte';
-	import { slide } from 'svelte/transition';
+	import { Clock } from '@lucide/svelte';
+	import { SvelteDate } from 'svelte/reactivity';
+	import { timeTravel } from './dev-tools-time.svelte';
 
-	let isEnabled = $state(db.dev?.timeTravelEnabled || false);
-
-	// Separamos la fecha y la hora en dos estados de string
 	let datePart = $state(
-		db.dev?.timeTravelDate?.split('T')[0] || new Date().toISOString().split('T')[0]
+		timeTravel.date?.split('T')[0] || new SvelteDate().toISOString().split('T')[0]
 	);
 	let timePart = $state(
-		db.dev?.timeTravelDate?.split('T')[1]?.slice(0, 5) || new Date().toTimeString().slice(0, 5)
+		timeTravel.date?.split('T')[1]?.slice(0, 5) || new SvelteDate().toTimeString().slice(0, 5)
 	);
 
-	// Derivamos la fecha completa combinando ambos
 	let selectedDate = $derived(`${datePart}T${timePart}`);
 
-	function toggleTimeTravel() {
-		if (!db.dev) return;
-		db.dev.timeTravelEnabled = isEnabled;
-		if (isEnabled) {
-			db.dev.timeTravelDate = selectedDate;
-		} else {
-			db.dev.timeTravelDate = null;
-		}
+	let displayLabel = $derived(
+		(() => {
+			const d = new SvelteDate(selectedDate);
+			const dd = String(d.getDate()).padStart(2, '0');
+			const mm = String(d.getMonth() + 1).padStart(2, '0');
+			const yyyy = d.getFullYear();
+			const hh = String(d.getHours()).padStart(2, '0');
+			const mi = String(d.getMinutes()).padStart(2, '0');
+			return `${dd}/${mm}/${yyyy} - ${hh}:${mi}`;
+		})()
+	);
+
+	type Unit = 'minutos' | 'horas' | 'dias';
+	let unit = $state<Unit>('horas');
+
+	function activate() {
+		timeTravel.activate(selectedDate);
 	}
 
-	function resetToNow() {
-		const now = new Date();
-		isEnabled = false;
-		datePart = now.toISOString().split('T')[0];
-		timePart = now.toTimeString().slice(0, 5);
-		toggleTimeTravel();
+	function deactivate() {
+		timeTravel.deactivate();
 	}
 
-	// Efecto para actualizar la DB cuando cambien los inputs si el viaje está activo
-	$effect(() => {
-		if (isEnabled && db.dev) {
-			db.dev.timeTravelDate = selectedDate;
+	function step(dir: -1 | 1) {
+		const d = new SvelteDate(selectedDate);
+		switch (unit) {
+			case 'minutos':
+				d.setMinutes(d.getMinutes() + dir * 15);
+				break;
+			case 'horas':
+				d.setHours(d.getHours() + dir);
+				break;
+			case 'dias':
+				d.setDate(d.getDate() + dir);
+				break;
 		}
-	});
+		datePart = d.toISOString().split('T')[0];
+		timePart = d.toTimeString().slice(0, 5);
+		if (!timeTravel.enabled) activate();
+	}
+
+	function stepBig(dir: -1 | 1) {
+		const d = new SvelteDate(selectedDate);
+		switch (unit) {
+			case 'minutos':
+				d.setMinutes(d.getMinutes() + dir * 60);
+				break;
+			case 'horas':
+				d.setHours(d.getHours() + dir * 6);
+				break;
+			case 'dias':
+				d.setDate(d.getDate() + dir * 7);
+				break;
+		}
+		datePart = d.toISOString().split('T')[0];
+		timePart = d.toTimeString().slice(0, 5);
+		if (!timeTravel.enabled) activate();
+	}
 </script>
 
-<div class="bg-base-100 border border-base-400 rounded-2xl p-6 shadow-sm flex flex-col gap-5">
-	<div class="flex items-center justify-between">
-		<div class="flex items-center gap-2 text-config-100">
-			<Clock size={20} />
-			<h2 class="font-bold text-content">Time Traveler</h2>
+<div class="bg-base-200 border border-base-300 rounded-xl overflow-hidden shadow-sm">
+	<div class="bg-base-100 px-3 py-2 border-b border-base-300 flex items-center justify-between">
+		<div class="flex items-center gap-1.5">
+			<Clock class="h-3.5 w-3.5 text-primary-100" />
+			<span class="text-[10px] font-bold text-content/50 uppercase tracking-widest"
+				>Viaje en el Tiempo</span
+			>
 		</div>
-		<div class="flex items-center gap-2">
-			<span class="text-[10px] font-bold text-content/40 uppercase">Activar</span>
-			<input
-				type="checkbox"
-				bind:checked={isEnabled}
-				onchange={toggleTimeTravel}
-				class="w-8 h-4 bg-base-300 rounded-full appearance-none checked:bg-primary-100 relative transition-colors cursor-pointer after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-base-100 after:w-3 after:h-3 after:rounded-full after:transition-transform checked:after:translate-x-4"
-			/>
+		<div class="flex items-center gap-1.5">
+			<span
+				class="text-[9px] font-bold uppercase tracking-wider {timeTravel.enabled
+					? 'text-primary-100'
+					: 'text-content/30'}"
+			>
+				{timeTravel.enabled ? 'Activo' : 'Off'}
+			</span>
+			<span
+				class="w-1.5 h-1.5 rounded-full {timeTravel.enabled
+					? 'bg-primary-100 animate-pulse'
+					: 'bg-base-300'}"
+			></span>
 		</div>
 	</div>
 
-	<div class="flex flex-col gap-4">
-		<p class="text-xs text-content/50 leading-relaxed">
-			Sobrescribe la fecha global del sistema para probar eventos futuros o pasados.
-		</p>
-
-		<div class="flex flex-col gap-2">
-			<div class="grid grid-cols-5 gap-2">
-				<div class="relative col-span-3">
-					<div
-						class="absolute inset-y-0 left-3 flex items-center pointer-events-none text-content/30"
-					>
-						<Calendar size={14} />
-					</div>
-					<input
-						type="date"
-						bind:value={datePart}
-						class="w-full bg-base-200 border border-base-400 rounded-xl pl-9 pr-3 py-2.5 text-xs text-content focus:ring-2 focus:ring-config-100 focus:outline-none transition-all"
-					/>
-				</div>
-
-				<div class="relative col-span-2">
-					<div
-						class="absolute inset-y-0 left-3 flex items-center pointer-events-none text-content/30"
-					>
-						<Clock size={14} />
-					</div>
-					<input
-						type="time"
-						bind:value={timePart}
-						class="w-full bg-base-200 border border-base-400 rounded-xl pl-9 pr-3 py-2.5 text-xs text-content focus:ring-2 focus:ring-config-100 focus:outline-none transition-all"
-					/>
-				</div>
-			</div>
-
-			<button
-				onclick={resetToNow}
-				class="flex items-center justify-center gap-2 text-[11px] font-bold text-content/40 hover:text-content transition-colors py-1 uppercase tracking-wider cursor-pointer"
+	<div class="p-3 space-y-2.5">
+		<div
+			class="bg-base-300/80 border border-base-300 rounded-lg px-4 py-2.5 flex items-center justify-center min-h-[40px]"
+		>
+			<span
+				class="text-sm font-mono font-bold tracking-[0.1em] {timeTravel.enabled
+					? 'text-primary-100'
+					: 'text-content/40'}">{displayLabel}</span
 			>
-				<RotateCcw size={12} />
-				Resetear a tiempo real
+		</div>
+
+		<div class="flex gap-1">
+			<button
+				onclick={() => (unit = 'minutos')}
+				class="flex-1 h-8 text-[10px] font-bold uppercase tracking-wider rounded-md border-2 cursor-pointer transition-all duration-75 select-none
+					{unit === 'minutos'
+					? 'bg-primary-100/15 border-primary-200/30 shadow-inner text-primary-100'
+					: 'bg-base-100 border-base-300 shadow-sm text-content/40 hover:border-primary-200/20 hover:text-primary-100'}"
+			>
+				Min
+			</button>
+			<button
+				onclick={() => (unit = 'horas')}
+				class="flex-1 h-8 text-[10px] font-bold uppercase tracking-wider rounded-md border-2 cursor-pointer transition-all duration-75 select-none
+					{unit === 'horas'
+					? 'bg-primary-100/15 border-primary-200/30 shadow-inner text-primary-100'
+					: 'bg-base-100 border-base-300 shadow-sm text-content/40 hover:border-primary-200/20 hover:text-primary-100'}"
+			>
+				Hrs
+			</button>
+			<button
+				onclick={() => (unit = 'dias')}
+				class="flex-1 h-8 text-[10px] font-bold uppercase tracking-wider rounded-md border-2 cursor-pointer transition-all duration-75 select-none
+					{unit === 'dias'
+					? 'bg-primary-100/15 border-primary-200/30 shadow-inner text-primary-100'
+					: 'bg-base-100 border-base-300 shadow-sm text-content/40 hover:border-primary-200/20 hover:text-primary-100'}"
+			>
+				Días
 			</button>
 		</div>
 
-		{#if isEnabled}
-			<div
-				transition:slide
-				class="p-3 bg-primary-400/10 border border-primary-100/30 rounded-xl flex items-center gap-3"
+		<div class="grid grid-cols-4 gap-1">
+			<button
+				onclick={() => stepBig(-1)}
+				class="h-10 text-lg font-bold rounded-md border-2 cursor-pointer transition-all duration-75 select-none flex items-center justify-center
+					{timeTravel.enabled
+					? 'bg-primary-100/15 border-primary-200/30 shadow-inner text-primary-100'
+					: 'bg-base-100 border-base-300 shadow-sm text-content/40 hover:border-primary-200/20 hover:text-primary-100'}"
 			>
-				<div class="animate-pulse">
-					<div class="w-2 h-2 bg-primary-100 rounded-full"></div>
-				</div>
-				<div class="flex flex-col">
-					<span class="text-[10px] font-bold text-primary-100 uppercase leading-none">
-						Viaje Activo
-					</span>
-					<span class="text-[11px] text-content/70 font-mono mt-1">
-						{new Date(selectedDate).toLocaleString()}
-					</span>
-				</div>
-			</div>
-		{/if}
+				◄◄
+			</button>
+			<button
+				onclick={() => step(-1)}
+				class="h-10 text-lg font-bold rounded-md border-2 cursor-pointer transition-all duration-75 select-none flex items-center justify-center
+					{timeTravel.enabled
+					? 'bg-primary-100/15 border-primary-200/30 shadow-inner text-primary-100'
+					: 'bg-base-100 border-base-300 shadow-sm text-content/40 hover:border-primary-200/20 hover:text-primary-100'}"
+			>
+				◄
+			</button>
+			<button
+				onclick={() => step(1)}
+				class="h-10 text-lg font-bold rounded-md border-2 cursor-pointer transition-all duration-75 select-none flex items-center justify-center
+					{timeTravel.enabled
+					? 'bg-primary-100/15 border-primary-200/30 shadow-inner text-primary-100'
+					: 'bg-base-100 border-base-300 shadow-sm text-content/40 hover:border-primary-200/20 hover:text-primary-100'}"
+			>
+				►
+			</button>
+			<button
+				onclick={() => stepBig(1)}
+				class="h-10 text-lg font-bold rounded-md border-2 cursor-pointer transition-all duration-75 select-none flex items-center justify-center
+					{timeTravel.enabled
+					? 'bg-primary-100/15 border-primary-200/30 shadow-inner text-primary-100'
+					: 'bg-base-100 border-base-300 shadow-sm text-content/40 hover:border-primary-200/20 hover:text-primary-100'}"
+			>
+				►►
+			</button>
+		</div>
+
+		<div class="flex items-center justify-center gap-1 text-[10px] font-mono text-content/40">
+			<span>—</span>
+			<span class="px-1.5">
+				{unit === 'minutos' ? '15 min' : unit === 'horas' ? '1 hr' : '1 día'}
+			</span>
+			<span class="text-content/20">|</span>
+			<span class="px-1.5">
+				{unit === 'minutos' ? '1 hr' : unit === 'horas' ? '6 hrs' : '7 días'}
+			</span>
+			<span>—</span>
+		</div>
+
+		<div class="flex gap-1">
+			<button
+				onclick={activate}
+				class="flex-1 h-8 flex items-center justify-center gap-1.5 text-[10px] font-bold uppercase tracking-wider rounded-md border-2 cursor-pointer transition-all duration-75 select-none
+					{timeTravel.enabled
+					? 'bg-red-900/30 border-red-500/20 shadow-inner text-red-400'
+					: 'bg-base-100 border-base-300 shadow-sm text-content/40 hover:border-primary-200/20 hover:text-primary-100'}"
+			>
+				<span
+					class="w-2 h-2 rounded-full {timeTravel.enabled
+						? 'bg-red-400 animate-pulse'
+						: 'bg-transparent'}"
+				></span>
+				Viajar
+			</button>
+			<button
+				onclick={deactivate}
+				class="flex-1 h-8 text-[10px] font-bold uppercase tracking-wider rounded-md border-2 cursor-pointer transition-all duration-75 select-none
+					{!timeTravel.enabled
+					? 'bg-base-300 border-base-400 shadow-inner text-content/50'
+					: 'bg-base-100 border-base-300 shadow-sm text-content/40 hover:border-primary-200/20 hover:text-primary-100'}"
+			>
+				Detener
+			</button>
+		</div>
 	</div>
 </div>
 
 <style>
-	/* Limpiar los iconos nativos en algunos navegadores para que no choquen con los de Lucide */
-	input::-webkit-calendar-picker-indicator {
-		background: transparent;
-		bottom: 0;
-		color: transparent;
-		cursor: pointer;
-		height: auto;
-		left: 0;
-		position: absolute;
-		right: 0;
-		top: 0;
-		width: auto;
+	button:active {
+		transform: scale(0.97);
 	}
 </style>

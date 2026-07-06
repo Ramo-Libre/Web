@@ -21,14 +21,17 @@
 	"devDependencies": {
 		"@eslint/compat": "2.1.0",
 		"@eslint/js": "10.0.1",
-		"@faker-js/faker": "^10.4.0",
+		"@faker-js/faker": "^10.5.0",
 		"@iconify/svelte": "^5.2.2",
 		"@lucide/svelte": "1.18.0",
+		"@ramo-libre/dsl-parser": "^1.0.0",
+		"@ramo-libre/solver": "^0.1.1",
 		"@ramo-libre/ui-themes": "^1.0.0",
 		"@sveltejs/adapter-static": "^3.0.10",
 		"@sveltejs/kit": "2.65.1",
 		"@sveltejs/vite-plugin-svelte": "7.1.2",
 		"@tailwindcss/vite": "4.3.1",
+		"@types/katex": "^0.16.8",
 		"@types/node": "25.9.3",
 		"@vite-pwa/assets-generator": "^1.0.2",
 		"@vite-pwa/sveltekit": "^1.1.0",
@@ -36,6 +39,7 @@
 		"eslint-config-prettier": "10.1.8",
 		"eslint-plugin-svelte": "3.19.0",
 		"globals": "17.6.0",
+		"katex": "^0.17.0",
 		"prettier": "3.8.4",
 		"prettier-plugin-svelte": "4.1.1",
 		"prettier-plugin-tailwindcss": "0.8.0",
@@ -50,7 +54,6 @@
 		"workbox-window": "^7.4.1"
 	},
 	"dependencies": {
-		"@madmti/gradesolver": "^1.0.0",
-		"@supabase/supabase-js": "^2.108.2"
+		"@supabase/supabase-js": "^2.110.0"
 	}
 }

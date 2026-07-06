@@ -1,0 +1,129 @@
+import type { Serializable } from '$lib/types/state';
+import { themes, type Theme } from '@ramo-libre/ui-themes';
+import { changeBus } from '$lib/infra/sync.svelte';
+
+export type Orientation = 'normal' | 'rotated';
+
+export interface Preferences {
+	theme: Theme;
+	schedule: {
+		showCalendarEvents: boolean;
+		orientation: Orientation;
+	};
+	calendar: {
+		showHorarios: boolean;
+	};
+	layout: {
+		sidebarCollapsed: boolean;
+	};
+}
+
+export type PreferencesSerial = Preferences;
+
+const DEFAULTS: Preferences = {
+	theme: 'dark',
+	schedule: {
+		showCalendarEvents: false,
+		orientation: 'normal'
+	},
+	calendar: {
+		showHorarios: false
+	},
+	layout: {
+		sidebarCollapsed: false
+	}
+};
+
+export class PreferencesManager implements Serializable<PreferencesSerial> {
+	private _prefs = $state<Preferences>({ ...DEFAULTS });
+
+	fromSerial(serial: PreferencesSerial) {
+		this._prefs = {
+			...DEFAULTS,
+			...(serial ?? {}),
+			schedule: {
+				...DEFAULTS.schedule,
+				...((serial?.schedule ?? {}) as Partial<Preferences['schedule']>)
+			},
+			calendar: {
+				...DEFAULTS.calendar,
+				...((serial?.calendar ?? {}) as Partial<Preferences['calendar']>)
+			},
+			layout: {
+				...DEFAULTS.layout,
+				...((serial?.layout ?? {}) as Partial<Preferences['layout']>)
+			}
+		};
+		if (typeof document !== 'undefined') this.applyTheme();
+	}
+
+	toSerial(): PreferencesSerial {
+		return this._prefs;
+	}
+
+	clear(): void {
+		this._prefs = { ...DEFAULTS };
+	}
+
+	empty(): boolean {
+		return (
+			this._prefs.theme === DEFAULTS.theme &&
+			this._prefs.schedule.showCalendarEvents === DEFAULTS.schedule.showCalendarEvents &&
+			this._prefs.schedule.orientation === DEFAULTS.schedule.orientation &&
+			this._prefs.calendar.showHorarios === DEFAULTS.calendar.showHorarios &&
+			this._prefs.layout.sidebarCollapsed === DEFAULTS.layout.sidebarCollapsed
+		);
+	}
+
+	get theme() {
+		return this._prefs.theme;
+	}
+
+	get scheduleShowCalendarEvents() {
+		return this._prefs.schedule.showCalendarEvents;
+	}
+
+	get scheduleOrientation() {
+		return this._prefs.schedule.orientation;
+	}
+
+	get calendarShowHorarios() {
+		return this._prefs.calendar.showHorarios;
+	}
+
+	get sidebarCollapsed() {
+		return this._prefs.layout.sidebarCollapsed;
+	}
+
+	setTheme(theme: Theme) {
+		this._prefs = { ...this._prefs, theme };
+		changeBus.emit('preferences', 'updated', '__global__');
+	}
+
+	setScheduleShowCalendarEvents(v: boolean) {
+		this._prefs = { ...this._prefs, schedule: { ...this._prefs.schedule, showCalendarEvents: v } };
+		changeBus.emit('preferences', 'updated', '__global__');
+	}
+
+	setScheduleOrientation(v: Orientation) {
+		this._prefs = { ...this._prefs, schedule: { ...this._prefs.schedule, orientation: v } };
+		changeBus.emit('preferences', 'updated', '__global__');
+	}
+
+	setCalendarShowHorarios(v: boolean) {
+		this._prefs = { ...this._prefs, calendar: { ...this._prefs.calendar, showHorarios: v } };
+		changeBus.emit('preferences', 'updated', '__global__');
+	}
+
+	setSidebarCollapsed(v: boolean) {
+		this._prefs = { ...this._prefs, layout: { ...this._prefs.layout, sidebarCollapsed: v } };
+		changeBus.emit('preferences', 'updated', '__global__');
+	}
+
+	applyTheme() {
+		const root = document.documentElement;
+		const cls = themes.map((t) => t.class).filter((c) => !!c);
+		root.classList.remove(...cls);
+		root.classList.add(this._prefs.theme);
+	}
+}

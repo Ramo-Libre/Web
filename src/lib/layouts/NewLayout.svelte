@@ -15,9 +15,12 @@
 	import type { LucideIcon } from '@lucide/svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { onMount } from 'svelte';
-	import { db } from '$lib';
+	import { semestre } from '$lib/infra/semestres.svelte';
+	import { ramoDrawer } from '$lib/features/ramosDrawer.svelte';
+	import RamoDrawer from '$lib/pages/RamoDrawer.svelte';
 	import { PUBLIC_SHOW_DEV_TOOLS } from '$env/static/public';
+	import { onMount } from 'svelte';
+	import { timeTravel } from '$lib/pages/_components/dev-tools/dev-tools-time.svelte';
 
 	const showDevTools = PUBLIC_SHOW_DEV_TOOLS === 'true';
 	let { children } = $props();
@@ -30,7 +33,7 @@
 		path: string;
 	};
 
-	const prefix = '/new';
+	const prefix = '';
 
 	const sections: Section[] = [
 		{
@@ -89,27 +92,50 @@
 	];
 
 	const bottomNavIds = ['ramolibre', 'horarios', 'notas', 'calendario'];
-	const sheetIds = ['ramos', 'config'];
+	const sheetIds = showDevTools ? ['ramos', 'config', 'dev-tools'] : ['ramos', 'config'];
 
 	const bottomNav = sections.filter((s) => bottomNavIds.includes(s.id));
 	const sheetSections = sections.filter((s) => sheetIds.includes(s.id));
 
-	let sidebarCollapsed = $state(false);
+	let sidebarCollapsed = $state(semestre.preferences.sidebarCollapsed);
 	let sheetOpen = $state(false);
 
 	function isActive(path: string) {
 		return page.url.pathname === path;
 	}
 
-	const sheetActive = $derived(sheetSections.find((s) => isActive(s.path)));
+	const sheetActive = $derived(
+		sheetSections.find(
+			(s) =>
+				isActive(s.path) || (s.id === 'ramos' && page.url.pathname.startsWith(`${prefix}/ramos/`))
+		)
+	);
 
 	function navigate(path: string) {
 		goto(path);
 		sheetOpen = false;
 	}
 
+	let ttActive = $derived(!!timeTravel.enabled && !!timeTravel.date);
+	let ttLabel = $derived(
+		timeTravel.date
+			? (() => {
+					const d = new Date(timeTravel.date);
+					const dd = String(d.getDate()).padStart(2, '0');
+					const mm = String(d.getMonth() + 1).padStart(2, '0');
+					const yyyy = d.getFullYear();
+					const hh = String(d.getHours()).padStart(2, '0');
+					const mi = String(d.getMinutes()).padStart(2, '0');
+					return `${dd}/${mm}/${yyyy} - ${hh}:${mi}`;
+				})()
+			: ''
+	);
+
+	type Unit = 'minutos' | 'horas' | 'dias';
+	let ttUnit = $state<Unit>('horas');
+
 	onMount(() => {
-		db.preferences.applyTheme();
+		semestre.preferences.applyTheme();
 	});
 </script>
 
@@ -132,7 +158,10 @@
 			{/if}
 			<button
 				class="bg-transparent border-0 cursor-pointer text-content/50 p-1 rounded-md hover:bg-base-300"
-				onclick={() => (sidebarCollapsed = !sidebarCollapsed)}
+				onclick={() => {
+					sidebarCollapsed = !sidebarCollapsed;
+					semestre.preferences.setSidebarCollapsed(sidebarCollapsed);
+				}}
 				aria-label={sidebarCollapsed ? 'Expandir sidebar' : 'Colapsar sidebar'}
 			>
 				{#if sidebarCollapsed}
@@ -145,13 +174,16 @@
 
 		<nav class="flex-1 flex flex-col gap-0.5 p-1 px-2">
 			{#each sections.filter((s) => s.id !== 'config') as section (section.id)}
+				{@const active =
+					isActive(section.path) ||
+					(section.id === 'ramos' && page.url.pathname.startsWith(`${prefix}/ramos/`))}
 				<button
 					class="flex items-center rounded-[10px] border-0 bg-transparent cursor-pointer text-content/60 whitespace-nowrap w-full relative transition-[background,opacity] duration-100 hover:bg-base-300 hover:opacity-90 {sidebarCollapsed
 						? 'justify-center p-2 px-0'
-						: 'gap-2.5 p-2 px-2.5 text-left'} {isActive(section.path) ? 'opacity-100' : ''}"
+						: 'gap-2.5 p-2 px-2.5 text-left'} {active ? 'opacity-100' : ''}"
 					onclick={() => navigate(section.path)}
 				>
-					{#if isActive(section.path)}
+					{#if active}
 						<span
 							class="absolute -left-2 w-[3px] h-[18px] rounded-r-[3px]"
 							style="background: {section.color}"
@@ -168,6 +200,107 @@
 					{/if}
 				</button>
 			{/each}
+
+			{#if semestre.ramos.list.length > 0}
+				{#if !sidebarCollapsed}
+					<span
+						class="text-xs font-semibold tracking-widest uppercase text-content/35 px-2.5 pt-3 pb-1"
+						>Tus Ramos</span
+					>
+				{/if}
+				{#each semestre.ramos.list as [id, ramo] (id)}
+					<button
+						class="flex items-center rounded-[10px] border-0 bg-transparent cursor-pointer text-content/60 whitespace-nowrap w-full relative transition-[background,opacity] duration-100 hover:bg-base-300 hover:opacity-90 {sidebarCollapsed
+							? 'justify-center p-2 px-0'
+							: 'gap-2.5 p-2 px-2.5 text-left'} {ramoDrawer.id === id ? 'opacity-100' : ''}"
+						onclick={() => ramoDrawer.open(id)}
+					>
+						{#if ramoDrawer.id === id}
+							<span
+								class="absolute -left-2 w-[3px] h-[18px] rounded-r-[3px]"
+								style="background: {ramo.color}"
+							></span>
+						{/if}
+						<span class="w-2.5 h-2.5 rounded-full shrink-0" style="background: {ramo.color}"></span>
+						{#if !sidebarCollapsed}
+							<span class="text-sm font-medium">{ramo.name}</span>
+						{/if}
+					</button>
+				{/each}
+			{/if}
+
+			{#if showDevTools && ttActive}
+				<div
+					class="mt-auto bg-base-300/60 border border-base-400 rounded-lg p-2 {sidebarCollapsed
+						? 'flex justify-center'
+						: 'space-y-1.5'}"
+				>
+					{#if sidebarCollapsed}
+						<div class="w-2 h-2 bg-primary-100 rounded-full animate-pulse"></div>
+					{:else}
+						<div class="flex items-center gap-1.5">
+							<div class="w-2 h-2 bg-primary-100 rounded-full animate-pulse shrink-0"></div>
+							<span
+								class="text-[10px] font-mono font-bold text-primary-100 tracking-[0.05em] flex-1 truncate"
+								>{ttLabel}</span
+							>
+							<button
+								onclick={() => timeTravel.deactivate()}
+								class="h-5 w-5 flex items-center justify-center rounded border border-base-400 bg-base-200 text-[9px] font-bold text-content/30 hover:text-error-100 cursor-pointer transition-colors"
+								title="Desactivar">X</button
+							>
+						</div>
+						<div class="flex gap-1">
+							<button
+								onclick={() => timeTravel.stepBig(-1, ttUnit)}
+								class="flex-1 h-6 flex items-center justify-center rounded border border-base-400 bg-base-200 text-[10px] text-content/40 hover:text-content cursor-pointer transition-colors"
+								>◄◄</button
+							>
+							<button
+								onclick={() => timeTravel.step(-1, ttUnit)}
+								class="flex-1 h-6 flex items-center justify-center rounded border border-base-400 bg-base-200 text-[10px] text-content/40 hover:text-content cursor-pointer transition-colors"
+								>◄</button
+							>
+							<button
+								onclick={() => timeTravel.step(1, ttUnit)}
+								class="flex-1 h-6 flex items-center justify-center rounded border border-base-400 bg-base-200 text-[10px] text-content/40 hover:text-content cursor-pointer transition-colors"
+								>►</button
+							>
+							<button
+								onclick={() => timeTravel.stepBig(1, ttUnit)}
+								class="flex-1 h-6 flex items-center justify-center rounded border border-base-400 bg-base-200 text-[10px] text-content/40 hover:text-content cursor-pointer transition-colors"
+								>►►</button
+							>
+						</div>
+						<div class="flex gap-1">
+							<button
+								onclick={() => (ttUnit = 'minutos')}
+								class="flex-1 h-6 text-[9px] font-bold uppercase tracking-wider rounded border cursor-pointer transition-colors {ttUnit ===
+								'minutos'
+									? 'bg-primary-100/15 border-primary-200/30 text-primary-100'
+									: 'bg-base-200 border-base-400 text-content/30 hover:text-content/50'}"
+								>Min</button
+							>
+							<button
+								onclick={() => (ttUnit = 'horas')}
+								class="flex-1 h-6 text-[9px] font-bold uppercase tracking-wider rounded border cursor-pointer transition-colors {ttUnit ===
+								'horas'
+									? 'bg-primary-100/15 border-primary-200/30 text-primary-100'
+									: 'bg-base-200 border-base-400 text-content/30 hover:text-content/50'}"
+								>Hrs</button
+							>
+							<button
+								onclick={() => (ttUnit = 'dias')}
+								class="flex-1 h-6 text-[9px] font-bold uppercase tracking-wider rounded border cursor-pointer transition-colors {ttUnit ===
+								'dias'
+									? 'bg-primary-100/15 border-primary-200/30 text-primary-100'
+									: 'bg-base-200 border-base-400 text-content/30 hover:text-content/50'}"
+								>Días</button
+							>
+						</div>
+					{/if}
+				</div>
+			{/if}
 		</nav>
 
 		<div class="p-2 border-t border-base-400">
@@ -276,6 +409,30 @@
 					</button>
 				{/each}
 			</div>
+
+			{#if semestre.ramos.list.length > 0}
+				<div class="mt-4">
+					<span class="text-xs font-semibold tracking-wider uppercase text-content/40"
+						>Tus Ramos</span
+					>
+					<div class="grid grid-cols-2 gap-2 mt-2">
+						{#each semestre.ramos.list as [id, ramo] (id)}
+							<button
+								class="flex items-center gap-2.5 p-3 rounded-[10px] border border-base-400 bg-base-100 cursor-pointer text-sm font-medium text-content hover:bg-base-300 transition-colors duration-100"
+								onclick={() => {
+									ramoDrawer.open(id);
+									sheetOpen = false;
+								}}
+							>
+								<span class="w-3 h-3 rounded-full shrink-0" style="background: {ramo.color}"></span>
+								<span>{ramo.name}</span>
+							</button>
+						{/each}
+					</div>
+				</div>
+			{/if}
 		</div>
 	</div>
 {/if}
+
+<RamoDrawer />

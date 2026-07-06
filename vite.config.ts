@@ -63,11 +63,11 @@ export default defineConfig(({ mode }) => {
 					]
 				},
 				workbox: {
-					globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+					globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
 					globIgnores: ['**/stats.html']
 				},
 				devOptions: {
-					enabled: true
+					enabled: false
 				}
 			}),
 			useRollupVisualizer &&
@@ -94,9 +94,6 @@ export default defineConfig(({ mode }) => {
 		].filter(Boolean),
 		preview: {
 			allowedHosts: true
-		},
-		optimizeDeps: {
-			exclude: ['@madmti/gradesolver']
 		}
 	};
 });
