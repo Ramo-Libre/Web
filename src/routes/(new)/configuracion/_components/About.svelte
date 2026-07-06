@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { VERSION } from '$lib/utils/version';
 	import Icon from '@iconify/svelte';
-	import { Globe, Heart, Code2, GraduationCap } from '@lucide/svelte';
+	import { Globe, Heart, CodeXml, GraduationCap } from '@lucide/svelte';
 	import { SuiteFavicons } from '@ramo-libre/ui-themes';
 </script>
 
@@ -39,11 +39,11 @@
 			<h3
 				class="text-[10px] font-bold text-content/30 uppercase tracking-widest flex items-center gap-2"
 			>
-				<Code2 size={12} />
+				<CodeXml size={12} />
 				Powered by
 			</h3>
 			<div class="flex flex-wrap gap-2">
-				{#each ['Svelte 5', 'SvelteKit', 'C++20', 'WebAssembly', 'Tailwind', 'Supabase'] as tech (tech)}
+				{#each ['Svelte 5', 'SvelteKit', 'Rust', 'WebAssembly', 'Tailwind', 'Supabase'] as tech (tech)}
 					<span
 						class="px-2.5 py-1 bg-base-200 text-content/70 rounded-md text-[10px] font-bold border border-base-400/50"
 					>
