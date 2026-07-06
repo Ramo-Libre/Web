@@ -175,7 +175,7 @@
 			name: esc.name,
 			scriptRaw: esc.scriptRaw,
 			variables: Object.fromEntries(
-				Object.entries(esc.variableEntries).filter(([_, v]) => v !== null)
+				Object.entries(esc.variableEntries).filter((e) => e[1] !== null)
 			) as Record<string, number>,
 			modo: 'script',
 			activeStatementRaw: '',
