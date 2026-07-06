@@ -54,7 +54,6 @@
 		"workbox-window": "^7.4.1"
 	},
 	"dependencies": {
-		"@madmti/gradesolver": "^1.0.0",
 		"@supabase/supabase-js": "^2.110.0"
 	}
 }
