@@ -95,7 +95,9 @@
 			<div
 				class="sticky top-0 bg-base-100 z-10 flex items-center justify-between px-6 pt-4 pb-3 border-b border-base-300"
 			>
-				<h3 class="text-lg font-bold text-content">{isEditing ? 'Editar pendiente' : 'Nuevo pendiente'}</h3>
+				<h3 class="text-lg font-bold text-content">
+					{isEditing ? 'Editar pendiente' : 'Nuevo pendiente'}
+				</h3>
 				<button
 					onclick={onClose}
 					class="p-2 rounded-lg text-content/50 hover:text-content hover:bg-base-200 transition-colors cursor-pointer"
@@ -118,8 +120,7 @@
 								e.preventDefault();
 								confirm();
 							}
-						}}
-					></textarea>
+						}}></textarea>
 				</div>
 
 				<div class="border-t border-base-300 pt-4">
@@ -188,7 +189,9 @@
 			<div
 				class="sticky top-0 bg-base-100 z-10 flex items-center justify-between px-6 pt-4 pb-2 border-b border-base-300"
 			>
-				<h3 class="text-lg font-bold text-content">{isEditing ? 'Editar pendiente' : 'Nuevo pendiente'}</h3>
+				<h3 class="text-lg font-bold text-content">
+					{isEditing ? 'Editar pendiente' : 'Nuevo pendiente'}
+				</h3>
 				<button
 					onclick={onClose}
 					class="p-2 rounded-lg text-content/50 hover:text-content hover:bg-base-200 transition-colors cursor-pointer"
@@ -211,8 +214,7 @@
 								e.preventDefault();
 								confirm();
 							}
-						}}
-					></textarea>
+						}}></textarea>
 				</div>
 
 				<div class="border-t border-base-300 pt-4">

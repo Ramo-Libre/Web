@@ -1,7 +1,7 @@
 import type { Serializable } from '$lib/types/state';
 import { generateUUID } from '$lib/utils/crypto';
 import { changeBus } from '$lib/infra/sync.svelte';
-import { SvelteMap } from 'svelte/reactivity';
+import { SvelteDate, SvelteMap } from 'svelte/reactivity';
 
 interface Todo {
 	text: string;
@@ -49,7 +49,7 @@ export class TodosManager implements Serializable<TodosSerial> {
 
 	add(todo: Omit<Todo, 'createdAt'> & { createdAt?: string }) {
 		const id = generateUUID();
-		this._todos.set(id, { ...todo, createdAt: todo.createdAt ?? new Date().toISOString() });
+		this._todos.set(id, { ...todo, createdAt: todo.createdAt ?? new SvelteDate().toISOString() });
 		changeBus.emit('todos', 'created', id);
 		return id;
 	}

@@ -109,7 +109,10 @@
 				};
 			}
 			case 'todos': {
-				const todos: [string, { text: string; completed: boolean; ramoId?: string; createdAt: string }][] = [];
+				const todos: [
+					string,
+					{ text: string; completed: boolean; ramoId?: string; createdAt: string }
+				][] = [];
 				for (let i = 0; i < faker.number.int({ min: 1, max: 5 }); i++) {
 					todos.push([
 						generateUUID(),

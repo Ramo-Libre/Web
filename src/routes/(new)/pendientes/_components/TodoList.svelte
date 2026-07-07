@@ -9,6 +9,7 @@
 
 	let showPending = $state(true);
 	let showCompleted = $state(false);
+	// eslint-disable-next-line svelte/no-unnecessary-state-wrap
 	let selectedRamos = $state(new SvelteSet<string>());
 
 	const todos = $derived(semestre.todos.list);

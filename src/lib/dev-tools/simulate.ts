@@ -76,7 +76,7 @@ export async function simulate(
 
 		for (const [, todo] of semData.todos) {
 			const ramoLabel = todo.ramoId
-				? semData.ramos.find(([rid]) => rid === todo.ramoId)?.[1]?.name ?? '?'
+				? (semData.ramos.find(([rid]) => rid === todo.ramoId)?.[1]?.name ?? '?')
 				: 'sin ramo';
 			logs.push({
 				id: id++,
