@@ -228,7 +228,7 @@ class SemestresManager {
     }
 
 	get hasData() {
-        return !this._ramos.empty() || !this._schedule.empty() || !this._escenarios.empty() || !this._todos;
+        return !this._ramos.empty() || !this._schedule.empty() || !this._escenarios.empty() || !this._todos.empty();
 	}
 
 	managerFor(feature: FeatureId): Serializable<unknown> {

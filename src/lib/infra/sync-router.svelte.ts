@@ -9,6 +9,7 @@ import { SYNC_POLICIES, KEYS, lksSeqKey } from './sync-policies';
 import type { RamosSerial } from '$lib/features/ramos.svelte';
 import type { ScheduleSerial } from '$lib/features/schedule.svelte';
 import type { EscenariosSerial } from '$lib/features/notas.svelte';
+import type { TodosSerial } from '$lib/features/todos.svelte';
 import { network } from './network.svelte';
 import { supabase } from '$lib/supabase/client';
 import { batchInsertEntities } from './sync-entities-store';
@@ -257,7 +258,7 @@ class SyncRouter {
 
 	persistAll() {
 		if (!browser) return;
-		const features: FeatureId[] = ['preferences', 'ramos', 'schedule', 'escenarios'];
+		const features: FeatureId[] = ['preferences', 'ramos', 'schedule', 'escenarios', 'todos'];
 		for (const f of features) {
 			this._persistFeature(f);
 		}
@@ -370,7 +371,7 @@ class SyncRouter {
 	private _removeOrphanSemesters(oldIds: Set<string>, newIds: Set<string>) {
 		for (const id of oldIds) {
 			if (!newIds.has(id)) {
-				for (const key of ['RMS', 'SCH', 'ESC']) {
+				for (const key of ['RMS', 'SCH', 'ESC', 'TOD']) {
 					local.remove(id + '_' + key);
 				}
 			}
@@ -439,6 +440,7 @@ class SyncRouter {
 				const ramos = local.get<RamosSerial>(`${id}_${KEYS.ramos}`) || [];
 				const schedule = local.get<ScheduleSerial>(`${id}_${KEYS.schedule}`) || [];
 				const escenarios = local.get<EscenariosSerial>(`${id}_${KEYS.escenarios}`) || [];
+				const todos = local.get<TodosSerial>(`${id}_${KEYS.todos}`) || [];
 
 				const pendientesRamos: [string, unknown][] = ramos.filter(
 					([entId]) => (local.get<number>(lksSeqKey(id, 'ramos', entId)) ?? 0) === 0
@@ -449,11 +451,15 @@ class SyncRouter {
 				const pendientesEscenarios: [string, unknown][] = escenarios.filter(
 					([entId]) => (local.get<number>(lksSeqKey(id, 'escenarios', entId)) ?? 0) === 0
 				);
+				const pendientesTodos: [string, unknown][] = todos.filter(
+					([entId]) => (local.get<number>(lksSeqKey(id, 'todos', entId)) ?? 0) === 0
+				);
 
 				for (const [feature, pendientes] of [
 					['ramos', pendientesRamos] as const,
 					['schedule', pendientesSchedule] as const,
-					['escenarios', pendientesEscenarios] as const
+					['escenarios', pendientesEscenarios] as const,
+					['todos', pendientesTodos] as const
 				]) {
 					if (pendientes.length === 0) continue;
 
@@ -512,7 +518,8 @@ class SyncRouter {
 		const ramos = local.get<RamosSerial>(`${semesterId}_${KEYS.ramos}`) || [];
 		const schedule = local.get<ScheduleSerial>(`${semesterId}_${KEYS.schedule}`) || [];
 		const escenarios = local.get<EscenariosSerial>(`${semesterId}_${KEYS.escenarios}`) || [];
-		return ramos.length > 0 || schedule.length > 0 || escenarios.length > 0;
+		const todos = local.get<TodosSerial>(`${semesterId}_${KEYS.todos}`) || [];
+		return ramos.length > 0 || schedule.length > 0 || escenarios.length > 0 || todos.length > 0;
 	}
 }
 
