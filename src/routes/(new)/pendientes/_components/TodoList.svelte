@@ -55,7 +55,7 @@
 
 <div class="flex flex-col gap-3">
 	<div class="bg-base-100 border border-base-400 rounded-xl p-3">
-		<div class="flex items-center gap-2 max-sm:mb-2">
+		<div class="flex items-center flex-wrap gap-2 max-sm:mb-2">
 			<button
 				onclick={() => (showPending = !showPending)}
 				class="px-3 py-1.5 rounded-lg border text-sm font-semibold transition-all cursor-pointer {showPending
@@ -98,7 +98,7 @@
 				class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-todos-100 text-base-100 text-sm font-semibold hover:opacity-90 transition-opacity cursor-pointer ml-auto shrink-0"
 			>
 				<Plus class="w-4 h-4" />
-				Nuevo
+				<p class="max-sm:hidden">Nuevo</p>
 			</button>
 		</div>
 
