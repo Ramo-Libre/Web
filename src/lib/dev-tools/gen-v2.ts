@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker/locale/es';
 import type { ScheduleCategory, ScheduleSerial } from '$lib/features/schedule.svelte';
 import type { RamosSerial } from '$lib/features/ramos.svelte';
 import type { EscenariosSerial } from '$lib/features/notas.svelte';
+import type { TodosSerial } from '$lib/features/todos.svelte';
 import { generateUUID } from '$lib/utils/crypto';
 import { ColorUtils } from '$lib/utils/colors';
 import type { MockDataInputV2, MockDataOutputV2 } from './types-v2';
@@ -20,7 +21,7 @@ const ACADEMIC_CATEGORIES: ScheduleCategory[] = ['book', 'lab', 'assist', 'talle
 
 export class MockDataGeneratorV2 {
 	static generate(input: MockDataInputV2): MockDataOutputV2 {
-		const { semestres, ramos, oneoff, recurrent, escenarios } = input;
+		const { semestres, ramos, oneoff, recurrent, escenarios, todos } = input;
 
 		const year = new Date().getFullYear();
 
@@ -35,12 +36,14 @@ export class MockDataGeneratorV2 {
 			const ramosSerial = this.generateRamos(ramos);
 			const schedule = this.generateSchedule(oneoff, recurrent, ramosSerial);
 			const escenariosSerial = this.generateEscenarios(escenarios, ramosSerial);
+			const todosSerial = this.generateTodos(todos, ramosSerial);
 			data[sem.id] = {
 				id: sem.id,
 				name: sem.name,
 				ramos: ramosSerial,
 				schedule,
-				escenarios: escenariosSerial
+				escenarios: escenariosSerial,
+				todos: todosSerial
 			};
 		}
 
@@ -171,6 +174,32 @@ export class MockDataGeneratorV2 {
 					}
 				]);
 			}
+		}
+
+		return result;
+	}
+
+	private static generateTodos(count: number, ramos: RamosSerial): TodosSerial {
+		const result: TodosSerial = [];
+		const ramoIds = ramos.map(([id]) => id);
+		const year = new Date().getFullYear();
+
+		for (let i = 0; i < count; i++) {
+			const id = generateUUID();
+			const hasRamo = faker.datatype.boolean({ probability: 0.7 });
+			const created = faker.date.between({
+				from: new Date(year, 0, 1),
+				to: new Date(year, 11, 31)
+			});
+			result.push([
+				id,
+				{
+					text: faker.lorem.sentence({ min: 3, max: 8 }),
+					completed: false,
+					ramoId: hasRamo ? faker.helpers.arrayElement(ramoIds) : undefined,
+					createdAt: created.toISOString()
+				}
+			]);
 		}
 
 		return result;

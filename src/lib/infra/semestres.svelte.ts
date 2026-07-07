@@ -257,6 +257,7 @@ class SemestresManager {
 			this._ramos.fromSerial(entry.ramos);
 			this._schedule.fromSerial(entry.schedule);
 			this._escenarios.fromSerial(entry.escenarios);
+			this._todos.fromSerial(entry.todos ?? []);
 		}
 
 		syncRouter.persistAll();

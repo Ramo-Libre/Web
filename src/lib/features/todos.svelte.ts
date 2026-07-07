@@ -7,6 +7,7 @@ interface Todo {
 	text: string;
 	completed: boolean;
 	ramoId?: string;
+	createdAt: string;
 }
 type Key = string;
 type Todos = SvelteMap<Key, Todo>;
@@ -46,9 +47,9 @@ export class TodosManager implements Serializable<TodosSerial> {
 		this._todos.delete(id);
 	}
 
-	add(todo: Todo) {
+	add(todo: Omit<Todo, 'createdAt'> & { createdAt?: string }) {
 		const id = generateUUID();
-		this._todos.set(id, todo);
+		this._todos.set(id, { ...todo, createdAt: todo.createdAt ?? new Date().toISOString() });
 		changeBus.emit('todos', 'created', id);
 		return id;
 	}

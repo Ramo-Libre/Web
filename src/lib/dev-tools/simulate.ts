@@ -73,18 +73,32 @@ export async function simulate(
 				indent: 1
 			});
 		}
+
+		for (const [, todo] of semData.todos) {
+			const ramoLabel = todo.ramoId
+				? semData.ramos.find(([rid]) => rid === todo.ramoId)?.[1]?.name ?? '?'
+				: 'sin ramo';
+			logs.push({
+				id: id++,
+				icon: '⭐',
+				label: 'TODO',
+				detail: `${todo.text.slice(0, 40)}… · ${ramoLabel}`,
+				indent: 1
+			});
+		}
 	}
 
 	const totalRamos = logs.filter((l) => l.icon === '📚').length;
 	const totalOneoff = logs.filter((l) => l.icon === '📅').length;
 	const totalRecurrent = logs.filter((l) => l.icon === '🔄').length;
 	const totalEscenarios = logs.filter((l) => l.icon === '🎯').length;
+	const totalTodos = logs.filter((l) => l.icon === '⭐').length;
 
 	logs.push({
 		id: id,
 		icon: '✅',
 		label: 'Simulación completada',
-		detail: `${data.semestres.length} semestre(s), ${totalRamos} ramo(s), ${totalOneoff} oneoff(s), ${totalRecurrent} recurrente(s), ${totalEscenarios} escenario(s). Ningún cambio aplicado.`,
+		detail: `${data.semestres.length} semestre(s), ${totalRamos} ramo(s), ${totalOneoff} oneoff(s), ${totalRecurrent} recurrente(s), ${totalEscenarios} escenario(s), ${totalTodos} todo(s). Ningún cambio aplicado.`,
 		indent: 0
 	});
 
