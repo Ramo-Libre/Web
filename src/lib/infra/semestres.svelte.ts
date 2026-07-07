@@ -12,6 +12,7 @@ import { KEYS } from './sync-policies';
 import type { MockDataOutputV2 } from '$lib/dev-tools/types-v2';
 import type { Serializable } from '$lib/types/state';
 import { detectLegacy, runMigration, cleanupLegacy, type LegacyCounts } from './migrate-legacy';
+import { TodosManager, type TodosSerial } from '$lib/features/todos.svelte';
 
 export interface SemestreData {
 	name: string;
@@ -27,9 +28,11 @@ class SemestresManager {
 	private _preferences = new PreferencesManager();
 	private _schedule = new ScheduleManager();
 	private _escenarios = new EscenariosManager();
+	private _todos = new TodosManager();
 	private _ramos = new RamosManager((id) => {
 		this._schedule.removeByRamo(id);
 		this._escenarios.removeByRamo(id);
+		this._todos.removeByRamo(id);
 	});
 
 	constructor() {
@@ -109,6 +112,9 @@ class SemestresManager {
 
 		const escenarios = local.get<EscenariosSerial>(this.prefix(KEYS.escenarios)) || [];
 		this._escenarios.fromSerial(escenarios);
+
+		const todos = local.get<TodosSerial>(this.prefix(KEYS.todos)) || [];
+		this._todos.fromSerial(todos);
 	}
 
 	get active() {
@@ -143,10 +149,12 @@ class SemestresManager {
 		const rmsKey = id + '_' + KEYS.ramos;
 		const schKey = id + '_' + KEYS.schedule;
 		const escKey = id + '_' + KEYS.escenarios;
+		const tdoKey = id + '_' + KEYS.todos;
 
 		const ramos = local.get<RamosSerial>(rmsKey) ?? [];
 		const schedule = local.get<ScheduleSerial>(schKey) ?? [];
 		const escenarios = local.get<EscenariosSerial>(escKey) ?? [];
+		const todos = local.get<TodosSerial>(tdoKey) ?? [];
 
 		for (const [ramoId] of ramos) {
 			changeBus.emit('ramos', 'deleted', ramoId, id);
@@ -156,6 +164,9 @@ class SemestresManager {
 		}
 		for (const [escId] of escenarios) {
 			changeBus.emit('escenarios', 'deleted', escId, id);
+		}
+		for (const [tdoId] of todos) {
+			changeBus.emit('todos', 'deleted', tdoId, id);
 		}
 
 		this._semestres.delete(id);
@@ -212,8 +223,17 @@ class SemestresManager {
 		return this._escenarios;
 	}
 
+	get todos() {
+		return this._todos;
+	}
+
 	get hasData() {
-		return !this._ramos.empty() || !this._schedule.empty() || !this._escenarios.empty();
+		return (
+			!this._ramos.empty() ||
+			!this._schedule.empty() ||
+			!this._escenarios.empty() ||
+			!this._todos.empty()
+		);
 	}
 
 	managerFor(feature: FeatureId): Serializable<unknown> {
@@ -226,6 +246,8 @@ class SemestresManager {
 				return this._schedule;
 			case 'escenarios':
 				return this._escenarios;
+			case 'todos':
+				return this._todos;
 			case 'semesters':
 				throw new Error('semesters has no manager');
 		}
@@ -240,6 +262,7 @@ class SemestresManager {
 			this._ramos.fromSerial(entry.ramos);
 			this._schedule.fromSerial(entry.schedule);
 			this._escenarios.fromSerial(entry.escenarios);
+			this._todos.fromSerial(entry.todos ?? []);
 		}
 
 		syncRouter.persistAll();

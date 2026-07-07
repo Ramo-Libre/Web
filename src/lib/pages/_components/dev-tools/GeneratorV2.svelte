@@ -9,7 +9,8 @@
 		ramos: 7,
 		oneoff: 100,
 		recurrent: 10,
-		escenarios: 10
+		escenarios: 10,
+		todos: 15
 	});
 
 	let logs = $state<LogEntry[]>([]);
@@ -67,7 +68,7 @@
 	</div>
 
 	<div class="p-3 space-y-2.5">
-		<div class="grid grid-cols-5 gap-2">
+		<div class="grid grid-cols-6 gap-2">
 			{#each Object.keys(params) as key (key)}
 				<div class="flex flex-col gap-0.5">
 					<label

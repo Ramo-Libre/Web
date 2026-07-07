@@ -14,6 +14,7 @@
 		{ id: 'ramos', label: 'Ramos' },
 		{ id: 'schedule', label: 'Horario' },
 		{ id: 'escenarios', label: 'Escenarios' },
+		{ id: 'todos', label: 'TODOs' },
 		{ id: 'preferences', label: 'Preferencias' },
 		{ id: 'semesters', label: 'Semestres' }
 	];
@@ -106,6 +107,23 @@
 					calendar: { showHorarios: faker.datatype.boolean() },
 					layout: { sidebarCollapsed: faker.datatype.boolean() }
 				};
+			}
+			case 'todos': {
+				const todos: [
+					string,
+					{ text: string; completed: boolean; ramoId?: string; createdAt: string }
+				][] = [];
+				for (let i = 0; i < faker.number.int({ min: 1, max: 5 }); i++) {
+					todos.push([
+						generateUUID(),
+						{
+							text: faker.lorem.sentence(3),
+							completed: faker.datatype.boolean(),
+							createdAt: faker.date.recent({ days: 7 }).toISOString()
+						}
+					]);
+				}
+				return todos;
 			}
 			case 'semesters': {
 				const sems: [string, { name: string }][] = [];

@@ -15,7 +15,7 @@
         "@lucide/svelte": "1.18.0",
         "@ramo-libre/dsl-parser": "^1.0.0",
         "@ramo-libre/solver": "^0.1.1",
-        "@ramo-libre/ui-themes": "^1.0.0",
+        "@ramo-libre/ui-themes": "^1.1.0",
         "@sveltejs/adapter-static": "^3.0.10",
         "@sveltejs/kit": "2.65.1",
         "@sveltejs/vite-plugin-svelte": "7.1.2",
@@ -337,7 +337,7 @@
 
     "@ramo-libre/solver": ["@ramo-libre/solver@0.1.1", "https://npm.pkg.github.com/download/@ramo-libre/solver/0.1.1/342c1c0548b32936a4d61b372c861b4bbd6ca487", {}, "sha512-SaD10gviXxT+xwPFO+iyjlW9JQ3UNyeNU2oMqzUmSCOifL+IUw3rFIdrZp+0pyircpUpM6Ho3HF7AvHDzXG7XQ=="],
 
-    "@ramo-libre/ui-themes": ["@ramo-libre/ui-themes@1.0.0", "https://npm.pkg.github.com/download/@ramo-libre/ui-themes/1.0.0/f03dbac5a72e6a8e94d3b9f3bb216f5834df85cf", { "dependencies": { "@lucide/svelte": "^1.17.0" }, "peerDependencies": { "typescript": "^5" } }, "sha512-wNfJk6v/uHvcYijIYjUuv3IkiGwZRYF8bqnLIrPMQ4NKr8MqzJf16wlZsG4uIDTEZkhNhZTYhbql58353rkyqQ=="],
+    "@ramo-libre/ui-themes": ["@ramo-libre/ui-themes@1.1.0", "https://npm.pkg.github.com/download/@ramo-libre/ui-themes/1.1.0/938da65a7b795f6671924f28d3aa01ca7e4db8a7", { "dependencies": { "@lucide/svelte": "^1.17.0" }, "peerDependencies": { "typescript": "^5" } }, "sha512-61e+8wh53OWsKkJMtyW1mCGCTHDU0sAar/Bj6MqbTUDpmhNdDdqvOuoKgD1sZxA4JAR5/xuch4+oiUkIBegecg=="],
 
     "@rolldown/binding-android-arm64": ["@rolldown/binding-android-arm64@1.0.3", "", { "os": "android", "cpu": "arm64" }, "sha512-454rs7jHngixp/NMxd5srYD57OnzSlZ/eFTETjORQHLwJG1lRtmNOJcBerZlfu4GjKqeq8aCCIQrMdHyhI51Hw=="],
 
