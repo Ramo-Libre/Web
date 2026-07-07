@@ -69,6 +69,12 @@
 
 	const escenarios = $derived(ramoDrawer.id ? semestre.escenarios.byRamo(ramoDrawer.id) : []);
 
+	const todos = $derived(
+		ramoDrawer.id
+			? semestre.todos.list.filter(([, t]) => t.ramoId === ramoDrawer.id && !t.completed)
+			: []
+	);
+
 	beforeNavigate(() => {
 		ramoDrawer.close();
 	});
@@ -215,6 +221,47 @@
 							<span class="text-xs font-medium {cls} shrink-0">{label}</span>
 							<ArrowRight class="h-4 w-4 shrink-0 text-content/20" />
 						</button>
+					{/each}
+				</div>
+			</div>
+		{/if}
+
+		{#if todos.length > 0}
+			<div class="border-t border-base-300 pt-4 mt-4">
+				<h3 class="text-xs font-semibold text-content/50 mb-3 uppercase tracking-wider">
+					Pendientes ({todos.length})
+				</h3>
+				<div class="space-y-1.5">
+					{#each todos as [id, todo] (id)}
+						<div
+							class="flex items-center gap-2.5 rounded-lg px-3 py-2 transition-colors hover:bg-base-200 cursor-pointer"
+							onclick={() => navTo('/pendientes/')}
+							role="button"
+							tabindex="0"
+							onkeydown={(e) => e.key === 'Enter' && navTo('/pendientes/')}
+						>
+							<button
+								onclick={(e) => {
+									e.stopPropagation();
+									semestre.todos.update(id, { ...todo, completed: !todo.completed });
+								}}
+								class="shrink-0 w-4 h-4 rounded-full border-2 transition-all cursor-pointer {todo.completed
+									? 'bg-base-300/60 border-base-300'
+									: 'border-base-400 hover:border-base-300'}"
+								style={selectedRamo?.color
+									? `border-color:${selectedRamo.color};${todo.completed ? `background:${selectedRamo.color};` : ''}`
+									: ''}
+								aria-label={todo.completed ? 'Marcar como pendiente' : 'Marcar como completado'}
+							></button>
+							<span
+								class="flex-1 text-sm min-w-0 break-words {todo.completed
+									? 'text-content/40 line-through'
+									: 'text-content'}"
+							>
+								{todo.text}
+							</span>
+							<ArrowRight class="h-4 w-4 shrink-0 text-content/20" />
+						</div>
 					{/each}
 				</div>
 			</div>
