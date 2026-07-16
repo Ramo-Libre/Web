@@ -21,15 +21,29 @@
 	let importing = $state(false);
 	let includeLocation = $state(true);
 	let includeDescription = $state(true);
+	let isDragging = $state(false);
+
+	function handleDragEnter(e: DragEvent) {
+		e.preventDefault();
+		e.stopPropagation();
+		isDragging = true;
+	}
 
 	function handleDragOver(e: DragEvent) {
 		e.preventDefault();
 		e.stopPropagation();
 	}
 
+	function handleDragLeave(e: DragEvent) {
+		e.preventDefault();
+		e.stopPropagation();
+		isDragging = false;
+	}
+
 	function handleDrop(e: DragEvent) {
 		e.preventDefault();
 		e.stopPropagation();
+		isDragging = false;
 		const file = e.dataTransfer?.files[0];
 		if (file) readFile(file);
 	}
@@ -106,29 +120,30 @@
 				Selecciona un archivo .ics para importar tus horarios.
 			</p>
 
-			<!-- svelte-ignore a11y_no_static_element_interactions -->
-			<div
+			<label
+				ondragenter={handleDragEnter}
 				ondragover={handleDragOver}
+				ondragleave={handleDragLeave}
 				ondrop={handleDrop}
-				class="border-2 border-dashed border-base-400 rounded-xl p-8 text-center hover:border-primary-100/50 transition-colors"
+				class="block border-2 border-dashed rounded-xl p-8 text-center transition-all cursor-pointer {isDragging
+					? 'border-primary-100 bg-primary-100/10'
+					: 'border-base-400 hover:border-primary-100/50'}"
 			>
-				<Upload class="w-10 h-10 mx-auto text-content/30 mb-3" />
-				<p class="text-sm text-content/60 mb-3">
-					Arrastra un archivo .ics aquí
+				<Upload class="w-10 h-10 mx-auto text-content/30 mb-3 pointer-events-none" />
+				<p class="text-sm text-content/60 mb-3 pointer-events-none">
+					Arrastra un archivo .ics aquí o haz clic para seleccionar
 				</p>
-				<label
-					class="inline-flex items-center gap-2 px-4 py-2 bg-base-200 hover:bg-base-300 rounded-lg text-sm font-medium text-content cursor-pointer transition-colors"
-				>
+				<span class="inline-flex items-center gap-2 px-4 py-2 bg-base-200 hover:bg-base-300 rounded-lg text-sm font-medium text-content transition-colors pointer-events-none">
 					<FileSpreadsheet class="w-4 h-4" />
 					Seleccionar archivo
-					<input
-						type="file"
-						accept=".ics"
-						class="hidden"
-						onchange={handleFileInput}
-					/>
-				</label>
-			</div>
+				</span>
+				<input
+					type="file"
+					accept=".ics"
+					class="hidden"
+					onchange={handleFileInput}
+				/>
+			</label>
 
 			{#if error}
 				<p class="text-sm text-red-400">{error}</p>
