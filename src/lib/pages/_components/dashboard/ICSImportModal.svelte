@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Upload, Check, Calendar, MapPin, Clock, X, FileSpreadsheet } from '@lucide/svelte';
-	import { parseICS, icsEventToScheduleEvent, type ParsedEvent } from '$lib/utils/ics';
+	import { parseICS, icsEventToScheduleEvent, type ParsedEvent, type DescriptionOptions } from '$lib/utils/ics';
 	import { semestre } from '$lib/infra/semestres.svelte';
 
 	let { onClose }: { onClose: () => void } = $props();
@@ -19,6 +19,8 @@
 	let fileName = $state('');
 	let error = $state('');
 	let importing = $state(false);
+	let includeLocation = $state(true);
+	let includeDescription = $state(true);
 
 	function handleDragOver(e: DragEvent) {
 		e.preventDefault();
@@ -73,11 +75,19 @@
 		return days.map((d) => DAY_LABELS[d]).join(', ');
 	}
 
+	function getPreviewDescription(event: ParsedEvent): string | undefined {
+		const parts: string[] = [];
+		if (includeLocation && event.location) parts.push(event.location);
+		if (includeDescription && event.description) parts.push(event.description);
+		return parts.length > 0 ? parts.join('\n') : undefined;
+	}
+
 	async function handleImport() {
 		importing = true;
+		const options: DescriptionOptions = { includeLocation, includeDescription };
 		const selected = events.filter((e) => e.selected);
 		for (const event of selected) {
-			const scheduleEvent = icsEventToScheduleEvent(event);
+			const scheduleEvent = icsEventToScheduleEvent(event, options);
 			semestre.schedule.add(scheduleEvent);
 		}
 		importing = false;
@@ -142,6 +152,26 @@
 				</button>
 			</div>
 
+			<div class="flex flex-wrap items-center gap-3">
+				<span class="text-xs font-semibold text-content/50 uppercase tracking-wider">Incluir</span>
+				<button
+					onclick={() => includeLocation = !includeLocation}
+					class="px-2.5 py-1 rounded-lg border text-xs font-medium transition-all cursor-pointer {includeLocation
+						? 'bg-primary-100 text-base-100 border-primary-100'
+						: 'bg-base-50 text-content/40 border-base-400 hover:border-primary-100 hover:text-content'}"
+				>
+					Ubicación
+				</button>
+				<button
+					onclick={() => includeDescription = !includeDescription}
+					class="px-2.5 py-1 rounded-lg border text-xs font-medium transition-all cursor-pointer {includeDescription
+						? 'bg-primary-100 text-base-100 border-primary-100'
+						: 'bg-base-50 text-content/40 border-base-400 hover:border-primary-100 hover:text-content'}"
+				>
+					Descripción
+				</button>
+			</div>
+
 			<label class="flex items-center gap-2 text-sm text-content/70 cursor-pointer">
 				<input
 					type="checkbox"
@@ -187,10 +217,10 @@
 									</span>
 								{/if}
 							</div>
-							{#if event.description}
+							{#if getPreviewDescription(event)}
 								<div class="mt-1 text-xs text-content/40">
-									{#each event.description.split('\n') as line}
-										{#if line.startsWith('/')}
+									{#each getPreviewDescription(event)!.split('\n') as line}
+										{#if line === event.location}
 											<span class="flex items-center gap-1">
 												<MapPin class="w-3 h-3" />
 												{line}

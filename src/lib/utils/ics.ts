@@ -9,9 +9,15 @@ export interface ParsedEvent {
 	date?: string;
 	startTime?: string;
 	endTime?: string;
+	location?: string;
 	description?: string;
 	category: ScheduleCategory;
 	selected: boolean;
+}
+
+export interface DescriptionOptions {
+	includeLocation: boolean;
+	includeDescription: boolean;
 }
 
 const ICS_DAY_TO_NUMBER: Record<string, number> = {
@@ -47,16 +53,9 @@ function extractDaysFromRRule(rrule: ICalRecur, dtstart: ICalDateTime | ICalDate
 	return [];
 }
 
-function buildDescription(location: string | null, description: string | null): string | undefined {
-	const parts: string[] = [];
-	if (location) parts.push(location);
-	if (description) parts.push(description);
-	return parts.length > 0 ? parts.join('\n') : undefined;
-}
-
 function getGroupKey(event: ParsedEvent): string {
 	const day = event.daysOfWeek?.[0] ?? event.date ?? '';
-	return `${event.title}|${event.description ?? ''}|${day}`;
+	return `${event.title}|${event.location ?? ''}|${event.description ?? ''}|${day}`;
 }
 
 function timeToMinutes(time: string): number {
@@ -134,7 +133,8 @@ export function parseICS(content: string): ParsedEvent[] {
 						parsed.endTime = extractTime(end);
 					}
 				}
-				parsed.description = buildDescription(event.location, event.description);
+				if (event.location) parsed.location = event.location;
+				if (event.description) parsed.description = event.description;
 			}
 		} else if (event.dtstart) {
 			const start = event.dtstart;
@@ -147,7 +147,8 @@ export function parseICS(content: string): ParsedEvent[] {
 			} else {
 				parsed.date = extractDate(start);
 			}
-			parsed.description = buildDescription(event.location, event.description);
+			if (event.location) parsed.location = event.location;
+			if (event.description) parsed.description = event.description;
 		}
 
 		events.push(parsed);
@@ -156,7 +157,11 @@ export function parseICS(content: string): ParsedEvent[] {
 	return mergeConsecutiveEvents(events);
 }
 
-export function icsEventToScheduleEvent(event: ParsedEvent) {
+export function icsEventToScheduleEvent(event: ParsedEvent, options: DescriptionOptions) {
+	const parts: string[] = [];
+	if (options.includeLocation && event.location) parts.push(event.location);
+	if (options.includeDescription && event.description) parts.push(event.description);
+
 	return {
 		id: event.uid || generateUUID(),
 		title: event.title,
@@ -165,6 +170,6 @@ export function icsEventToScheduleEvent(event: ParsedEvent) {
 		date: event.date,
 		startTime: event.startTime,
 		endTime: event.endTime,
-		description: event.description
+		description: parts.length > 0 ? parts.join('\n') : undefined
 	};
 }
