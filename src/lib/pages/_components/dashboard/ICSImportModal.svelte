@@ -1,7 +1,8 @@
 <script lang="ts">
-	import { Upload, Check, Calendar, MapPin, Clock, X, FileSpreadsheet } from '@lucide/svelte';
+	import { Upload, Check, Calendar, MapPin, Clock, X, FileSpreadsheet, Book, Presentation, CircleAlert, FlaskConical, Users, Wrench, Ellipsis } from '@lucide/svelte';
 	import { parseICS, icsEventToScheduleEvent, type ParsedEvent, type DescriptionOptions } from '$lib/utils/ics';
 	import { semestre } from '$lib/infra/semestres.svelte';
+	import type { ScheduleCategory } from '$lib/features/schedule.svelte';
 
 	let { onClose }: { onClose: () => void } = $props();
 
@@ -13,6 +14,17 @@
 		5: 'Vie',
 		6: 'Sáb',
 		7: 'Dom'
+	};
+
+	const categoryIcons: Record<ScheduleCategory, typeof Book> = {
+		exam: Presentation,
+		urgent: CircleAlert,
+		book: Book,
+		lab: FlaskConical,
+		assist: Users,
+		taller: Wrench,
+		event: Clock,
+		other: Ellipsis
 	};
 
 	let events = $state<ParsedEvent[]>([]);
@@ -95,6 +107,8 @@
 		if (includeDescription && event.description) parts.push(event.description);
 		return parts.length > 0 ? parts.join('\n') : undefined;
 	}
+
+	const EVENT_COLOR = '#64748b';
 
 	async function handleImport() {
 		importing = true;
@@ -198,22 +212,31 @@
 				Seleccionar todos
 			</label>
 
-			<div class="space-y-2 max-h-80 overflow-y-auto pr-1">
-				{#each events as event, i (event.uid)}
-					<button
-						onclick={() => toggleEvent(i)}
-						class="w-full flex items-start gap-3 p-3 rounded-xl border transition-colors text-left cursor-pointer {event.selected
-							? 'bg-primary-100/10 border-primary-100/30'
-							: 'bg-base-200/50 border-base-400 hover:border-base-300'}"
-					>
+		<div class="space-y-2 max-h-80 overflow-y-auto pr-1">
+			{#each events as event, i (event.uid)}
+				{@const Icon = categoryIcons[event.category] ?? Ellipsis}
+				{@const desc = getPreviewDescription(event)}
+				<button
+					onclick={() => toggleEvent(i)}
+					class="w-full rounded-md border-l-4 shadow-sm overflow-hidden transition-all text-left cursor-pointer p-2 lg:p-3 {event.selected
+						? 'opacity-100'
+						: 'opacity-40'}"
+					style="background-color: {EVENT_COLOR}15; border-color: {EVENT_COLOR};"
+				>
+					<div class="flex items-start gap-2">
 						<input
 							type="checkbox"
 							checked={event.selected}
 							class="w-4 h-4 mt-0.5 rounded border-base-400 text-primary-100 focus:ring-primary-100 shrink-0"
 						/>
 						<div class="flex-1 min-w-0">
-							<p class="text-sm font-medium text-content truncate">{event.title}</p>
-							<div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-xs text-content/50">
+							<div class="flex items-center gap-1.5 w-full min-w-0">
+								<Icon class="w-3.5 h-3.5 shrink-0" style="color: {EVENT_COLOR}" />
+								<span class="text-[11px] font-bold leading-tight truncate text-content">
+									{event.title}
+								</span>
+							</div>
+							<div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-[9px] text-content/50 leading-tight">
 								{#if event.daysOfWeek}
 									<span class="flex items-center gap-1">
 										<Calendar class="w-3 h-3" />
@@ -228,28 +251,29 @@
 								{#if event.startTime}
 									<span class="flex items-center gap-1">
 										<Clock class="w-3 h-3" />
-										{event.startTime} - {event.endTime}
+										{event.startTime}–{event.endTime}
 									</span>
 								{/if}
 							</div>
-							{#if getPreviewDescription(event)}
-								<div class="mt-1 text-xs text-content/40">
-									{#each getPreviewDescription(event)!.split('\n') as line}
+							{#if desc}
+								<div class="mt-1 text-[10px] text-content/60 leading-tight font-semibold break-words whitespace-normal line-clamp-2">
+									{#each desc.split('\n') as line}
 										{#if line === event.location}
 											<span class="flex items-center gap-1">
 												<MapPin class="w-3 h-3" />
 												{line}
 											</span>
 										{:else}
-											<p>{line}</p>
+											{line}
 										{/if}
 									{/each}
 								</div>
 							{/if}
 						</div>
-					</button>
-				{/each}
-			</div>
+					</div>
+				</button>
+			{/each}
+		</div>
 
 			{#if error}
 				<p class="text-sm text-red-400">{error}</p>
