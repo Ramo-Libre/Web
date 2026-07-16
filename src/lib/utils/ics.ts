@@ -54,6 +54,58 @@ function buildDescription(location: string | null, description: string | null): 
 	return parts.length > 0 ? parts.join('\n') : undefined;
 }
 
+function getGroupKey(event: ParsedEvent): string {
+	const day = event.daysOfWeek?.[0] ?? event.date ?? '';
+	return `${event.title}|${event.description ?? ''}|${day}`;
+}
+
+function timeToMinutes(time: string): number {
+	const [h, m] = time.split(':').map(Number);
+	return h * 60 + m;
+}
+
+function mergeConsecutiveEvents(events: ParsedEvent[]): ParsedEvent[] {
+	const groups = new Map<string, ParsedEvent[]>();
+
+	for (const event of events) {
+		if (!event.startTime || !event.endTime) {
+			const key = `standalone|${event.uid}`;
+			groups.set(key, [event]);
+			continue;
+		}
+		const key = getGroupKey(event);
+		const group = groups.get(key) ?? [];
+		group.push(event);
+		groups.set(key, group);
+	}
+
+	const merged: ParsedEvent[] = [];
+
+	for (const group of groups.values()) {
+		if (group.length === 1) {
+			merged.push(group[0]);
+			continue;
+		}
+
+		group.sort((a, b) => timeToMinutes(a.startTime!) - timeToMinutes(b.startTime!));
+
+		let current = { ...group[0] };
+
+		for (let i = 1; i < group.length; i++) {
+			const next = group[i];
+			if (current.endTime === next.startTime) {
+				current.endTime = next.endTime;
+			} else {
+				merged.push(current);
+				current = { ...next };
+			}
+		}
+		merged.push(current);
+	}
+
+	return merged;
+}
+
 export function parseICS(content: string): ParsedEvent[] {
 	const cal = parse(content);
 	const events: ParsedEvent[] = [];
@@ -101,7 +153,7 @@ export function parseICS(content: string): ParsedEvent[] {
 		events.push(parsed);
 	}
 
-	return events;
+	return mergeConsecutiveEvents(events);
 }
 
 export function icsEventToScheduleEvent(event: ParsedEvent) {
