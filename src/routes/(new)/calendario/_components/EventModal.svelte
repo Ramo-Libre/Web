@@ -13,6 +13,7 @@
 	} from '@lucide/svelte';
 	import { fly } from 'svelte/transition';
 	import type { ScheduleEvent, ScheduleCategory } from '$lib/features/schedule.svelte';
+	import { SCHEDULE_DESC_MAX_LENGTH } from '$lib/features/schedule.svelte';
 
 	const CATEGORIES: { value: ScheduleCategory; label: string; icon: typeof Book }[] = [
 		{ value: 'exam', label: 'Examen', icon: Presentation },
@@ -95,7 +96,7 @@
 
 	<!-- Desktop: right panel -->
 	<div
-		class="max-sm:hidden absolute top-0 right-0 bottom-0 w-[500px] bg-base-100 border-l border-base-400 shadow-2xl overflow-y-auto"
+		class="max-sm:hidden absolute top-0 right-0 bottom-0 w-[{SCHEDULE_DESC_MAX_LENGTH}px] bg-base-100 border-l border-base-400 shadow-2xl overflow-y-auto"
 		in:fly={{ x: 380, duration: 250 }}
 		out:fly={{ x: 380, duration: 200 }}
 	>
@@ -234,10 +235,10 @@
 						bind:value={description}
 						placeholder="Descripción opcional..."
 						rows="2"
-						maxlength="150"
+						maxlength={SCHEDULE_DESC_MAX_LENGTH}
 						class="w-full bg-transparent text-sm text-content outline-none resize-none placeholder-content/20"
 					></textarea>
-					<span class="text-[10px] text-content/20 block text-right">{description.length}/150</span>
+					<span class="text-[10px] text-content/20 block text-right">{description.length}/{SCHEDULE_DESC_MAX_LENGTH}</span>
 				</div>
 			</div>
 
@@ -415,10 +416,10 @@
 						bind:value={description}
 						placeholder="Descripción opcional..."
 						rows="2"
-						maxlength="150"
+						maxlength={SCHEDULE_DESC_MAX_LENGTH}
 						class="w-full bg-transparent text-sm text-content outline-none resize-none placeholder-content/20"
 					></textarea>
-					<span class="text-[10px] text-content/20 block text-right">{description.length}/150</span>
+					<span class="text-[10px] text-content/20 block text-right">{description.length}/{SCHEDULE_DESC_MAX_LENGTH}</span>
 				</div>
 			</div>
 

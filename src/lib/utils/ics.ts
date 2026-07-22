@@ -1,5 +1,6 @@
 import { parse, type ICalRecur, type ByDayRule, type ICalDateTime, type ICalDate } from '@pipobscure/ical';
 import type { ScheduleCategory } from '$lib/features/schedule.svelte';
+import { SCHEDULE_DESC_MAX_LENGTH } from '$lib/features/schedule.svelte';
 import { generateUUID } from '$lib/utils/crypto';
 
 export interface ParsedEvent {
@@ -168,6 +169,8 @@ export function icsEventToScheduleEvent(event: ParsedEvent, options: Description
 	if (options.includeLocation && event.location) parts.push(event.location);
 	if (options.includeDescription && event.description) parts.push(event.description);
 
+	const description = parts.length > 0 ? parts.join('\n').slice(0, SCHEDULE_DESC_MAX_LENGTH) : undefined;
+
 	return {
 		id: event.uid || generateUUID(),
 		title: event.title,
@@ -176,6 +179,6 @@ export function icsEventToScheduleEvent(event: ParsedEvent, options: Description
 		date: event.date,
 		startTime: event.startTime,
 		endTime: event.endTime,
-		description: parts.length > 0 ? parts.join('\n') : undefined
+		description
 	};
 }
