@@ -54,6 +54,7 @@
 		"workbox-window": "^7.4.1"
 	},
 	"dependencies": {
-		"@supabase/supabase-js": "^2.110.0"
+		"@pipobscure/ical": "^1.0.0",
+		"@supabase/supabase-js": "^2.110.6"
 	}
 }

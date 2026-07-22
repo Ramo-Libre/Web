@@ -7,6 +7,7 @@
 	import WizardSemestre from './WizardSemestre.svelte';
 	import VistaPreviaWizard from './VistaPreviaWizard.svelte';
 	import AIContextDrawer from './AIContextDrawer.svelte';
+	import ICSImportModal from './ICSImportModal.svelte';
 
 	const now = getNow();
 	const year = now.getFullYear();
@@ -36,13 +37,13 @@
 		},
 		{
 			icon: CalendarPlus,
-			iconBg: 'bg-base-200/50 text-content/30',
-			iconHoverBg: '',
-			hoverBg: '',
+			iconBg: 'bg-calendar-400/20 text-calendar-100',
+			iconHoverBg: 'group-hover:bg-calendar-100 group-active:bg-calendar-100',
+			hoverBg: 'hover:bg-calendar-400/5 active:bg-calendar-400/10',
 			title: 'Importar Google Calendar',
-			desc: 'Próximamente disponible.',
+			desc: 'Importa eventos desde un archivo .ics.',
 			id: 'importar-google',
-			disabled: true
+			disabled: false
 		},
 		{
 			icon: Bot,
@@ -140,6 +141,7 @@
 				class="absolute bottom-0 left-0 right-0 bg-base-100 rounded-t-2xl shadow-xl border border-base-400 lg:hidden {action.id ===
 					'inicia-semestre' ||
 				action.id === 'vista-previa' ||
+				action.id === 'importar-google' ||
 				action.id === 'contexto-ia'
 					? 'max-h-[85vh] flex flex-col'
 					: ''}"
@@ -160,6 +162,7 @@
 				<div
 					class="p-6 {action.id === 'inicia-semestre' ||
 					action.id === 'vista-previa' ||
+					action.id === 'importar-google' ||
 					action.id === 'contexto-ia'
 						? 'flex-1 overflow-y-auto'
 						: ''}"
@@ -180,6 +183,8 @@
 							onPrev={() => previewStep--}
 							onFinish={() => (openModal = null)}
 						/>
+					{:else if action.id === 'importar-google'}
+						<ICSImportModal onClose={() => (openModal = null)} />
 					{:else if action.id === 'contexto-ia'}
 						<AIContextDrawer />
 					{/if}
@@ -219,6 +224,8 @@
 							onPrev={() => previewStep--}
 							onFinish={() => (openModal = null)}
 						/>
+					{:else if action.id === 'importar-google'}
+						<ICSImportModal onClose={() => (openModal = null)} />
 					{:else if action.id === 'contexto-ia'}
 						<AIContextDrawer />
 					{/if}

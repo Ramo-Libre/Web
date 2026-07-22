@@ -3,6 +3,8 @@ import { generateUUID } from '$lib/utils/crypto';
 import { changeBus } from '$lib/infra/sync.svelte';
 import { SvelteDate, SvelteMap } from 'svelte/reactivity';
 
+export const SCHEDULE_DESC_MAX_LENGTH = 500;
+
 export type ScheduleCategory =
 	| 'book'
 	| 'lab'

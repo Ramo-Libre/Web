@@ -2,7 +2,6 @@
 	import { onMount } from 'svelte';
 	import { fly } from 'svelte/transition';
 	import { page } from '$app/state';
-	import { SvelteSet, SvelteDate } from 'svelte/reactivity';
 	import { semestre } from '$lib/infra/semestres.svelte';
 	import { getNow } from '$lib/utils/date';
 	import type { ScheduleEvent, ScheduleCategory } from '$lib/features/schedule.svelte';
@@ -12,10 +11,10 @@
 	import RecurrenceModal from '../horarios/_components/RecurrenceModal.svelte';
 	import DayList from './_components/DayList.svelte';
 	import DayTimeline from './_components/DayTimeline.svelte';
+	import EventList from './_components/EventList.svelte';
+	import { SvelteDate } from 'svelte/reactivity';
 
 	let selectedRamo = $state<string | null>(null);
-	// svelte-ignore non_reactive_update
-	let selectedCategories: SvelteSet<ScheduleCategory> = new SvelteSet();
 	let selectedDate = $state<string | null>(
 		(() => {
 			const d = getNow();
@@ -26,6 +25,7 @@
 	let showModal = $state(false);
 	let modalDate = $state<string | undefined>(undefined);
 	let showHorarios = $state(semestre.preferences.calendarShowHorarios);
+	let showLista = $state(semestre.preferences.calendarShowLista);
 	let editingRecurring = $state<ScheduleEvent | null>(null);
 	let showRecurringModal = $state(false);
 
@@ -33,9 +33,6 @@
 		semestre.schedule.list
 			.map(([, e]) => e)
 			.filter((e) => !selectedRamo || e.ramoId === selectedRamo)
-			.filter(
-				(e) => selectedCategories.size === 0 || (e.category && selectedCategories.has(e.category))
-			)
 	);
 
 	const filteredEvents = $derived(showHorarios ? baseEvents : baseEvents.filter((e) => e.date));
@@ -45,10 +42,6 @@
 			? semestre.schedule
 					.getByDate(selectedDate)
 					.filter((e) => !selectedRamo || e.ramoId === selectedRamo)
-					.filter(
-						(e) =>
-							selectedCategories.size === 0 || (e.category && selectedCategories.has(e.category))
-					)
 					.filter((e) => showHorarios || e.date)
 			: []
 	);
@@ -63,7 +56,7 @@
 				return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 			}
 		}
-		const d = new SvelteDate(today);
+		const d = new Date(today);
 		return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 	}
 
@@ -177,23 +170,30 @@
 <div in:fly={{ y: 10, duration: 300, delay: 100 }} class="flex flex-col gap-4">
 	<ViewBar
 		{selectedRamo}
-		{selectedCategories}
 		{showHorarios}
+		{showLista}
 		onRamoChange={(v) => (selectedRamo = v)}
-		onCategoriesChange={(v) => (selectedCategories = v)}
 		onToggleHorarios={() => {
 			showHorarios = !showHorarios;
 			semestre.preferences.setCalendarShowHorarios(showHorarios);
 		}}
+		onToggleLista={() => {
+			showLista = !showLista;
+			semestre.preferences.setCalendarShowLista(showLista);
+		}}
 		onAddEvent={() => openCreate(selectedDate ?? undefined)}
 	/>
 
-	<CalendarGrid events={filteredEvents} {selectedDate} onDaySelect={(d) => (selectedDate = d)} />
+	{#if showLista}
+		<EventList events={filteredEvents} onEventClick={(e) => openEdit(e)} />
+	{:else}
+		<CalendarGrid events={filteredEvents} {selectedDate} onDaySelect={(d) => (selectedDate = d)} />
 
-	<div class="flex flex-col lg:grid lg:grid-cols-2 gap-4">
-		<DayList dateStr={selectedDate} events={dayEvents} onEventClick={(e) => openEdit(e)} />
-		<DayTimeline events={dayEvents} onEventClick={(e) => openEdit(e)} />
-	</div>
+		<div class="flex flex-col lg:grid lg:grid-cols-2 gap-4">
+			<DayList dateStr={selectedDate} events={dayEvents} onEventClick={(e) => openEdit(e)} />
+			<DayTimeline events={dayEvents} onEventClick={(e) => openEdit(e)} />
+		</div>
+	{/if}
 </div>
 
 {#if showModal}
