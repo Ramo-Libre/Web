@@ -37,9 +37,9 @@
 		},
 		{
 			icon: CalendarPlus,
-			iconBg: 'bg-classes-400/20 text-classes-100',
-			iconHoverBg: 'group-hover:bg-classes-100 group-active:bg-classes-100',
-			hoverBg: 'hover:bg-classes-400/5 active:bg-classes-400/10',
+			iconBg: 'bg-calendar-400/20 text-calendar-100',
+			iconHoverBg: 'group-hover:bg-calendar-100 group-active:bg-calendar-100',
+			hoverBg: 'hover:bg-calendar-400/5 active:bg-calendar-400/10',
 			title: 'Importar Google Calendar',
 			desc: 'Importa eventos desde un archivo .ics.',
 			id: 'importar-google',
