@@ -12,6 +12,7 @@ export interface Preferences {
 	};
 	calendar: {
 		showHorarios: boolean;
+		showLista: boolean;
 	};
 	layout: {
 		sidebarCollapsed: boolean;
@@ -27,7 +28,8 @@ const DEFAULTS: Preferences = {
 		orientation: 'normal'
 	},
 	calendar: {
-		showHorarios: false
+		showHorarios: false,
+		showLista: false
 	},
 	layout: {
 		sidebarCollapsed: false
@@ -91,6 +93,10 @@ export class PreferencesManager implements Serializable<PreferencesSerial> {
 		return this._prefs.calendar.showHorarios;
 	}
 
+	get calendarShowLista() {
+		return this._prefs.calendar.showLista;
+	}
+
 	get sidebarCollapsed() {
 		return this._prefs.layout.sidebarCollapsed;
 	}
@@ -112,6 +118,11 @@ export class PreferencesManager implements Serializable<PreferencesSerial> {
 
 	setCalendarShowHorarios(v: boolean) {
 		this._prefs = { ...this._prefs, calendar: { ...this._prefs.calendar, showHorarios: v } };
+		changeBus.emit('preferences', 'updated', '__global__');
+	}
+
+	setCalendarShowLista(v: boolean) {
+		this._prefs = { ...this._prefs, calendar: { ...this._prefs.calendar, showLista: v } };
 		changeBus.emit('preferences', 'updated', '__global__');
 	}
 
