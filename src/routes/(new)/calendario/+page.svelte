@@ -12,6 +12,7 @@
 	import DayList from './_components/DayList.svelte';
 	import DayTimeline from './_components/DayTimeline.svelte';
 	import EventList from './_components/EventList.svelte';
+	import { SvelteDate } from 'svelte/reactivity';
 
 	let selectedRamo = $state<string | null>(null);
 	let selectedDate = $state<string | null>(
@@ -48,7 +49,7 @@
 	function getNextDateForDow(dows: number[]): string {
 		const today = getNow();
 		for (let i = 0; i < 60; i++) {
-			const d = new Date(today);
+			const d = new SvelteDate(today);
 			d.setDate(d.getDate() + i);
 			const dow = d.getDay() === 0 ? 7 : d.getDay();
 			if (dows.includes(dow)) {

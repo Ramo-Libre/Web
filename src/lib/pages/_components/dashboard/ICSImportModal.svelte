@@ -274,7 +274,7 @@
 							<div
 								class="mt-1 text-[10px] text-content/60 leading-tight font-semibold break-words whitespace-normal line-clamp-2"
 							>
-								{#each desc.split('\n') as line}
+								{#each desc.split('\n') as line, i (i)}
 									{#if line === event.location}
 										<span class="flex items-center gap-1">
 											<MapPin class="w-3 h-3" />

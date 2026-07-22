@@ -12,6 +12,7 @@
 		Clock,
 		Ellipsis
 	} from '@lucide/svelte';
+	import { SvelteDate } from 'svelte/reactivity';
 
 	const categoryIcons: Record<string, typeof Book> = {
 		exam: Presentation,
@@ -61,11 +62,11 @@
 		const rangeEnd = new Date(ey, em - 1, ed, 23, 59, 59, 999);
 
 		const rows: Row[] = [];
-		const start = new Date(today);
+		const start = new SvelteDate(today);
 		start.setHours(0, 0, 0, 0);
 
 		for (let i = 0; i < 28 && rows.length < 20; i++) {
-			const d = new Date(start);
+			const d = new SvelteDate(start);
 			d.setDate(d.getDate() + i);
 			if (d > rangeEnd) break;
 			if (d < rangeStart) continue;
@@ -151,7 +152,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					{#each rows as row, i (row.event.id + '-' + row.date)}
+					{#each rows as row (row.event.id + '-' + row.date)}
 						{@const Icon = categoryIcons[row.event.category] ?? Ellipsis}
 						{@const color = ramoColor(row.event.ramoId)}
 						<tr
