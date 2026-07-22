@@ -133,10 +133,21 @@
 			<table class="w-full text-sm">
 				<thead>
 					<tr class="border-b border-base-300 text-left">
-						<th class="px-4 py-2.5 text-xs font-semibold text-content/40 uppercase tracking-wider w-28">Fecha</th>
-						<th class="px-4 py-2.5 text-xs font-semibold text-content/40 uppercase tracking-wider w-32">Hora</th>
-						<th class="px-4 py-2.5 text-xs font-semibold text-content/40 uppercase tracking-wider">Título</th>
-						<th class="px-4 py-2.5 text-xs font-semibold text-content/40 uppercase tracking-wider hidden xl:table-cell">Descripción</th>
+						<th
+							class="px-4 py-2.5 text-xs font-semibold text-content/40 uppercase tracking-wider w-28"
+							>Fecha</th
+						>
+						<th
+							class="px-4 py-2.5 text-xs font-semibold text-content/40 uppercase tracking-wider w-32"
+							>Hora</th
+						>
+						<th class="px-4 py-2.5 text-xs font-semibold text-content/40 uppercase tracking-wider"
+							>Título</th
+						>
+						<th
+							class="px-4 py-2.5 text-xs font-semibold text-content/40 uppercase tracking-wider hidden xl:table-cell"
+							>Descripción</th
+						>
 					</tr>
 				</thead>
 				<tbody>
@@ -154,7 +165,8 @@
 							</td>
 							<td class="px-4 py-2.5 whitespace-nowrap text-content/50">
 								{#if row.startTime}
-									{row.startTime}{#if row.endTime} — {row.endTime}{/if}
+									{row.startTime}{#if row.endTime}
+										— {row.endTime}{/if}
 								{:else}
 									—
 								{/if}
@@ -165,7 +177,9 @@
 									<span class="font-medium text-content">{row.event.title || 'Sin título'}</span>
 								</div>
 							</td>
-							<td class="px-4 py-2.5 text-content/50 text-xs truncate max-w-[200px] hidden xl:table-cell">
+							<td
+								class="px-4 py-2.5 text-content/50 text-xs truncate max-w-[200px] hidden xl:table-cell"
+							>
 								{row.event.description || ''}
 							</td>
 						</tr>

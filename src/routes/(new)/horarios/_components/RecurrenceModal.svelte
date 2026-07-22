@@ -285,7 +285,9 @@
 						maxlength={SCHEDULE_DESC_MAX_LENGTH}
 						class="w-full bg-transparent text-sm text-content outline-none resize-none placeholder-content/20"
 					></textarea>
-					<span class="text-[10px] text-content/20 block text-right">{description.length}/{SCHEDULE_DESC_MAX_LENGTH}</span>
+					<span class="text-[10px] text-content/20 block text-right"
+						>{description.length}/{SCHEDULE_DESC_MAX_LENGTH}</span
+					>
 				</div>
 			</div>
 
@@ -502,7 +504,9 @@
 						maxlength={SCHEDULE_DESC_MAX_LENGTH}
 						class="w-full bg-transparent text-sm text-content outline-none resize-none placeholder-content/20"
 					></textarea>
-					<span class="text-[10px] text-content/20 block text-right">{description.length}/{SCHEDULE_DESC_MAX_LENGTH}</span>
+					<span class="text-[10px] text-content/20 block text-right"
+						>{description.length}/{SCHEDULE_DESC_MAX_LENGTH}</span
+					>
 				</div>
 			</div>
 
