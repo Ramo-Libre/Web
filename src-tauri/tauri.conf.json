@@ -1,8 +1,8 @@
 {
 	"$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
-	"productName": "ramolibre",
+	"productName": "Ramo Libre",
 	"version": "0.1.0",
-	"identifier": "com.tauri.dev",
+	"identifier": "cl.ramolibre.app",
 	"build": {
 		"frontendDist": "../build",
 		"devUrl": "http://localhost:5173",
@@ -33,9 +33,6 @@
 			"icons/128x128@2x.png",
 			"icons/icon.icns",
 			"icons/icon.ico"
-		],
-		"android": {
-			"debugApplicationIdSuffix": ".debug"
-		}
+		]
 	}
 }
