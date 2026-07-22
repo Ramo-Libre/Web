@@ -22,6 +22,7 @@
 	import { PUBLIC_SHOW_DEV_TOOLS } from '$env/static/public';
 	import { onMount } from 'svelte';
 	import { timeTravel } from '$lib/pages/_components/dev-tools/dev-tools-time.svelte';
+	import TitleBar from './TitleBar.svelte';
 
 	const showDevTools = PUBLIC_SHOW_DEV_TOOLS === 'true';
 	let { children } = $props();
@@ -149,228 +150,232 @@
 	});
 </script>
 
-<div class="flex h-dvh overflow-hidden relative text-content">
-	<!-- ── SIDEBAR (desktop) ── -->
-	<aside
-		class="hidden sm:flex flex-col bg-base-200 border-r border-base-400 overflow-hidden transition-all duration-200 ease-linear {sidebarCollapsed
-			? 'w-[60px] min-w-[60px]'
-			: 'w-[220px] min-w-[220px]'}"
-	>
-		<div
-			class="flex items-center {sidebarCollapsed
-				? 'justify-center p-3 pb-1'
-				: 'justify-between p-3 pb-1'}"
+<div class="flex flex-col h-dvh overflow-hidden relative text-content">
+	<TitleBar />
+	<div class="flex flex-1 overflow-hidden">
+		<!-- ── SIDEBAR (desktop) ── -->
+		<aside
+			class="hidden sm:flex flex-col bg-base-200 border-r border-base-400 overflow-hidden transition-all duration-200 ease-linear {sidebarCollapsed
+				? 'w-[60px] min-w-[60px]'
+				: 'w-[220px] min-w-[220px]'}"
 		>
-			{#if !sidebarCollapsed}
-				<span class="text-xs font-semibold tracking-widest uppercase text-content/35"
-					>Secciones</span
-				>
-			{/if}
-			<button
-				class="bg-transparent border-0 cursor-pointer text-content/50 p-1 rounded-md hover:bg-base-300"
-				onclick={() => {
-					sidebarCollapsed = !sidebarCollapsed;
-					semestre.preferences.setSidebarCollapsed(sidebarCollapsed);
-				}}
-				aria-label={sidebarCollapsed ? 'Expandir sidebar' : 'Colapsar sidebar'}
+			<div
+				class="flex items-center {sidebarCollapsed
+					? 'justify-center p-3 pb-1'
+					: 'justify-between p-3 pb-1'}"
 			>
-				{#if sidebarCollapsed}
-					<PanelLeftOpen class="w-5 h-5" />
-				{:else}
-					<PanelLeftClose class="w-5 h-5" />
-				{/if}
-			</button>
-		</div>
-
-		<nav class="flex-1 flex flex-col gap-0.5 p-1 px-2">
-			{#each sections.filter((s) => s.id !== 'config') as section (section.id)}
-				{@const active =
-					isActive(section.path) ||
-					(section.id === 'ramos' && page.url.pathname.startsWith(`${prefix}/ramos/`))}
-				<button
-					class="flex items-center rounded-[10px] border-0 bg-transparent cursor-pointer text-content/60 whitespace-nowrap w-full relative transition-[background,opacity] duration-100 hover:bg-base-300 hover:opacity-90 {sidebarCollapsed
-						? 'justify-center p-2 px-0'
-						: 'gap-2.5 p-2 px-2.5 text-left'} {active ? 'opacity-100' : ''}"
-					onclick={() => navigate(section.path)}
-				>
-					{#if active}
-						<span
-							class="absolute -left-2 w-[3px] h-[18px] rounded-r-[3px]"
-							style="background: {section.color}"
-						></span>
-					{/if}
-					<span
-						class="inline-flex items-center justify-center w-7 h-7 rounded-[7px] text-[10px] font-bold text-white shrink-0"
-						style="background: {section.color}"
+				{#if !sidebarCollapsed}
+					<span class="text-xs font-semibold tracking-widest uppercase text-content/35"
+						>Secciones</span
 					>
-						<section.icon size="16" />
-					</span>
-					{#if !sidebarCollapsed}
-						<span class="text-sm font-medium">{section.label}</span>
+				{/if}
+				<button
+					class="bg-transparent border-0 cursor-pointer text-content/50 p-1 rounded-md hover:bg-base-300"
+					onclick={() => {
+						sidebarCollapsed = !sidebarCollapsed;
+						semestre.preferences.setSidebarCollapsed(sidebarCollapsed);
+					}}
+					aria-label={sidebarCollapsed ? 'Expandir sidebar' : 'Colapsar sidebar'}
+				>
+					{#if sidebarCollapsed}
+						<PanelLeftOpen class="w-5 h-5" />
+					{:else}
+						<PanelLeftClose class="w-5 h-5" />
 					{/if}
 				</button>
-			{/each}
+			</div>
 
-			{#if semestre.ramos.list.length > 0}
-				{#if !sidebarCollapsed}
-					<span
-						class="text-xs font-semibold tracking-widest uppercase text-content/35 px-2.5 pt-3 pb-1"
-						>Tus Ramos</span
-					>
-				{/if}
-				{#each semestre.ramos.list as [id, ramo] (id)}
+			<nav class="flex-1 flex flex-col gap-0.5 p-1 px-2">
+				{#each sections.filter((s) => s.id !== 'config') as section (section.id)}
+					{@const active =
+						isActive(section.path) ||
+						(section.id === 'ramos' && page.url.pathname.startsWith(`${prefix}/ramos/`))}
 					<button
 						class="flex items-center rounded-[10px] border-0 bg-transparent cursor-pointer text-content/60 whitespace-nowrap w-full relative transition-[background,opacity] duration-100 hover:bg-base-300 hover:opacity-90 {sidebarCollapsed
 							? 'justify-center p-2 px-0'
-							: 'gap-2.5 p-2 px-2.5 text-left'} {ramoDrawer.id === id ? 'opacity-100' : ''}"
-						onclick={() => ramoDrawer.open(id)}
+							: 'gap-2.5 p-2 px-2.5 text-left'} {active ? 'opacity-100' : ''}"
+						onclick={() => navigate(section.path)}
 					>
-						{#if ramoDrawer.id === id}
+						{#if active}
 							<span
 								class="absolute -left-2 w-[3px] h-[18px] rounded-r-[3px]"
-								style="background: {ramo.color}"
+								style="background: {section.color}"
 							></span>
 						{/if}
-						<span class="w-2.5 h-2.5 rounded-full shrink-0" style="background: {ramo.color}"></span>
+						<span
+							class="inline-flex items-center justify-center w-7 h-7 rounded-[7px] text-[10px] font-bold text-white shrink-0"
+							style="background: {section.color}"
+						>
+							<section.icon size="16" />
+						</span>
 						{#if !sidebarCollapsed}
-							<span class="text-sm font-medium">{ramo.name}</span>
+							<span class="text-sm font-medium">{section.label}</span>
 						{/if}
 					</button>
 				{/each}
-			{/if}
 
-			{#if showDevTools && ttActive}
-				<div
-					class="mt-auto bg-base-300/60 border border-base-400 rounded-lg p-2 {sidebarCollapsed
-						? 'flex justify-center'
-						: 'space-y-1.5'}"
-				>
-					{#if sidebarCollapsed}
-						<div class="w-2 h-2 bg-primary-100 rounded-full animate-pulse"></div>
-					{:else}
-						<div class="flex items-center gap-1.5">
-							<div class="w-2 h-2 bg-primary-100 rounded-full animate-pulse shrink-0"></div>
-							<span
-								class="text-[10px] font-mono font-bold text-primary-100 tracking-[0.05em] flex-1 truncate"
-								>{ttLabel}</span
-							>
-							<button
-								onclick={() => timeTravel.deactivate()}
-								class="h-5 w-5 flex items-center justify-center rounded border border-base-400 bg-base-200 text-[9px] font-bold text-content/30 hover:text-error-100 cursor-pointer transition-colors"
-								title="Desactivar">X</button
-							>
-						</div>
-						<div class="flex gap-1">
-							<button
-								onclick={() => timeTravel.stepBig(-1, ttUnit)}
-								class="flex-1 h-6 flex items-center justify-center rounded border border-base-400 bg-base-200 text-[10px] text-content/40 hover:text-content cursor-pointer transition-colors"
-								>◄◄</button
-							>
-							<button
-								onclick={() => timeTravel.step(-1, ttUnit)}
-								class="flex-1 h-6 flex items-center justify-center rounded border border-base-400 bg-base-200 text-[10px] text-content/40 hover:text-content cursor-pointer transition-colors"
-								>◄</button
-							>
-							<button
-								onclick={() => timeTravel.step(1, ttUnit)}
-								class="flex-1 h-6 flex items-center justify-center rounded border border-base-400 bg-base-200 text-[10px] text-content/40 hover:text-content cursor-pointer transition-colors"
-								>►</button
-							>
-							<button
-								onclick={() => timeTravel.stepBig(1, ttUnit)}
-								class="flex-1 h-6 flex items-center justify-center rounded border border-base-400 bg-base-200 text-[10px] text-content/40 hover:text-content cursor-pointer transition-colors"
-								>►►</button
-							>
-						</div>
-						<div class="flex gap-1">
-							<button
-								onclick={() => (ttUnit = 'minutos')}
-								class="flex-1 h-6 text-[9px] font-bold uppercase tracking-wider rounded border cursor-pointer transition-colors {ttUnit ===
-								'minutos'
-									? 'bg-primary-100/15 border-primary-200/30 text-primary-100'
-									: 'bg-base-200 border-base-400 text-content/30 hover:text-content/50'}"
-								>Min</button
-							>
-							<button
-								onclick={() => (ttUnit = 'horas')}
-								class="flex-1 h-6 text-[9px] font-bold uppercase tracking-wider rounded border cursor-pointer transition-colors {ttUnit ===
-								'horas'
-									? 'bg-primary-100/15 border-primary-200/30 text-primary-100'
-									: 'bg-base-200 border-base-400 text-content/30 hover:text-content/50'}"
-								>Hrs</button
-							>
-							<button
-								onclick={() => (ttUnit = 'dias')}
-								class="flex-1 h-6 text-[9px] font-bold uppercase tracking-wider rounded border cursor-pointer transition-colors {ttUnit ===
-								'dias'
-									? 'bg-primary-100/15 border-primary-200/30 text-primary-100'
-									: 'bg-base-200 border-base-400 text-content/30 hover:text-content/50'}"
-								>Días</button
-							>
-						</div>
+				{#if semestre.ramos.list.length > 0}
+					{#if !sidebarCollapsed}
+						<span
+							class="text-xs font-semibold tracking-widest uppercase text-content/35 px-2.5 pt-3 pb-1"
+							>Tus Ramos</span
+						>
 					{/if}
-				</div>
-			{/if}
-		</nav>
-
-		<div class="p-2 border-t border-base-400">
-			<button
-				class="flex items-center rounded-[10px] border-0 bg-transparent cursor-pointer text-content/60 whitespace-nowrap w-full relative transition-[background,opacity] duration-100 hover:bg-base-300 hover:opacity-90 {sidebarCollapsed
-					? 'justify-center p-2 px-0'
-					: 'gap-2.5 p-2 px-2.5 text-left'} {isActive(`${prefix}/configuracion/`)
-					? 'opacity-100'
-					: ''}"
-				onclick={() => navigate(`${prefix}/configuracion/`)}
-			>
-				{#if isActive(`${prefix}/configuracion/`)}
-					<span
-						class="absolute -left-2 w-[3px] h-[18px] rounded-r-[3px]"
-						style="background: var(--color-config-100)"
-					></span>
+					{#each semestre.ramos.list as [id, ramo] (id)}
+						<button
+							class="flex items-center rounded-[10px] border-0 bg-transparent cursor-pointer text-content/60 whitespace-nowrap w-full relative transition-[background,opacity] duration-100 hover:bg-base-300 hover:opacity-90 {sidebarCollapsed
+								? 'justify-center p-2 px-0'
+								: 'gap-2.5 p-2 px-2.5 text-left'} {ramoDrawer.id === id ? 'opacity-100' : ''}"
+							onclick={() => ramoDrawer.open(id)}
+						>
+							{#if ramoDrawer.id === id}
+								<span
+									class="absolute -left-2 w-[3px] h-[18px] rounded-r-[3px]"
+									style="background: {ramo.color}"
+								></span>
+							{/if}
+							<span class="w-2.5 h-2.5 rounded-full shrink-0" style="background: {ramo.color}"
+							></span>
+							{#if !sidebarCollapsed}
+								<span class="text-sm font-medium">{ramo.name}</span>
+							{/if}
+						</button>
+					{/each}
 				{/if}
-				<Bolt class="w-5 h-5 shrink-0 text-content/60" />
-				{#if !sidebarCollapsed}
-					<span class="text-sm font-medium">Config</span>
+
+				{#if showDevTools && ttActive}
+					<div
+						class="mt-auto bg-base-300/60 border border-base-400 rounded-lg p-2 {sidebarCollapsed
+							? 'flex justify-center'
+							: 'space-y-1.5'}"
+					>
+						{#if sidebarCollapsed}
+							<div class="w-2 h-2 bg-primary-100 rounded-full animate-pulse"></div>
+						{:else}
+							<div class="flex items-center gap-1.5">
+								<div class="w-2 h-2 bg-primary-100 rounded-full animate-pulse shrink-0"></div>
+								<span
+									class="text-[10px] font-mono font-bold text-primary-100 tracking-[0.05em] flex-1 truncate"
+									>{ttLabel}</span
+								>
+								<button
+									onclick={() => timeTravel.deactivate()}
+									class="h-5 w-5 flex items-center justify-center rounded border border-base-400 bg-base-200 text-[9px] font-bold text-content/30 hover:text-error-100 cursor-pointer transition-colors"
+									title="Desactivar">X</button
+								>
+							</div>
+							<div class="flex gap-1">
+								<button
+									onclick={() => timeTravel.stepBig(-1, ttUnit)}
+									class="flex-1 h-6 flex items-center justify-center rounded border border-base-400 bg-base-200 text-[10px] text-content/40 hover:text-content cursor-pointer transition-colors"
+									>◄◄</button
+								>
+								<button
+									onclick={() => timeTravel.step(-1, ttUnit)}
+									class="flex-1 h-6 flex items-center justify-center rounded border border-base-400 bg-base-200 text-[10px] text-content/40 hover:text-content cursor-pointer transition-colors"
+									>◄</button
+								>
+								<button
+									onclick={() => timeTravel.step(1, ttUnit)}
+									class="flex-1 h-6 flex items-center justify-center rounded border border-base-400 bg-base-200 text-[10px] text-content/40 hover:text-content cursor-pointer transition-colors"
+									>►</button
+								>
+								<button
+									onclick={() => timeTravel.stepBig(1, ttUnit)}
+									class="flex-1 h-6 flex items-center justify-center rounded border border-base-400 bg-base-200 text-[10px] text-content/40 hover:text-content cursor-pointer transition-colors"
+									>►►</button
+								>
+							</div>
+							<div class="flex gap-1">
+								<button
+									onclick={() => (ttUnit = 'minutos')}
+									class="flex-1 h-6 text-[9px] font-bold uppercase tracking-wider rounded border cursor-pointer transition-colors {ttUnit ===
+									'minutos'
+										? 'bg-primary-100/15 border-primary-200/30 text-primary-100'
+										: 'bg-base-200 border-base-400 text-content/30 hover:text-content/50'}"
+									>Min</button
+								>
+								<button
+									onclick={() => (ttUnit = 'horas')}
+									class="flex-1 h-6 text-[9px] font-bold uppercase tracking-wider rounded border cursor-pointer transition-colors {ttUnit ===
+									'horas'
+										? 'bg-primary-100/15 border-primary-200/30 text-primary-100'
+										: 'bg-base-200 border-base-400 text-content/30 hover:text-content/50'}"
+									>Hrs</button
+								>
+								<button
+									onclick={() => (ttUnit = 'dias')}
+									class="flex-1 h-6 text-[9px] font-bold uppercase tracking-wider rounded border cursor-pointer transition-colors {ttUnit ===
+									'dias'
+										? 'bg-primary-100/15 border-primary-200/30 text-primary-100'
+										: 'bg-base-200 border-base-400 text-content/30 hover:text-content/50'}"
+									>Días</button
+								>
+							</div>
+						{/if}
+					</div>
 				{/if}
-			</button>
-		</div>
-	</aside>
+			</nav>
 
-	<!-- ── MAIN CONTENT ── -->
-	<main class="flex-1 overflow-hidden overflow-y-auto p-3 max-sm:pb-[87px]">
-		{@render children()}
-	</main>
+			<div class="p-2 border-t border-base-400">
+				<button
+					class="flex items-center rounded-[10px] border-0 bg-transparent cursor-pointer text-content/60 whitespace-nowrap w-full relative transition-[background,opacity] duration-100 hover:bg-base-300 hover:opacity-90 {sidebarCollapsed
+						? 'justify-center p-2 px-0'
+						: 'gap-2.5 p-2 px-2.5 text-left'} {isActive(`${prefix}/configuracion/`)
+						? 'opacity-100'
+						: ''}"
+					onclick={() => navigate(`${prefix}/configuracion/`)}
+				>
+					{#if isActive(`${prefix}/configuracion/`)}
+						<span
+							class="absolute -left-2 w-[3px] h-[18px] rounded-r-[3px]"
+							style="background: var(--color-config-100)"
+						></span>
+					{/if}
+					<Bolt class="w-5 h-5 shrink-0 text-content/60" />
+					{#if !sidebarCollapsed}
+						<span class="text-sm font-medium">Config</span>
+					{/if}
+				</button>
+			</div>
+		</aside>
 
-	<!-- ── MOBILE BOTTOM NAV ── -->
-	<nav
-		class="hidden max-sm:flex fixed bottom-0 left-0 right-0 bg-base-200 border-t border-base-400 pt-1.5 pb-[max(8px,env(safe-area-inset-bottom))] z-40"
-	>
-		{#each bottomNav as section (section.id)}
-			<button
-				class="flex-1 flex flex-col items-center gap-[3px] py-1.5 border-0 bg-transparent cursor-pointer transition-opacity duration-100 rounded-lg {isActive(
-					section.path
-				)
-					? 'opacity-100 hover:opacity-100'
-					: 'opacity-40 hover:opacity-70'}"
-				style={isActive(section.path) ? `color: ${section.color}` : ''}
-				onclick={() => navigate(section.path)}
-			>
-				<section.icon class="w-6 h-6" />
-				<span class="text-[10px] font-medium">{section.label}</span>
-			</button>
-		{/each}
+		<!-- ── MAIN CONTENT ── -->
+		<main class="flex-1 overflow-hidden overflow-y-auto p-3 max-sm:pb-[87px]">
+			{@render children()}
+		</main>
 
-		<button
-			class="flex-1 flex flex-col items-center gap-[3px] py-1.5 border-0 bg-transparent cursor-pointer transition-opacity duration-100 rounded-lg {sheetActive
-				? 'opacity-100'
-				: 'opacity-40 hover:opacity-70'}"
-			style={sheetActive ? `color: ${sheetActive.color}` : ''}
-			onclick={() => (sheetOpen = true)}
+		<!-- ── MOBILE BOTTOM NAV ── -->
+		<nav
+			class="hidden max-sm:flex fixed bottom-0 left-0 right-0 bg-base-200 border-t border-base-400 pt-1.5 pb-[max(8px,env(safe-area-inset-bottom))] z-40"
 		>
-			<Ellipsis class="w-6 h-6" />
-			<span class="text-[10px] font-medium">Más</span>
-		</button>
-	</nav>
+			{#each bottomNav as section (section.id)}
+				<button
+					class="flex-1 flex flex-col items-center gap-[3px] py-1.5 border-0 bg-transparent cursor-pointer transition-opacity duration-100 rounded-lg {isActive(
+						section.path
+					)
+						? 'opacity-100 hover:opacity-100'
+						: 'opacity-40 hover:opacity-70'}"
+					style={isActive(section.path) ? `color: ${section.color}` : ''}
+					onclick={() => navigate(section.path)}
+				>
+					<section.icon class="w-6 h-6" />
+					<span class="text-[10px] font-medium">{section.label}</span>
+				</button>
+			{/each}
+
+			<button
+				class="flex-1 flex flex-col items-center gap-[3px] py-1.5 border-0 bg-transparent cursor-pointer transition-opacity duration-100 rounded-lg {sheetActive
+					? 'opacity-100'
+					: 'opacity-40 hover:opacity-70'}"
+				style={sheetActive ? `color: ${sheetActive.color}` : ''}
+				onclick={() => (sheetOpen = true)}
+			>
+				<Ellipsis class="w-6 h-6" />
+				<span class="text-[10px] font-medium">Más</span>
+			</button>
+		</nav>
+	</div>
 </div>
 
 <!-- ── BOTTOM SHEET ── -->
