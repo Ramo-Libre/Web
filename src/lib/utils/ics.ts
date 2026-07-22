@@ -135,6 +135,12 @@ export function parseICS(content: string): ParsedEvent[] {
 				}
 				if (event.location) parsed.location = event.location;
 				if (event.description) parsed.description = event.description;
+			} else if (event.dtstart) {
+				const d = event.dtstart;
+				const year = new Date().getFullYear();
+				parsed.date = `${year}-${String(d.month).padStart(2, '0')}-${String(d.day).padStart(2, '0')}`;
+				if (event.location) parsed.location = event.location;
+				if (event.description) parsed.description = event.description;
 			}
 		} else if (event.dtstart) {
 			const start = event.dtstart;
