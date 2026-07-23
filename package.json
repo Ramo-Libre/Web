@@ -13,7 +13,7 @@
 		"build": "vite build",
 		"tauri": "tauri",
 		"tauri:dev": "tauri dev --config src-tauri/tauri.dev.conf.json",
-		"tauri:dev:android": "JAVA_HOME=/usr/lib/jvm/java-21-openjdk bun tauri android dev --config src-tauri/tauri.dev.conf.json",
+		"tauri:dev:android": "JAVA_HOME=/usr/lib/jvm/java-21-openjdk tauri android dev --config src-tauri/tauri.dev.conf.json",
 		"tauri:build": "NO_STRIP=true tauri build",
 		"tauri:build:android": "tauri android build",
 		"tauri:build:ios": "tauri ios build",

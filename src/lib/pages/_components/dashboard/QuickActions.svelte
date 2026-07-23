@@ -138,7 +138,7 @@
 			></button>
 			<!-- Mobile: bottom sheet -->
 			<div
-				class="absolute bottom-0 left-0 right-0 bg-base-100 rounded-t-2xl shadow-xl border border-base-400 lg:hidden {action.id ===
+				class="absolute bottom-0 left-0 right-0 bg-base-100 rounded-t-2xl shadow-xl border border-base-400 pb-[env(safe-area-inset-bottom,0px)] lg:hidden {action.id ===
 					'inicia-semestre' ||
 				action.id === 'vista-previa' ||
 				action.id === 'importar-google' ||
