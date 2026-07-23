@@ -156,7 +156,7 @@ dominio Cert [0, 100]"
 
 		<!-- Mobile: bottom sheet -->
 		<div
-			class="sm:hidden absolute bottom-0 left-0 right-0 bg-base-100 rounded-t-2xl shadow-xl border border-base-400 max-h-[85vh] overflow-y-auto"
+			class="sm:hidden absolute bottom-0 left-0 right-0 bg-base-100 rounded-t-2xl shadow-xl border border-base-400 max-h-[85vh] overflow-y-auto pb-[env(safe-area-inset-bottom,0px)]"
 			in:fly={{ y: 100, duration: 250 }}
 			out:fly={{ y: 100, duration: 200 }}
 		>

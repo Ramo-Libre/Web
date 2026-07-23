@@ -150,9 +150,12 @@
 	});
 </script>
 
-<div class="flex flex-col h-dvh overflow-hidden relative text-content">
+<div
+	class="flex flex-col h-dvh overflow-hidden relative text-content pt-[env(safe-area-inset-top,0px)]"
+>
 	<TitleBar />
-	<div class="flex flex-1 overflow-hidden">
+
+	<div class="flex flex-1 overflow-hidden relative">
 		<!-- ── SIDEBAR (desktop) ── -->
 		<aside
 			class="hidden sm:flex flex-col bg-base-200 border-r border-base-400 overflow-hidden transition-all duration-200 ease-linear {sidebarCollapsed
@@ -185,7 +188,7 @@
 				</button>
 			</div>
 
-			<nav class="flex-1 flex flex-col gap-0.5 p-1 px-2">
+			<nav class="flex-1 flex flex-col gap-0.5 p-1 px-2 overflow-y-auto">
 				{#each sections.filter((s) => s.id !== 'config') as section (section.id)}
 					{@const active =
 						isActive(section.path) ||
@@ -341,13 +344,17 @@
 		</aside>
 
 		<!-- ── MAIN CONTENT ── -->
-		<main class="flex-1 overflow-hidden overflow-y-auto p-3 max-sm:pb-[87px]">
+		<!-- Cambiado max-sm:pb-[87px] por pb-[calc(70px+env(safe-area-inset-bottom))] para dar espacio dinámico a la navbar movil -->
+		<main
+			class="flex-1 overflow-hidden overflow-y-auto p-3 max-sm:pb-[calc(70px+env(safe-area-inset-bottom,0px))]"
+		>
 			{@render children()}
 		</main>
 
 		<!-- ── MOBILE BOTTOM NAV ── -->
+		<!-- Cambiado fixed por absolute dentro del contenedor flex flex-1 para que se mantenga fijo al pie sin salirse del Viewport -->
 		<nav
-			class="hidden max-sm:flex fixed bottom-0 left-0 right-0 bg-base-200 border-t border-base-400 pt-1.5 pb-[max(8px,env(safe-area-inset-bottom))] z-40"
+			class="hidden max-sm:flex absolute bottom-0 left-0 right-0 bg-base-200 border-t border-base-400 pt-1.5 pb-[max(8px,env(safe-area-inset-bottom))] z-40 shrink-0"
 		>
 			{#each bottomNav as section (section.id)}
 				<button
@@ -392,7 +399,7 @@
 		}}
 	>
 		<div
-			class="w-full bg-base-200 rounded-t-2xl px-4 pt-3 pb-[max(20px,env(safe-area-inset-bottom))] border border-base-400 border-b-0"
+			class="w-full bg-base-200 rounded-t-2xl px-4 pt-3 pb-[max(20px,env(safe-area-inset-bottom))] border border-base-400 border-b-0 max-h-[80vh] overflow-y-auto"
 		>
 			<div class="w-9 h-1 rounded-full bg-base-400 mx-auto mb-4"></div>
 
@@ -440,7 +447,7 @@
 								}}
 							>
 								<span class="w-3 h-3 rounded-full shrink-0" style="background: {ramo.color}"></span>
-								<span>{ramo.name}</span>
+								<span class="truncate">{ramo.name}</span>
 							</button>
 						{/each}
 					</div>

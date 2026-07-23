@@ -44,7 +44,7 @@
 			aria-label="Cancelar"
 		></button>
 		<div
-			class="absolute bottom-0 left-0 right-0 bg-base-100 rounded-t-2xl shadow-xl border border-base-400"
+			class="absolute bottom-0 left-0 right-0 bg-base-100 rounded-t-2xl shadow-xl border border-base-400 pb-[env(safe-area-inset-bottom,0px)]"
 			in:fly={{ y: 100, duration: 250 }}
 		>
 			<div
