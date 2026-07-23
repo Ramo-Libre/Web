@@ -198,6 +198,7 @@ class SemestresManager {
 		if (!this._semestres.has(id)) return;
 		this._active = id;
 		this.loadCurrentSemester();
+		changeBus.emit('semesters', 'updated', this._active);
 	}
 
 	rename(id: string, name: string) {
