@@ -32,7 +32,7 @@
 
 	function toggleTodo(
 		id: string,
-		todo: { text: string; completed: boolean; ramoId?: string; createdAt: string }
+		todo: { text: string; body?: string; completed: boolean; ramoId?: string; createdAt: string }
 	) {
 		semestre.todos.update(id, { ...todo, completed: !todo.completed });
 	}
@@ -156,6 +156,9 @@
 			>
 				{todo.text}
 			</span>
+			{#if todo.body}
+				<span class="text-xs text-content/30 truncate max-w-[200px] hidden sm:block">{todo.body}</span>
+			{/if}
 		</div>
 	{/each}
 </div>
