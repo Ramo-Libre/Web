@@ -63,7 +63,7 @@ jobs:
           echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > android/app/my-release-key.jks
 
       - name: 🏗️ Build APK with Tauri
-        run: bun tauri android build --apk --target aarch64-linux-android
+        run: bun tauri android build --apk
         env:
           JAVA_HOME: ${{ env.JAVA_HOME_21_X64 }}
           PUBLIC_SHOW_DEV_TOOLS: ${{ vars.PUBLIC_SHOW_DEV_TOOLS }}
