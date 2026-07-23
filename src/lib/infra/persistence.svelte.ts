@@ -1,30 +1,26 @@
-export interface LocalPersistenceAdapter {
-	save(key: string, data: unknown): void;
-	get<T>(key: string): T | null;
-	remove(key: string): void;
+export interface PersistenceAdapter {
+	save(key: string, data: unknown): Promise<void>;
+	get<T>(key: string): Promise<T | null>;
+	remove(key: string): Promise<void>;
 }
 
-class LocalStorageManager implements LocalPersistenceAdapter {
+class LocalStorageManager implements PersistenceAdapter {
 	private _prefix = 'RAMOLIBRE_V2_';
 
-	save(id_key: string, data: unknown): void {
+	async save(id_key: string, data: unknown): Promise<void> {
 		const key = this._prefix + id_key;
-		const strData = JSON.stringify(data);
-		localStorage.setItem(key, strData);
+		localStorage.setItem(key, JSON.stringify(data));
 	}
 
-	get<T>(id_key: string): T | null {
+	async get<T>(id_key: string): Promise<T | null> {
 		const key = this._prefix + id_key;
-		const strData = localStorage.getItem(key);
-		if (!strData) return null;
-		const objectData = JSON.parse(strData);
-		return objectData;
+		const str = localStorage.getItem(key);
+		return str ? (JSON.parse(str) as T) : null;
 	}
 
-	remove(id_key: string): void {
-		const key = this._prefix + id_key;
-		localStorage.removeItem(key);
+	async remove(id_key: string): Promise<void> {
+		localStorage.removeItem(this._prefix + id_key);
 	}
 }
 
-export const local = new LocalStorageManager();
+export const local: PersistenceAdapter = new LocalStorageManager();

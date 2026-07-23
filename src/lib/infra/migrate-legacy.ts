@@ -101,7 +101,7 @@ export function detectLegacy(): LegacyCounts | null {
 	return { semesters: legacySem.list.length, ramos, horarios, events, notasRamos };
 }
 
-export function runMigration(): void {
+export async function runMigration(): Promise<void> {
 	const semRaw = localStorage.getItem(SEM_KEY);
 	if (!semRaw) return;
 
@@ -123,8 +123,8 @@ export function runMigration(): void {
 		nameToUuid.get(name)!,
 		{ name }
 	]);
-	local.save(KEYS.semesters, semesters);
-	local.save(KEYS.active, activeUuid);
+	await local.save(KEYS.semesters, semesters);
+	await local.save(KEYS.active, activeUuid);
 
 	// Preferences (theme only)
 	const legacyPrefsRaw = localStorage.getItem(PREFS_KEY);
@@ -137,7 +137,7 @@ export function runMigration(): void {
 			// ignore
 		}
 	}
-	local.save(KEYS.preferences, {
+	await local.save(KEYS.preferences, {
 		theme: legacyTheme,
 		schedule: { showCalendarEvents: false, orientation: 'normal' },
 		calendar: { showHorarios: false },
@@ -170,7 +170,7 @@ export function runMigration(): void {
 				([id, r]) =>
 					[id, { name: r.nombre, color: r.color }] as [string, { name: string; color: string }]
 			);
-			local.save(uuid + '_' + KEYS.ramos, mapped);
+			await local.save(uuid + '_' + KEYS.ramos, mapped);
 		}
 
 		// Horarios → Schedule
@@ -211,7 +211,7 @@ export function runMigration(): void {
 		}
 
 		if (scheduleEntries.length > 0) {
-			local.save(uuid + '_' + KEYS.schedule, scheduleEntries);
+			await local.save(uuid + '_' + KEYS.schedule, scheduleEntries);
 		}
 	}
 }

@@ -4,6 +4,7 @@
 	import { onMount } from 'svelte';
 	import { SuiteFavicons } from '@ramo-libre/ui-themes';
 	import { PUBLIC_TAURI_BUILD } from '$env/static/public';
+	import { initApp } from '$lib/infra/semestres.svelte';
 
 	const isTauri = PUBLIC_TAURI_BUILD === 'true' || '__TAURI__' in window;
 
@@ -17,9 +18,13 @@
 		| undefined;
 
 	let pwaInfo = $state<PWAInfo>(undefined);
+	let ready = $state(false);
 	let { children } = $props();
 
 	onMount(async () => {
+		await initApp();
+		ready = true;
+
 		if (!isTauri) {
 			const { pwaInfo: info } = await import('virtual:pwa-info');
 			pwaInfo = info;
@@ -67,6 +72,12 @@
 	<link rel="icon" href={SuiteFavicons.web} />
 </svelte:head>
 
-<div class="">
-	{@render children()}
-</div>
+{#if ready}
+	<div class="">
+		{@render children()}
+	</div>
+{:else}
+	<div class="flex items-center justify-center h-screen">
+		<div class="animate-pulse text-content/40 text-sm">Cargando...</div>
+	</div>
+{/if}

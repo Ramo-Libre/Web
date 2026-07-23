@@ -14,12 +14,10 @@ export interface EntityChange {
 	timestamp: number;
 }
 
-function eventName(feature: FeatureId): string {
-	return `ramolibre:${feature}:change`;
-}
-
 class ChangeBus {
 	private _getSemesterId: () => string = () => '';
+	private _queue: Promise<void> = Promise.resolve();
+	private _handlers: Array<(event: EntityChange) => void | Promise<void>> = [];
 
 	setSemesterIdProvider(fn: () => string) {
 		this._getSemesterId = fn;
@@ -37,26 +35,39 @@ class ChangeBus {
 			origin: 'local',
 			timestamp: Date.now()
 		};
-		window.dispatchEvent(new CustomEvent(eventName(feature), { detail: event }));
+
+		this._queue = this._queue.then(async () => {
+			for (const handler of this._handlers) {
+				try {
+					await handler(event);
+				} catch (err) {
+					console.error('[ChangeBus] Handler falló para evento:', event, err);
+				}
+			}
+		});
 	}
 
-	subscribe(feature: FeatureId, handler: (event: EntityChange) => void): () => void {
-		const wrapper = (e: Event) => handler((e as CustomEvent<EntityChange>).detail);
-		window.addEventListener(eventName(feature), wrapper);
-		return () => window.removeEventListener(eventName(feature), wrapper);
+	subscribe(
+		feature: FeatureId,
+		handler: (event: EntityChange) => void | Promise<void>
+	): () => void {
+		const filtered = (event: EntityChange) => {
+			if (event.feature !== feature) return;
+			return handler(event);
+		};
+		this._handlers.push(filtered);
+		return () => {
+			const idx = this._handlers.indexOf(filtered);
+			if (idx >= 0) this._handlers.splice(idx, 1);
+		};
 	}
 
-	subscribeAll(handler: (event: EntityChange) => void): () => void {
-		const features: FeatureId[] = [
-			'preferences',
-			'ramos',
-			'schedule',
-			'escenarios',
-			'semesters',
-			'todos'
-		];
-		const unsubs = features.map((f) => this.subscribe(f, handler));
-		return () => unsubs.forEach((u) => u());
+	subscribeAll(handler: (event: EntityChange) => void | Promise<void>): () => void {
+		this._handlers.push(handler);
+		return () => {
+			const idx = this._handlers.indexOf(handler);
+			if (idx >= 0) this._handlers.splice(idx, 1);
+		};
 	}
 }
 

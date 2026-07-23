@@ -39,8 +39,11 @@ class SemestresManager {
 		if (browser) {
 			changeBus.setSemesterIdProvider(() => this._active);
 			syncRouter.init();
-			this.load();
 		}
+	}
+
+	async init(): Promise<void> {
+		await this.load();
 	}
 
 	get legacyData() {
@@ -51,7 +54,7 @@ class SemestresManager {
 		return this._active + '_' + id_key;
 	}
 
-	private load() {
+	private async load(): Promise<void> {
 		if (browser) {
 			const legacy = detectLegacy();
 			if (legacy) {
@@ -60,11 +63,11 @@ class SemestresManager {
 			}
 		}
 
-		this._active = local.get<string>(KEYS.active) || '';
-		const raw = local.get<SemestresSerial>(KEYS.semesters);
+		this._active = (await local.get<string>(KEYS.active)) || '';
+		const raw = await local.get<SemestresSerial>(KEYS.semesters);
 		this._semestres = new SvelteMap(raw ?? []);
 
-		const prefs = local.get<PreferencesSerial>(KEYS.preferences);
+		const prefs = await local.get<PreferencesSerial>(KEYS.preferences);
 		if (prefs) this._preferences.fromSerial(prefs);
 
 		if (!this._active && this._semestres.size > 0) {
@@ -77,20 +80,20 @@ class SemestresManager {
 			this._active = id;
 		}
 
-		local.save(KEYS.active, this._active);
-		local.save(KEYS.semesters, Array.from(this._semestres.entries()));
+		await local.save(KEYS.active, this._active);
+		await local.save(KEYS.semesters, Array.from(this._semestres.entries()));
 
-		this.loadCurrentSemester();
+		await this.loadCurrentSemester();
 	}
 
-	afterLegacyDecision(action: 'migrate' | 'discard') {
-		if (action === 'migrate') runMigration();
+	async afterLegacyDecision(action: 'migrate' | 'discard'): Promise<void> {
+		if (action === 'migrate') await runMigration();
 		cleanupLegacy();
 		this._legacyData = null;
-		this.load();
+		await this.load();
 	}
 
-	ensureActive() {
+	async ensureActive(): Promise<void> {
 		if (!this._active) {
 			if (this._semestres.size > 0) {
 				this._active = Array.from(this._semestres.keys())[0];
@@ -99,21 +102,21 @@ class SemestresManager {
 				this._semestres.set(id, { name: 'Mis Datos' });
 				this._active = id;
 			}
-			this.loadCurrentSemester();
+			await this.loadCurrentSemester();
 		}
 	}
 
-	loadCurrentSemester() {
-		const ramos = local.get<RamosSerial>(this.prefix(KEYS.ramos)) || DEFAULT_RAMOS;
+	async loadCurrentSemester(): Promise<void> {
+		const ramos = (await local.get<RamosSerial>(this.prefix(KEYS.ramos))) || DEFAULT_RAMOS;
 		this._ramos.fromSerial(ramos);
 
-		const schedule = local.get<ScheduleSerial>(this.prefix(KEYS.schedule)) || [];
+		const schedule = (await local.get<ScheduleSerial>(this.prefix(KEYS.schedule))) || [];
 		this._schedule.fromSerial(schedule);
 
-		const escenarios = local.get<EscenariosSerial>(this.prefix(KEYS.escenarios)) || [];
+		const escenarios = (await local.get<EscenariosSerial>(this.prefix(KEYS.escenarios))) || [];
 		this._escenarios.fromSerial(escenarios);
 
-		const todos = local.get<TodosSerial>(this.prefix(KEYS.todos)) || [];
+		const todos = (await local.get<TodosSerial>(this.prefix(KEYS.todos))) || [];
 		this._todos.fromSerial(todos);
 	}
 
@@ -129,7 +132,7 @@ class SemestresManager {
 		return this._semestres;
 	}
 
-	add(name: string): string {
+	async add(name: string): Promise<string> {
 		if (this._semestres.size === 1 && !this.hasData) {
 			this._semestres.set(this._active, { name });
 			changeBus.emit('semesters', 'updated', this._active);
@@ -139,22 +142,22 @@ class SemestresManager {
 		const id = generateUUID();
 		this._semestres.set(id, { name });
 		this._active = id;
-		this.loadCurrentSemester();
+		await this.loadCurrentSemester();
 		changeBus.emit('semesters', 'created', id);
 		return id;
 	}
 
-	remove(id: string) {
+	async remove(id: string): Promise<void> {
 		if (this._semestres.size <= 1) return;
 		const rmsKey = id + '_' + KEYS.ramos;
 		const schKey = id + '_' + KEYS.schedule;
 		const escKey = id + '_' + KEYS.escenarios;
 		const tdoKey = id + '_' + KEYS.todos;
 
-		const ramos = local.get<RamosSerial>(rmsKey) ?? [];
-		const schedule = local.get<ScheduleSerial>(schKey) ?? [];
-		const escenarios = local.get<EscenariosSerial>(escKey) ?? [];
-		const todos = local.get<TodosSerial>(tdoKey) ?? [];
+		const ramos = (await local.get<RamosSerial>(rmsKey)) ?? [];
+		const schedule = (await local.get<ScheduleSerial>(schKey)) ?? [];
+		const escenarios = (await local.get<EscenariosSerial>(escKey)) ?? [];
+		const todos = (await local.get<TodosSerial>(tdoKey)) ?? [];
 
 		for (const [ramoId] of ramos) {
 			changeBus.emit('ramos', 'deleted', ramoId, id);
@@ -172,7 +175,7 @@ class SemestresManager {
 		this._semestres.delete(id);
 		if (this._active === id) {
 			this._active = '';
-			this.loadCurrentSemester();
+			await this.loadCurrentSemester();
 		}
 		changeBus.emit('semesters', 'deleted', id);
 	}
@@ -186,18 +189,18 @@ class SemestresManager {
 		this._semestres.set(id, data);
 	}
 
-	removeSilent(id: string) {
+	async removeSilent(id: string): Promise<void> {
 		this._semestres.delete(id);
 		if (this._active === id) {
 			this._active = '';
-			this.loadCurrentSemester();
+			await this.loadCurrentSemester();
 		}
 	}
 
-	select(id: string) {
+	async select(id: string): Promise<void> {
 		if (!this._semestres.has(id)) return;
 		this._active = id;
-		this.loadCurrentSemester();
+		await this.loadCurrentSemester();
 		changeBus.emit('semesters', 'updated', this._active);
 	}
 
@@ -270,4 +273,9 @@ class SemestresManager {
 	}
 }
 
-export const semestre = new SemestresManager();
+const manager = new SemestresManager();
+export const semestre = manager;
+
+export async function initApp(): Promise<void> {
+	await manager.init();
+}

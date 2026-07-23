@@ -116,9 +116,9 @@ class SyncRouter {
 		}
 
 		if (this._init) {
-			this._unsubscribeRemote = this._adapter.onRemoteChanges((events) =>
-				this._handleRemoteEvents(events)
-			);
+			this._unsubscribeRemote = this._adapter.onRemoteChanges((events) => {
+				this._handleRemoteEvents(events);
+			});
 			try {
 				await this._adapter.connect();
 				await this._pushLocalState();
@@ -131,10 +131,10 @@ class SyncRouter {
 		}
 	}
 
-	init() {
+	async init() {
 		if (this._init || !browser) return;
 		this._init = true;
-		this._loadPushedSemesters();
+		await this._loadPushedSemesters();
 
 		this._setStatus(network.online ? 'disconnected' : 'offline');
 
@@ -158,9 +158,9 @@ class SyncRouter {
 			});
 		});
 
-		this._unsubscribeRemote = this._adapter.onRemoteChanges((events) =>
-			this._handleRemoteEvents(events)
-		);
+		this._unsubscribeRemote = this._adapter.onRemoteChanges((events) => {
+			this._handleRemoteEvents(events);
+		});
 		this._adapter.connect();
 
 		changeBus.subscribeAll(async (event) => {
@@ -168,9 +168,9 @@ class SyncRouter {
 			if (!policy?.persist) return;
 
 			if (event.feature === 'semesters') {
-				this._persistSemesters(event);
+				await this._persistSemesters(event);
 			} else {
-				this._persistFeature(event.feature);
+				await this._persistFeature(event.feature);
 			}
 
 			if (!policy?.sync) return;
@@ -179,7 +179,7 @@ class SyncRouter {
 			if (
 				event.feature === 'semesters' &&
 				event.action === 'created' &&
-				!this._semesterHasRealContent(event.entityId)
+				!(await this._semesterHasRealContent(event.entityId))
 			) {
 				return;
 			}
@@ -206,9 +206,9 @@ class SyncRouter {
 				const result = await this._trackedPush(entity);
 				if (result.accepted) {
 					this._pushedSemesters.add(event.entityId);
-					this._savePushedSemesters();
+					await this._savePushedSemesters();
 				} else if (result.conflict) {
-					this._persistConflict(result.conflict);
+					await this._persistConflict(result.conflict);
 				}
 				return;
 			}
@@ -230,7 +230,7 @@ class SyncRouter {
 					const result = await this._trackedPush(semEntity);
 					if (result.accepted) {
 						this._pushedSemesters.add(event.semesterId);
-						this._savePushedSemesters();
+						await this._savePushedSemesters();
 					}
 				}
 			}
@@ -251,22 +251,22 @@ class SyncRouter {
 
 			const result = await this._trackedPush(entity);
 			if (!result.accepted && result.conflict) {
-				this._persistConflict(result.conflict);
+				await this._persistConflict(result.conflict);
 			}
 		});
 	}
 
-	persistAll() {
+	async persistAll() {
 		if (!browser) return;
 		const features: FeatureId[] = ['preferences', 'ramos', 'schedule', 'escenarios', 'todos'];
 		for (const f of features) {
-			this._persistFeature(f);
+			await this._persistFeature(f);
 		}
-		this._persistActiveSem();
-		this._persistSemesterList();
+		await this._persistActiveSem();
+		await this._persistSemesterList();
 	}
 
-	private _handleRemoteEvents(events: EntityChange[]) {
+	private async _handleRemoteEvents(events: EntityChange[]) {
 		let hadSemesterEvents = false;
 
 		for (const event of events) {
@@ -277,13 +277,13 @@ class SyncRouter {
 
 				if (event.payload === null) {
 					if (event.entityId) {
-						semestre.removeSilent(event.entityId);
-						this._persistSemesterList();
-						this._removeOrphanSemesters(new Set([event.entityId]), new Set());
+						await semestre.removeSilent(event.entityId);
+						await this._persistSemesterList();
+						await this._removeOrphanSemesters(new Set([event.entityId]), new Set());
 					}
 				} else {
 					semestre.fromOne(event.entityId, event.payload as { name: string });
-					this._persistSemesterList();
+					await this._persistSemesterList();
 				}
 			} else {
 				const manager = semestre.managerFor(event.feature) as EntityManager;
@@ -291,12 +291,12 @@ class SyncRouter {
 					if (event.semesterId === semestre.activeId || !semestre.activeId) {
 						manager.removeSilent(event.entityId);
 					}
-					this._persistDirect(event.feature, event.semesterId, event.entityId, null);
+					await this._persistDirect(event.feature, event.semesterId, event.entityId, null);
 				} else {
 					if (event.semesterId === semestre.activeId || !semestre.activeId) {
 						manager.fromOne(event.entityId, event.payload);
 					}
-					this._persistDirect(event.feature, event.semesterId, event.entityId, event.payload);
+					await this._persistDirect(event.feature, event.semesterId, event.entityId, event.payload);
 				}
 			}
 		}
@@ -307,25 +307,25 @@ class SyncRouter {
 
 			if (
 				activeWasNeverSynced &&
-				!this._semesterHasRealContent(semestre.activeId) &&
+				!(await this._semesterHasRealContent(semestre.activeId)) &&
 				realSemestersArrived
 			) {
 				const bootstrapId = semestre.activeId;
-				semestre.removeSilent(bootstrapId);
+				await semestre.removeSilent(bootstrapId);
 				const firstReal = Array.from(semestre.semestres.entries()).sort(([, a], [, b]) =>
 					a.name.localeCompare(b.name)
 				)[0];
-				if (firstReal) semestre.select(firstReal[0]);
+				if (firstReal) await semestre.select(firstReal[0]);
 			} else {
-				semestre.ensureActive();
+				await semestre.ensureActive();
 			}
-			this._persistActiveSem();
+			await this._persistActiveSem();
 		}
 
-		semestre.loadCurrentSemester();
+		await semestre.loadCurrentSemester();
 	}
 
-	private _persistDirect(
+	private async _persistDirect(
 		feature: FeatureId,
 		semesterId: string,
 		entityId: string,
@@ -333,12 +333,12 @@ class SyncRouter {
 	) {
 		if (feature === 'preferences') return;
 		const key = semesterId + '_' + KEYS[feature];
-		const existing = local.get<[string, unknown][]>(key) ?? [];
+		const existing = (await local.get<[string, unknown][]>(key)) ?? [];
 		const idx = existing.findIndex(([id]) => id === entityId);
 		if (payload === null) {
 			if (idx >= 0) {
 				existing.splice(idx, 1);
-				local.save(key, existing);
+				await local.save(key, existing);
 			}
 		} else {
 			if (idx >= 0) {
@@ -346,59 +346,59 @@ class SyncRouter {
 			} else {
 				existing.push([entityId, payload]);
 			}
-			local.save(key, existing);
+			await local.save(key, existing);
 		}
 	}
 
-	private _persistFeature(feature: FeatureId) {
+	private async _persistFeature(feature: FeatureId) {
 		if (feature === 'preferences') {
-			local.save(KEYS.preferences, semestre.managerFor('preferences').toSerial());
+			await local.save(KEYS.preferences, semestre.managerFor('preferences').toSerial());
 		} else {
 			const semId = semestre.activeId;
-			local.save(semId + '_' + KEYS[feature], semestre.managerFor(feature).toSerial());
+			await local.save(semId + '_' + KEYS[feature], semestre.managerFor(feature).toSerial());
 		}
 	}
 
-	private _persistSemesters(event: EntityChange) {
-		this._persistActiveSem();
-		this._persistSemesterList();
+	private async _persistSemesters(event: EntityChange) {
+		await this._persistActiveSem();
+		await this._persistSemesterList();
 
 		if (event.action === 'deleted' && event.entityId) {
-			this._removeOrphanSemesters(new Set([event.entityId]), new Set());
+			await this._removeOrphanSemesters(new Set([event.entityId]), new Set());
 		}
 	}
 
-	private _removeOrphanSemesters(oldIds: Set<string>, newIds: Set<string>) {
+	private async _removeOrphanSemesters(oldIds: Set<string>, newIds: Set<string>) {
 		for (const id of oldIds) {
 			if (!newIds.has(id)) {
 				for (const key of ['RMS', 'SCH', 'ESC', 'TOD']) {
-					local.remove(id + '_' + key);
+					await local.remove(id + '_' + key);
 				}
 			}
 		}
 	}
 
-	private _persistActiveSem() {
-		local.save(KEYS.active, semestre.activeId);
+	private async _persistActiveSem() {
+		await local.save(KEYS.active, semestre.activeId);
 	}
 
-	private _persistSemesterList() {
-		local.save(KEYS.semesters, Array.from(semestre.semestres.entries()));
+	private async _persistSemesterList() {
+		await local.save(KEYS.semesters, Array.from(semestre.semestres.entries()));
 	}
 
-	private _persistConflict(conflict: ConflictEvent) {
-		const queue = local.get<ConflictEvent[]>(CONFLICT_QUEUE_KEY) ?? [];
+	private async _persistConflict(conflict: ConflictEvent) {
+		const queue = (await local.get<ConflictEvent[]>(CONFLICT_QUEUE_KEY)) ?? [];
 		queue.push(conflict);
-		local.save(CONFLICT_QUEUE_KEY, queue);
+		await local.save(CONFLICT_QUEUE_KEY, queue);
 	}
 
-	private _loadPushedSemesters() {
-		const saved = local.get<string[]>(KEYS.pushed);
+	private async _loadPushedSemesters() {
+		const saved = await local.get<string[]>(KEYS.pushed);
 		if (saved) this._pushedSemesters = new Set(saved);
 	}
 
-	private _savePushedSemesters() {
-		local.save(KEYS.pushed, Array.from(this._pushedSemesters));
+	private async _savePushedSemesters() {
+		await local.save(KEYS.pushed, Array.from(this._pushedSemesters));
 	}
 
 	private async _pushLocalState() {
@@ -420,7 +420,7 @@ class SyncRouter {
 		try {
 			for (const [id, data] of semestre.semestres) {
 				const semSeqKey = lksSeqKey(id, 'semesters', id);
-				if ((local.get<number>(semSeqKey) ?? 0) > 0) continue;
+				if (((await local.get<number>(semSeqKey)) ?? 0) > 0) continue;
 
 				const semResult = await this._trackedPush({
 					feature: 'semesters',
@@ -434,26 +434,38 @@ class SyncRouter {
 				});
 				if (semResult.accepted) {
 					this._pushedSemesters.add(id);
-					this._savePushedSemesters();
+					await this._savePushedSemesters();
 				}
 
-				const ramos = local.get<RamosSerial>(`${id}_${KEYS.ramos}`) || [];
-				const schedule = local.get<ScheduleSerial>(`${id}_${KEYS.schedule}`) || [];
-				const escenarios = local.get<EscenariosSerial>(`${id}_${KEYS.escenarios}`) || [];
-				const todos = local.get<TodosSerial>(`${id}_${KEYS.todos}`) || [];
+				const ramos = (await local.get<RamosSerial>(`${id}_${KEYS.ramos}`)) || [];
+				const schedule = (await local.get<ScheduleSerial>(`${id}_${KEYS.schedule}`)) || [];
+				const escenarios = (await local.get<EscenariosSerial>(`${id}_${KEYS.escenarios}`)) || [];
+				const todos = (await local.get<TodosSerial>(`${id}_${KEYS.todos}`)) || [];
 
-				const pendientesRamos: [string, unknown][] = ramos.filter(
-					([entId]) => (local.get<number>(lksSeqKey(id, 'ramos', entId)) ?? 0) === 0
-				);
-				const pendientesSchedule: [string, unknown][] = schedule.filter(
-					([evId]) => (local.get<number>(lksSeqKey(id, 'schedule', evId)) ?? 0) === 0
-				);
-				const pendientesEscenarios: [string, unknown][] = escenarios.filter(
-					([entId]) => (local.get<number>(lksSeqKey(id, 'escenarios', entId)) ?? 0) === 0
-				);
-				const pendientesTodos: [string, unknown][] = todos.filter(
-					([entId]) => (local.get<number>(lksSeqKey(id, 'todos', entId)) ?? 0) === 0
-				);
+				const pendientesRamos: [string, unknown][] = [];
+				for (const [entId, payload] of ramos) {
+					if (((await local.get<number>(lksSeqKey(id, 'ramos', entId))) ?? 0) === 0) {
+						pendientesRamos.push([entId, payload]);
+					}
+				}
+				const pendientesSchedule: [string, unknown][] = [];
+				for (const [evId, payload] of schedule) {
+					if (((await local.get<number>(lksSeqKey(id, 'schedule', evId))) ?? 0) === 0) {
+						pendientesSchedule.push([evId, payload]);
+					}
+				}
+				const pendientesEscenarios: [string, unknown][] = [];
+				for (const [entId, payload] of escenarios) {
+					if (((await local.get<number>(lksSeqKey(id, 'escenarios', entId))) ?? 0) === 0) {
+						pendientesEscenarios.push([entId, payload]);
+					}
+				}
+				const pendientesTodos: [string, unknown][] = [];
+				for (const [entId, payload] of todos) {
+					if (((await local.get<number>(lksSeqKey(id, 'todos', entId))) ?? 0) === 0) {
+						pendientesTodos.push([entId, payload]);
+					}
+				}
 
 				for (const [feature, pendientes] of [
 					['ramos', pendientesRamos] as const,
@@ -472,7 +484,7 @@ class SyncRouter {
 					);
 
 					for (const [entId, sequence] of inserted) {
-						local.save(lksSeqKey(id, feature, entId), sequence);
+						await local.save(lksSeqKey(id, feature, entId), sequence);
 					}
 
 					for (const entId of alreadyExisted) {
@@ -514,11 +526,12 @@ class SyncRouter {
 		}
 	}
 
-	private _semesterHasRealContent(semesterId: string): boolean {
-		const ramos = local.get<RamosSerial>(`${semesterId}_${KEYS.ramos}`) || [];
-		const schedule = local.get<ScheduleSerial>(`${semesterId}_${KEYS.schedule}`) || [];
-		const escenarios = local.get<EscenariosSerial>(`${semesterId}_${KEYS.escenarios}`) || [];
-		const todos = local.get<TodosSerial>(`${semesterId}_${KEYS.todos}`) || [];
+	private async _semesterHasRealContent(semesterId: string): Promise<boolean> {
+		const ramos = (await local.get<RamosSerial>(`${semesterId}_${KEYS.ramos}`)) || [];
+		const schedule = (await local.get<ScheduleSerial>(`${semesterId}_${KEYS.schedule}`)) || [];
+		const escenarios =
+			(await local.get<EscenariosSerial>(`${semesterId}_${KEYS.escenarios}`)) || [];
+		const todos = (await local.get<TodosSerial>(`${semesterId}_${KEYS.todos}`)) || [];
 		return ramos.length > 0 || schedule.length > 0 || escenarios.length > 0 || todos.length > 0;
 	}
 }
