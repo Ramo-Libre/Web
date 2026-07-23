@@ -5,10 +5,18 @@
 <h1 align="center">Ramo Libre — Web</h1>
 
 <p align="center">
-  <img src="https://img.shields.io/github/license/Ramo-Libre/Web" alt="License" />
-  <img src="https://img.shields.io/aur/version/ramolibre" alt="AUR version" />
-  <img src="https://img.shields.io/github/actions/workflow/status/Ramo-Libre/Web/deploy.yml?label=deploy" alt="Web deploy" />
-
+  <a href="https://opensource.org/license/mit">
+    <img src="https://img.shields.io/github/license/Ramo-Libre/Web" alt="License" />
+  </a>
+  <a href="https://aur.archlinux.org/packages/ramolibre">
+    <img src="https://img.shields.io/aur/version/ramolibre" alt="AUR version" />
+  </a>
+  <a href="https://github.com/Ramo-Libre/Web/releases/latest">
+    <img src="https://img.shields.io/github/v/release/Ramo-Libre/Web" alt="Web deploy" />
+  </a>
+  <a href="https://github.com/Ramo-Libre/Web/releases/latest">
+    <img src="https://img.shields.io/github/actions/workflow/status/Ramo-Libre/Web/android.yml?label=android" alt="Web deploy" />
+  </a>
 </p>
 
 Remake de [RamoLibre](https://github.com/madmti/RamoLibre), un gestor académico que funciona sin conexión y organiza todos tus datos por semestre. El proceso de análisis y diseño se documenta en la [Wiki del proyecto](https://github.com/Ramo-Libre/Web/wiki).
