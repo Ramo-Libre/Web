@@ -21,35 +21,48 @@ const LKS_PAYLOAD_PREFIX = 'RAMOLIBRE_V2_LKS_PAYLOAD_';
 const CONFLICT_QUEUE_KEY = 'RAMOLIBRE_V2_UNRESOLVED_CONFLICTS';
 const WATERMARK_KEY_PREFIX = 'RAMOLIBRE_V2_WATERMARK_';
 
-function getLastKnownSequence(semesterId: string, feature: string, entityId: string): number {
-	return local.get<number>(lksSeqKey(semesterId, feature, entityId)) ?? 0;
+async function getLastKnownSequence(
+	semesterId: string,
+	feature: string,
+	entityId: string
+): Promise<number> {
+	return (await local.get<number>(lksSeqKey(semesterId, feature, entityId))) ?? 0;
 }
 
-function setLastKnownSequence(semesterId: string, feature: string, entityId: string, seq: number) {
-	local.save(lksSeqKey(semesterId, feature, entityId), seq);
+async function setLastKnownSequence(
+	semesterId: string,
+	feature: string,
+	entityId: string,
+	seq: number
+) {
+	await local.save(lksSeqKey(semesterId, feature, entityId), seq);
 }
 
 function lksPayloadKey(semesterId: string, feature: string, entityId: string): string {
 	return `${LKS_PAYLOAD_PREFIX}${semesterId}_${feature}_${entityId}`;
 }
 
-function getLastKnownPayload(semesterId: string, feature: string, entityId: string): unknown {
-	return local.get<unknown>(lksPayloadKey(semesterId, feature, entityId));
+async function getLastKnownPayload(
+	semesterId: string,
+	feature: string,
+	entityId: string
+): Promise<unknown> {
+	return await local.get<unknown>(lksPayloadKey(semesterId, feature, entityId));
 }
 
-function setLastKnownPayload(
+async function setLastKnownPayload(
 	semesterId: string,
 	feature: string,
 	entityId: string,
 	payload: unknown
 ) {
-	local.save(lksPayloadKey(semesterId, feature, entityId), payload);
+	await local.save(lksPayloadKey(semesterId, feature, entityId), payload);
 }
 
-function persistConflict(conflict: ConflictEvent) {
-	const queue = local.get<ConflictEvent[]>(CONFLICT_QUEUE_KEY) ?? [];
+async function persistConflict(conflict: ConflictEvent) {
+	const queue = (await local.get<ConflictEvent[]>(CONFLICT_QUEUE_KEY)) ?? [];
 	queue.push(conflict);
-	local.save(CONFLICT_QUEUE_KEY, queue);
+	await local.save(CONFLICT_QUEUE_KEY, queue);
 }
 
 class PollingAdapter implements SyncAdapter {
@@ -80,7 +93,7 @@ class PollingAdapter implements SyncAdapter {
 			return;
 		}
 		this._userId = user.id;
-		const saved = local.get<number>(`${WATERMARK_KEY_PREFIX}${user.id}`);
+		const saved = await local.get<number>(`${WATERMARK_KEY_PREFIX}${user.id}`);
 		this._deviceWatermark = saved ?? 0;
 		this._connected = true;
 		console.log('[Sync:Polling] connect', {
@@ -93,14 +106,14 @@ class PollingAdapter implements SyncAdapter {
 		this._timer = setInterval(() => this._tick(), POLL_INTERVAL);
 	}
 
-	disconnect() {
+	async disconnect() {
 		console.log('[Sync:Polling] disconnect');
 		if (this._timer) {
 			clearInterval(this._timer);
 			this._timer = null;
 		}
 		if (this._deviceWatermark > 0 && this._userId) {
-			local.save(`${WATERMARK_KEY_PREFIX}${this._userId}`, this._deviceWatermark);
+			await local.save(`${WATERMARK_KEY_PREFIX}${this._userId}`, this._deviceWatermark);
 		}
 		this._connected = false;
 		this._userId = null;
@@ -116,7 +129,7 @@ class PollingAdapter implements SyncAdapter {
 			if (result.changes.length > 0) {
 				this._remoteHandler?.(result.changes);
 				this._deviceWatermark = result.watermark;
-				local.save(`${WATERMARK_KEY_PREFIX}${this._userId}`, this._deviceWatermark);
+				await local.save(`${WATERMARK_KEY_PREFIX}${this._userId}`, this._deviceWatermark);
 			}
 		} catch (e) {
 			console.warn('[Sync:Polling] _tick error', e);
@@ -131,7 +144,7 @@ class PollingAdapter implements SyncAdapter {
 
 		try {
 			const { semesterId, feature, entityId, payload } = entity;
-			const lastKnown = getLastKnownSequence(semesterId, feature, entityId);
+			const lastKnown = await getLastKnownSequence(semesterId, feature, entityId);
 
 			const result = await tryUpdate(
 				this._userId,
@@ -144,8 +157,8 @@ class PollingAdapter implements SyncAdapter {
 			);
 
 			if (result) {
-				setLastKnownSequence(semesterId, feature, entityId, result.sequence);
-				setLastKnownPayload(semesterId, feature, entityId, payload);
+				await setLastKnownSequence(semesterId, feature, entityId, result.sequence);
+				await setLastKnownPayload(semesterId, feature, entityId, payload);
 				return { accepted: true, serverSequence: result.sequence };
 			}
 
@@ -160,15 +173,15 @@ class PollingAdapter implements SyncAdapter {
 				);
 
 				if (insertResult) {
-					setLastKnownSequence(semesterId, feature, entityId, insertResult.sequence);
-					setLastKnownPayload(semesterId, feature, entityId, payload);
+					await setLastKnownSequence(semesterId, feature, entityId, insertResult.sequence);
+					await setLastKnownPayload(semesterId, feature, entityId, payload);
 					return { accepted: true, serverSequence: insertResult.sequence };
 				}
 			}
 
 			const current = await fetchEntity(this._userId, semesterId, feature, entityId);
 
-			const lastKnownPayload = getLastKnownPayload(semesterId, feature, entityId);
+			const lastKnownPayload = await getLastKnownPayload(semesterId, feature, entityId);
 			const serverPayload = current?.payload ?? null;
 			const serverSequence = current?.sequence ?? 0;
 
@@ -191,7 +204,7 @@ class PollingAdapter implements SyncAdapter {
 					lastKnownSequence: lastKnown,
 					serverSequence
 				};
-				persistConflict(conflict);
+				await persistConflict(conflict);
 			}
 
 			if (merged !== null) {
@@ -206,8 +219,8 @@ class PollingAdapter implements SyncAdapter {
 				);
 
 				if (retry) {
-					setLastKnownSequence(semesterId, feature, entityId, retry.sequence);
-					setLastKnownPayload(semesterId, feature, entityId, merged);
+					await setLastKnownSequence(semesterId, feature, entityId, retry.sequence);
+					await setLastKnownPayload(semesterId, feature, entityId, merged);
 					return { accepted: true, serverSequence: retry.sequence };
 				}
 			}
@@ -260,8 +273,8 @@ class PollingAdapter implements SyncAdapter {
 					});
 				}
 
-				setLastKnownSequence(row.semester_id, row.feature, row.entity_id, row.sequence);
-				setLastKnownPayload(row.semester_id, row.feature, row.entity_id, row.payload);
+				await setLastKnownSequence(row.semester_id, row.feature, row.entity_id, row.sequence);
+				await setLastKnownPayload(row.semester_id, row.feature, row.entity_id, row.payload);
 			}
 
 			return { changes, watermark: currentWatermark };
@@ -283,8 +296,8 @@ class PollingAdapter implements SyncAdapter {
 
 		for (const event of events) {
 			if (event.payload !== undefined) {
-				setLastKnownSequence(event.semesterId, event.feature, event.entityId, 0);
-				setLastKnownPayload(event.semesterId, event.feature, event.entityId, event.payload);
+				await setLastKnownSequence(event.semesterId, event.feature, event.entityId, 0);
+				await setLastKnownPayload(event.semesterId, event.feature, event.entityId, event.payload);
 			}
 		}
 

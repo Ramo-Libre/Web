@@ -13,6 +13,7 @@ jobs:
       PUBLIC_SHOW_DEV_TOOLS: 'true'
       PUBLIC_SUPABASE_URL: 'https://url.supabase.co'
       PUBLIC_SUPABASE_PUBLISHABLE_KEY: 'sb_super_secret_key'
+      PUBLIC_TAURI_BUILD: false
 
     steps:
       - name: 📥 Checkout Code

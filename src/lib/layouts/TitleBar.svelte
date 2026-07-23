@@ -1,7 +1,8 @@
 <script lang="ts">
+	import { PUBLIC_TAURI_BUILD } from '$env/static/public';
 	import { Minus, Square, X } from '@lucide/svelte';
 
-	const isTauri = import.meta.env.PUBLIC_TAURI_BUILD === 'true' || '__TAURI__' in window;
+	const isTauri = PUBLIC_TAURI_BUILD === 'true' || '__TAURI__' in window;
 	const isLinux = typeof navigator !== 'undefined' && navigator.platform.includes('Linux');
 	const showControls = isTauri && !isLinux;
 
@@ -13,7 +14,7 @@
 	}
 
 	async function minimize() {
-		(await getWindow()).minimize();
+		await (await getWindow()).minimize();
 	}
 
 	async function toggleMaximize() {
@@ -23,7 +24,7 @@
 	}
 
 	async function close() {
-		(await getWindow()).close();
+		await (await getWindow()).close();
 	}
 </script>
 

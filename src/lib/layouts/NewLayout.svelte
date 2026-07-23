@@ -123,7 +123,7 @@
 	);
 
 	function navigate(path: string) {
-		goto(path);
+		void goto(path);
 		sheetOpen = false;
 	}
 

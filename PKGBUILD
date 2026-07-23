@@ -20,8 +20,9 @@ build() {
   PUBLIC_SUPABASE_URL="https://ihgteikkevsfjwgbenxu.supabase.co" \
   PUBLIC_SUPABASE_PUBLISHABLE_KEY="sb_publishable_yBASTBrLn4YJ7de1jxI4kQ_tjhny6fD" \
   PUBLIC_CLOUD_SYNC_POLL_INTERVAL=10000 \
-  PUBLIC_ROLLUP_VISUALIZER=false \
+  PUBLIC_ROLLUP_VISUALIZER="false" \
   PUBLIC_RAMOLIBRE_LAB_URL=https://lab.ramolibre.app \
+  PUBLIC_TAURI_BUILD="true" \
   NO_STRIP=true \
   bun run tauri:build
 }

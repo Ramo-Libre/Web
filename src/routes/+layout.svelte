@@ -2,37 +2,58 @@
 	import '@ramo-libre/ui-themes/tailwind.css';
 	import './custom.css';
 	import { onMount } from 'svelte';
-	import { pwaInfo } from 'virtual:pwa-info';
 	import { SuiteFavicons } from '@ramo-libre/ui-themes';
+	import { PUBLIC_TAURI_BUILD } from '$env/static/public';
+	import { initApp } from '$lib/infra/semestres.svelte';
 
-	const isTauri = import.meta.env.PUBLIC_TAURI_BUILD === 'true' || '__TAURI__' in window;
+	const isTauri = PUBLIC_TAURI_BUILD === 'true' || '__TAURI__' in window;
+
+	type PWAInfo =
+		| {
+				webManifest: {
+					href: string;
+					linkTag: string;
+				};
+		  }
+		| undefined;
+
+	let pwaInfo = $state<PWAInfo>(undefined);
+	let ready = $state(false);
+	let { children } = $props();
 
 	onMount(async () => {
-		if (!isTauri && pwaInfo) {
-			const { registerSW } = await import('virtual:pwa-register');
-			registerSW({
-				immediate: true,
-				onRegistered(r: ServiceWorkerRegistration | undefined) {
-					if (!r) return;
+		await initApp();
+		ready = true;
 
-					const interval = setInterval(() => {
-						console.log('Checking for SW update...');
-						r.update();
-					}, 3600000);
+		if (!isTauri) {
+			const { pwaInfo: info } = await import('virtual:pwa-info');
+			pwaInfo = info;
 
-					console.log(`SW Registered`);
+			if (pwaInfo) {
+				const { registerSW } = await import('virtual:pwa-register');
+				registerSW({
+					immediate: true,
+					onRegistered(r: ServiceWorkerRegistration | undefined) {
+						if (!r) return;
 
-					return () => clearInterval(interval);
-				},
-				onRegisterError(error: Error) {
-					console.error('SW registration error', error);
-				}
-			});
+						const interval = setInterval(() => {
+							console.log('Checking for SW update...');
+							void r.update();
+						}, 3600000);
+
+						console.log(`SW Registered`);
+
+						return () => clearInterval(interval);
+					},
+					onRegisterError(error: Error) {
+						console.error('SW registration error', error);
+					}
+				});
+			}
 		}
 	});
 
 	let webManifest = $derived(!isTauri && pwaInfo ? pwaInfo.webManifest.linkTag : '');
-	let { children } = $props();
 
 	$effect(() => {
 		const root = document.documentElement;
@@ -51,6 +72,12 @@
 	<link rel="icon" href={SuiteFavicons.web} />
 </svelte:head>
 
-<div class="">
-	{@render children()}
-</div>
+{#if ready}
+	<div class="">
+		{@render children()}
+	</div>
+{:else}
+	<div class="flex items-center justify-center h-screen">
+		<div class="animate-pulse text-content/40 text-sm">Cargando...</div>
+	</div>
+{/if}

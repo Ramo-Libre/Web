@@ -30,7 +30,7 @@ export default defineConfig(
 		}
 	},
 	{
-		files: ['**/*.svelte', '**/*.svelte.ts', '**/*.svelte.js'],
+		files: ['**/*.ts', '**/*.svelte', '**/*.svelte.ts', '**/*.svelte.js'],
 		languageOptions: {
 			parserOptions: {
 				projectService: true,
@@ -38,9 +38,12 @@ export default defineConfig(
 				parser: ts.parser,
 				svelteConfig
 			}
+		},
+		rules: {
+			'@typescript-eslint/no-floating-promises': 'error'
 		}
 	},
 	{
-		ignores: ['src-tauri/', 'build/']
+		ignores: ['src-tauri/', 'build/', 'pwa-assets.config.ts']
 	}
 );

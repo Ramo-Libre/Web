@@ -96,7 +96,7 @@
 
 	function navTo(path: string) {
 		ramoDrawer.close();
-		goto(path);
+		void goto(path);
 	}
 
 	function escenarioStatus(esc: Escenario) {

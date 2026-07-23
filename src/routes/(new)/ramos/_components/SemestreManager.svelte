@@ -21,10 +21,10 @@
 	const activeSemestre = $derived(semestre.active);
 	const activeSemestreId = $derived(semestre.activeId);
 
-	function handleAddKey(e: KeyboardEvent) {
+	async function handleAddKey(e: KeyboardEvent) {
 		if (e.key === 'Enter') {
 			if (!newSemesterName.trim()) return;
-			semestre.add(newSemesterName.trim());
+			await semestre.add(newSemesterName.trim());
 			newSemesterName = '';
 		}
 	}
@@ -74,9 +74,9 @@
 		deleteConfirmData = { id, name };
 	}
 
-	function confirmDelete() {
+	async function confirmDelete() {
 		if (!deleteConfirmData) return;
-		semestre.remove(deleteConfirmData.id);
+		await semestre.remove(deleteConfirmData.id);
 		deleteConfirmData = null;
 	}
 
@@ -147,8 +147,8 @@
 					<div
 						class="group flex items-center justify-between px-6 py-3 hover:bg-base-100 transition-colors cursor-pointer"
 						onclick={() => semestre.select(id)}
-						onkeydown={(e) => {
-							if (e.key === 'Enter' || e.key === ' ') semestre.select(id);
+						onkeydown={async (e) => {
+							if (e.key === 'Enter' || e.key === ' ') await semestre.select(id);
 						}}
 						role="button"
 						tabindex="0"

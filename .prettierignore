@@ -12,3 +12,5 @@ modules/
 
 # tauri
 src-tauri/
+
+*.md

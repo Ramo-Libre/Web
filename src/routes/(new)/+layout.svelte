@@ -16,7 +16,7 @@
 				await supabase.from('backups').delete().eq('user_id', data.user.id);
 				await supabase.auth.signOut();
 			}
-			semestre.afterLegacyDecision('migrate');
+			await semestre.afterLegacyDecision('migrate');
 		} finally {
 			migrating = false;
 		}
@@ -30,7 +30,7 @@
 				await supabase.from('backups').delete().eq('user_id', data.user.id);
 				await supabase.auth.signOut();
 			}
-			semestre.afterLegacyDecision('discard');
+			await semestre.afterLegacyDecision('discard');
 		} finally {
 			migrating = false;
 		}

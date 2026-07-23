@@ -73,6 +73,7 @@ jobs:
           PUBLIC_ROLLUP_VISUALIZER: ${{ vars.PUBLIC_ROLLUP_VISUALIZER }}
           PUBLIC_RAMOLIBRE_LAB_URL: ${{ vars.PUBLIC_RAMOLIBRE_LAB_URL }}
           PUBLIC_CLOUD_SYNC_POLL_INTERVAL: ${{ vars.PUBLIC_CLOUD_SYNC_POLL_INTERVAL }}
+          PUBLIC_TAURI_BUILD: 'true'
 
       - name: ✍️ Sign APK with apksigner
         run: |

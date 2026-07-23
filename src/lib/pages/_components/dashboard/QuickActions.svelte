@@ -75,14 +75,14 @@
 		openModal = id;
 	}
 
-	function handleFinish() {
+	async function handleFinish() {
 		const name = wizardName.trim() || recomendado;
-		semestre.add(name);
+		await semestre.add(name);
 		for (const r of wizardRamos) {
 			if (r.name.trim()) semestre.ramos.add({ name: r.name.trim(), color: r.color });
 		}
 		openModal = null;
-		goto('/ramos#semesters');
+		await goto('/ramos#semesters');
 	}
 </script>
 
