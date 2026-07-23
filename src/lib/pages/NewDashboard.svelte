@@ -5,6 +5,7 @@
 	import CargaMensual from './_components/dashboard/CargaMensual.svelte';
 	import ProbabilidadesCard from './_components/dashboard/ProbabilidadesCard.svelte';
 	import UpcomingEventsCard from './_components/dashboard/UpcomingEventsCard.svelte';
+	import TodosOverviewCard from './_components/dashboard/TodosOverviewCard.svelte';
 	import QuickActions from './_components/dashboard/QuickActions.svelte';
 
 	let now = $state(getNow());
@@ -23,6 +24,7 @@
 	<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
 		<ProbabilidadesCard />
 		<UpcomingEventsCard {now} class="lg:row-span-2" />
+		<TodosOverviewCard />
 		<QuickActions />
 	</div>
 </div>
