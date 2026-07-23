@@ -38,7 +38,7 @@
 
 						const interval = setInterval(() => {
 							console.log('Checking for SW update...');
-							r.update();
+							void r.update();
 						}, 3600000);
 
 						console.log(`SW Registered`);

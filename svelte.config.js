@@ -16,7 +16,13 @@ const config = {
 			strict: true,
 			fallback: '404.html',
 			precompress: false
-		})
+		}),
+		prerender: {
+			handleHttpError: ({ path, message }) => {
+				if (path === '/manifest.webmanifest') return;
+				throw message;
+			}
+		}
 	}
 };
 

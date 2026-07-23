@@ -13,7 +13,7 @@
 	}
 
 	async function minimize() {
-		(await getWindow()).minimize();
+		await (await getWindow()).minimize();
 	}
 
 	async function toggleMaximize() {
@@ -23,7 +23,7 @@
 	}
 
 	async function close() {
-		(await getWindow()).close();
+		await (await getWindow()).close();
 	}
 </script>
 

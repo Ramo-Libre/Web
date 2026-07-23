@@ -117,7 +117,7 @@ class SyncRouter {
 
 		if (this._init) {
 			this._unsubscribeRemote = this._adapter.onRemoteChanges((events) => {
-				this._handleRemoteEvents(events);
+				void this._handleRemoteEvents(events);
 			});
 			try {
 				await this._adapter.connect();
@@ -159,9 +159,9 @@ class SyncRouter {
 		});
 
 		this._unsubscribeRemote = this._adapter.onRemoteChanges((events) => {
-			this._handleRemoteEvents(events);
+			void this._handleRemoteEvents(events);
 		});
-		this._adapter.connect();
+		void this._adapter.connect();
 
 		changeBus.subscribeAll(async (event) => {
 			const policy = SYNC_POLICIES[event.feature];

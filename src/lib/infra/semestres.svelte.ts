@@ -38,7 +38,7 @@ class SemestresManager {
 	constructor() {
 		if (browser) {
 			changeBus.setSemesterIdProvider(() => this._active);
-			syncRouter.init();
+			void syncRouter.init();
 		}
 	}
 
@@ -269,7 +269,7 @@ class SemestresManager {
 			this._todos.fromSerial(entry.todos ?? []);
 		}
 
-		syncRouter.persistAll();
+		void syncRouter.persistAll();
 	}
 }
 

@@ -55,7 +55,7 @@
 	}
 
 	function copyKey(key: string) {
-		navigator.clipboard.writeText(key);
+		void navigator.clipboard.writeText(key);
 		copiedKey = key;
 		setTimeout(() => {
 			if (copiedKey === key) copiedKey = null;
