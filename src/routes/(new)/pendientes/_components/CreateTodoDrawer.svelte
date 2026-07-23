@@ -60,10 +60,20 @@
 		if (editId) {
 			const current = semestre.todos.get(editId);
 			if (current) {
-				semestre.todos.update(editId, { ...current, text: todoText, body: todoBody, ramoId: selectedRamoId });
+				semestre.todos.update(editId, {
+					...current,
+					text: todoText,
+					body: todoBody,
+					ramoId: selectedRamoId
+				});
 			}
 		} else {
-			semestre.todos.add({ text: todoText, body: todoBody, completed: false, ramoId: selectedRamoId });
+			semestre.todos.add({
+				text: todoText,
+				body: todoBody,
+				completed: false,
+				ramoId: selectedRamoId
+			});
 		}
 		onClose();
 	}

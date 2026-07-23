@@ -34,7 +34,9 @@
 	});
 
 	const circumference = 2 * Math.PI * 36;
-	const dashOffset = $derived(total > 0 ? circumference - (pct / 100) * circumference : circumference);
+	const dashOffset = $derived(
+		total > 0 ? circumference - (pct / 100) * circumference : circumference
+	);
 </script>
 
 <div class="bg-base-100 border border-base-400 rounded-xl p-4 shadow-sm">
@@ -57,13 +59,17 @@
 			<div class="relative shrink-0">
 				<svg width="80" height="80" viewBox="0 0 80 80">
 					<circle
-						cx="40" cy="40" r="36"
+						cx="40"
+						cy="40"
+						r="36"
 						fill="none"
 						stroke="var(--color-base-300)"
 						stroke-width="6"
 					/>
 					<circle
-						cx="40" cy="40" r="36"
+						cx="40"
+						cy="40"
+						r="36"
 						fill="none"
 						stroke="var(--color-todos-100)"
 						stroke-width="6"
@@ -74,7 +80,9 @@
 						class="transition-all duration-500"
 					/>
 				</svg>
-				<span class="absolute inset-0 flex items-center justify-center text-sm font-bold text-content">
+				<span
+					class="absolute inset-0 flex items-center justify-center text-sm font-bold text-content"
+				>
 					{pct}%
 				</span>
 			</div>
@@ -82,18 +90,18 @@
 			<div class="flex flex-col gap-1.5 min-w-0 flex-1">
 				{#each rows as row (row.name)}
 					<div class="flex items-center gap-2 min-w-0">
-						<span
-							class="w-2 h-2 rounded-full shrink-0"
-							style="background: {row.color}"
-						></span>
+						<span class="w-2 h-2 rounded-full shrink-0" style="background: {row.color}"></span>
 						<span class="text-xs text-content/60 truncate flex-1">{row.name}</span>
 						<div class="w-16 h-1.5 bg-base-300 rounded-full overflow-hidden shrink-0">
 							<div
 								class="h-full rounded-full transition-all duration-300"
-								style="width: {row.total > 0 ? (row.done / row.total) * 100 : 0}%; background: {row.color}"
+								style="width: {row.total > 0
+									? (row.done / row.total) * 100
+									: 0}%; background: {row.color}"
 							></div>
 						</div>
-						<span class="text-xs text-content/40 shrink-0 tabular-nums">{row.done}/{row.total}</span>
+						<span class="text-xs text-content/40 shrink-0 tabular-nums">{row.done}/{row.total}</span
+						>
 					</div>
 				{/each}
 			</div>

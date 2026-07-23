@@ -157,7 +157,9 @@
 				{todo.text}
 			</span>
 			{#if todo.body}
-				<span class="text-xs text-content/30 truncate max-w-[200px] hidden sm:block">{todo.body}</span>
+				<span class="text-xs text-content/30 truncate max-w-[200px] hidden sm:block"
+					>{todo.body}</span
+				>
 			{/if}
 		</div>
 	{/each}
