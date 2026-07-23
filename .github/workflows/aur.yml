@@ -1,0 +1,55 @@
+name: Publish to AUR
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+concurrency:
+  group: 'aur-publish'
+  cancel-in-progress: true
+
+jobs:
+  aur-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve Version
+        run: |
+          git fetch --tags --force
+          # Si fue provocado por un tag (push tags), toma ese tag; si fue manual, toma el último tag v*
+          if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
+            VERSION_TAG=${GITHUB_REF#refs/tags/}
+          else
+            VERSION_TAG=$(git tag --list "v*" --sort=-v:refname | head -n 1)
+          fi
+
+          VERSION_NO_V=${VERSION_TAG#v}
+          echo "VERSION_NO_V=${VERSION_NO_V}" >> "$GITHUB_ENV"
+          echo "Resolved version tag: ${VERSION_TAG} (${VERSION_NO_V})"
+
+      - name: 🍞 Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: 🏷️ Run update-version script
+        run: bun scripts/update-version.js ${{ env.VERSION_NO_V }}
+
+      - name: 📦 Generate .SRCINFO
+        run: |
+          sudo apt-get update && sudo apt-get install -y pacman-package-manager
+          makepkg --printsrcinfo > .SRCINFO
+
+      - name: 🏔️ Deploy to AUR
+        uses: ksm2/aur-deploy-action@v3
+        with:
+          pkgname: ramolibre
+          pkgbuild: ./PKGBUILD
+          commit_username: ${{ github.actor }}
+          commit_email: ${{ github.actor }}@users.noreply.github.com
+          ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+          commit_message: "chore: release v${{ env.VERSION_NO_V }}"
