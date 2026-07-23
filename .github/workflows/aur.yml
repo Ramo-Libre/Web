@@ -1,9 +1,6 @@
 name: Publish to AUR
 
 on:
-  push:
-    tags:
-      - 'v*'
   workflow_dispatch:
 
 concurrency:
