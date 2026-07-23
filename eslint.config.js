@@ -41,6 +41,6 @@ export default defineConfig(
 		}
 	},
 	{
-		ignores: ['static/wasm/**/*.js', 'modules/**']
+		ignores: ['src-tauri/', 'build/']
 	}
 );
