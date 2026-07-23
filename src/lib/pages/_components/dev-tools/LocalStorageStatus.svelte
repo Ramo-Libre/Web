@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
+	import { clearAllPersistence } from '$lib/infra/persistence.svelte';
 	import { HardDrive, Trash2, RefreshCw, Copy, Check, Skull } from '@lucide/svelte';
 
 	let storageInfo = $state<{ key: string; size: number }[]>([]);
@@ -40,18 +41,18 @@
 		calculateStorage();
 	}
 
-	function nukeAll() {
+	async function nukeAll() {
 		const confirm1 = confirm(
-			'¿Estás seguro de que quieres borrar ABSOLUTAMENTE TODO el LocalStorage? Esto incluye preferencias, temas y datos de desarrollo.'
+			'¿Estás seguro de que quieres borrar ABSOLUTAMENTE TODO el storage? Esto incluye preferencias, temas y datos de desarrollo.'
 		);
 		if (!confirm1) return;
 
 		const confirm2 = confirm('¿Última oportunidad? Se perderán todas las configuraciones.');
 		if (!confirm2) return;
 
-		localStorage.clear();
+		await clearAllPersistence();
 		calculateStorage();
-		window.location.reload(); // Recargamos para que la app se inicialice desde cero
+		window.location.reload();
 	}
 
 	function copyKey(key: string) {

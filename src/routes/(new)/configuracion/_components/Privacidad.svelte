@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { account } from '$lib/infra/account.svelte';
+	import { clearAllPersistence } from '$lib/infra/persistence.svelte';
 	import { Trash, TriangleAlert, UserX } from '@lucide/svelte';
 	import { fade } from 'svelte/transition';
 
@@ -7,8 +8,8 @@
 	let showDeleteAccountModal = $state(false);
 	let isLogedIn = $derived(account.isAuthenticated);
 
-	function confirmDeleteLocal() {
-		localStorage.clear();
+	async function confirmDeleteLocal() {
+		await clearAllPersistence();
 		window.location.reload();
 		showDeleteLocalModal = false;
 	}
