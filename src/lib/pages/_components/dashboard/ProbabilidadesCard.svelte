@@ -86,7 +86,7 @@
 	const escTotal = $derived(ramoEscenarios.reduce((sum, r) => sum + r.escenarios.length, 0));
 </script>
 
-<div class="bg-base-100 border border-base-400 rounded-xl p-4 shadow-sm lg:self-start">
+<div class="bg-base-100 border border-base-400 rounded-xl p-4 shadow-sm">
 	<div class="flex items-center justify-between mb-3">
 		<div class="flex items-center gap-1.5">
 			<TrendingUp class="h-4 w-4 text-grades-100" />

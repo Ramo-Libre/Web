@@ -22,9 +22,13 @@
 		<CargaMensual {now} />
 	</div>
 	<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-		<ProbabilidadesCard />
-		<UpcomingEventsCard {now} class="lg:row-span-2" />
-		<TodosOverviewCard />
-		<QuickActions />
+		<div class="flex flex-col gap-4">
+			<ProbabilidadesCard />
+			<TodosOverviewCard />
+		</div>
+		<div class="flex flex-col gap-4">
+			<UpcomingEventsCard {now} />
+			<QuickActions />
+		</div>
 	</div>
 </div>
