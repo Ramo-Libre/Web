@@ -9,3 +9,6 @@ bun.lockb
 static/
 .github/
 modules/
+
+# tauri
+src-tauri/

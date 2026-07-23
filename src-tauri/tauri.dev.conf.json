@@ -1,0 +1,17 @@
+{
+	"$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+	"productName": "Ramo Libre (Dev)",
+	"identifier": "cl.ramolibre.app.dev",
+	"app": {
+		"windows": [
+			{
+				"title": "Ramo Libre [DEV]"
+			}
+		]
+	},
+	"bundle": {
+		"android": {
+			"debugApplicationIdSuffix": ".debug"
+		}
+	}
+}

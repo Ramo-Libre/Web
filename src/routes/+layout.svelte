@@ -5,8 +5,10 @@
 	import { pwaInfo } from 'virtual:pwa-info';
 	import { SuiteFavicons } from '@ramo-libre/ui-themes';
 
+	const isTauri = import.meta.env.PUBLIC_TAURI_BUILD === 'true' || '__TAURI__' in window;
+
 	onMount(async () => {
-		if (pwaInfo) {
+		if (!isTauri && pwaInfo) {
 			const { registerSW } = await import('virtual:pwa-register');
 			registerSW({
 				immediate: true,
@@ -29,7 +31,7 @@
 		}
 	});
 
-	let webManifest = $derived(pwaInfo ? pwaInfo.webManifest.linkTag : '');
+	let webManifest = $derived(!isTauri && pwaInfo ? pwaInfo.webManifest.linkTag : '');
 	let { children } = $props();
 
 	$effect(() => {
