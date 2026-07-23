@@ -238,12 +238,14 @@ export class EscenariosManager implements Serializable<EscenariosSerial> {
 		const e = this._data.get(id);
 		if (!e) return;
 		this._data.set(id, { ...e, lastResult: result });
+		changeBus.emit('escenarios', 'updated', id);
 	}
 
 	setLastHash(id: string, hash: string) {
 		const e = this._data.get(id);
 		if (!e) return;
 		this._data.set(id, { ...e, lastHash: hash });
+		changeBus.emit('escenarios', 'updated', id);
 	}
 
 	remove(id: string) {
