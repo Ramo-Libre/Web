@@ -48,6 +48,9 @@ jobs:
           PUBLIC_SHOW_DEV_TOOLS: ${{ vars.PUBLIC_SHOW_DEV_TOOLS }}
           PUBLIC_SUPABASE_URL: ${{ secrets.PUBLIC_SUPABASE_URL }}
           PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
+          PUBLIC_ROLLUP_VISUALIZER: ${{ vars.PUBLIC_ROLLUP_VISUALIZER }}
+          PUBLIC_RAMOLIBRE_LAB_URL: ${{ vars.PUBLIC_RAMOLIBRE_LAB_URL }}
+          PUBLIC_CLOUD_SYNC_POLL_INTERVAL: ${{ vars.PUBLIC_CLOUD_SYNC_POLL_INTERVAL }}
 
       - name: 🚀 Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
