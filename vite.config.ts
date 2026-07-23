@@ -72,6 +72,23 @@ export default defineConfig(({ mode }) => {
 						enabled: false
 					}
 				}),
+			isTauriBuild &&
+				({
+					name: 'pwa-stub',
+					resolveId(id) {
+						if (id === 'virtual:pwa-info' || id === 'virtual:pwa-register') {
+							return '\0' + id;
+						}
+					},
+					load(id) {
+						if (id === '\0virtual:pwa-info') {
+							return 'export const pwaInfo = undefined;';
+						}
+						if (id === '\0virtual:pwa-register') {
+							return 'export function registerSW() {}';
+						}
+					}
+				} as PluginOption),
 			useRollupVisualizer &&
 				(visualizer({
 					emitFile: true,

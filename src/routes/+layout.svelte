@@ -2,37 +2,53 @@
 	import '@ramo-libre/ui-themes/tailwind.css';
 	import './custom.css';
 	import { onMount } from 'svelte';
-	import { pwaInfo } from 'virtual:pwa-info';
 	import { SuiteFavicons } from '@ramo-libre/ui-themes';
+	import { PUBLIC_TAURI_BUILD } from '$env/static/public';
 
-	const isTauri = import.meta.env.PUBLIC_TAURI_BUILD === 'true' || '__TAURI__' in window;
+	const isTauri = PUBLIC_TAURI_BUILD === 'true' || '__TAURI__' in window;
+
+	type PWAInfo =
+		| {
+				webManifest: {
+					href: string;
+					linkTag: string;
+				};
+		  }
+		| undefined;
+
+	let pwaInfo = $state<PWAInfo>(undefined);
+	let { children } = $props();
 
 	onMount(async () => {
-		if (!isTauri && pwaInfo) {
-			const { registerSW } = await import('virtual:pwa-register');
-			registerSW({
-				immediate: true,
-				onRegistered(r: ServiceWorkerRegistration | undefined) {
-					if (!r) return;
+		if (!isTauri) {
+			const { pwaInfo: info } = await import('virtual:pwa-info');
+			pwaInfo = info;
 
-					const interval = setInterval(() => {
-						console.log('Checking for SW update...');
-						r.update();
-					}, 3600000);
+			if (pwaInfo) {
+				const { registerSW } = await import('virtual:pwa-register');
+				registerSW({
+					immediate: true,
+					onRegistered(r: ServiceWorkerRegistration | undefined) {
+						if (!r) return;
 
-					console.log(`SW Registered`);
+						const interval = setInterval(() => {
+							console.log('Checking for SW update...');
+							r.update();
+						}, 3600000);
 
-					return () => clearInterval(interval);
-				},
-				onRegisterError(error: Error) {
-					console.error('SW registration error', error);
-				}
-			});
+						console.log(`SW Registered`);
+
+						return () => clearInterval(interval);
+					},
+					onRegisterError(error: Error) {
+						console.error('SW registration error', error);
+					}
+				});
+			}
 		}
 	});
 
 	let webManifest = $derived(!isTauri && pwaInfo ? pwaInfo.webManifest.linkTag : '');
-	let { children } = $props();
 
 	$effect(() => {
 		const root = document.documentElement;
