@@ -32,10 +32,7 @@ writeFileSync(cargoTomlPath, cargoToml);
 // ── src-tauri/Cargo.lock ──
 const cargoLockPath = 'src-tauri/Cargo.lock';
 let cargoLock = readFileSync(cargoLockPath, 'utf8');
-cargoLock = cargoLock.replace(
-	/(name = "app"\nversion = ")[^"]*"/,
-	`$1${version}"`,
-);
+cargoLock = cargoLock.replace(/(name = "app"\nversion = ")[^"]*"/, `$1${version}"`);
 writeFileSync(cargoLockPath, cargoLock);
 
 // ── src-tauri/tauri.conf.json ──
