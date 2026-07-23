@@ -45,9 +45,9 @@ jobs:
           targets: aarch64-linux-android
 
       - name: 🤖 Setup Android NDK
-        uses: nsetup/action-setup-android-ndk@v1
+        uses: nttld/setup-ndk@v1
         with:
-          ndk-version: '29.0.13846066'
+          ndk-version: r27c
 
       - name: 🏷️ Update version files
         run: bun scripts/update-version.js ${{ env.VERSION_NO_V }}
@@ -65,7 +65,7 @@ jobs:
       - name: 🏗️ Build APK with Tauri
         run: bun tauri android build --apk --target aarch64-linux-android
         env:
-          JAVA_HOME: /usr/lib/jvm/temurin-21-jdk-amd64
+          JAVA_HOME: ${{ env.JAVA_HOME_21_X64 }}
           PUBLIC_SHOW_DEV_TOOLS: ${{ vars.PUBLIC_SHOW_DEV_TOOLS }}
           PUBLIC_SUPABASE_URL: ${{ secrets.PUBLIC_SUPABASE_URL }}
           PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
