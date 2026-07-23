@@ -1,7 +1,8 @@
 <script lang="ts">
+	import { PUBLIC_TAURI_BUILD } from '$env/static/public';
 	import { Minus, Square, X } from '@lucide/svelte';
 
-	const isTauri = import.meta.env.PUBLIC_TAURI_BUILD === 'true' || '__TAURI__' in window;
+	const isTauri = PUBLIC_TAURI_BUILD === 'true' || '__TAURI__' in window;
 	const isLinux = typeof navigator !== 'undefined' && navigator.platform.includes('Linux');
 	const showControls = isTauri && !isLinux;
 
