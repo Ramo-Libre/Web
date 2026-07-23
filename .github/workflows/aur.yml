@@ -41,8 +41,8 @@ jobs:
           sudo apt-get update && sudo apt-get install -y pacman-package-manager
           makepkg --printsrcinfo > .SRCINFO
 
-      - name: 🏔️ Deploy to AUR
-        uses: ksm2/aur-deploy-action@v3
+      - name: Deploy to AUR
+        uses: KSXGitHub/github-actions-deploy-aur@v2.7.0
         with:
           pkgname: ramolibre
           pkgbuild: ./PKGBUILD
