@@ -4,7 +4,6 @@
 
 	const total = $derived(semestre.todos.map.size);
 	const completed = $derived(semestre.todos.getByCompleted(true).length);
-	const pending = $derived(total - completed);
 	const pct = $derived(total > 0 ? Math.round((completed / total) * 100) : 0);
 
 	const ramos = $derived(semestre.ramos.list);
