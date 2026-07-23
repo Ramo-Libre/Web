@@ -57,7 +57,7 @@
 	}
 </script>
 
-<div class="bg-base-100 border border-base-400 rounded-xl p-4 shadow-sm lg:self-start {className}">
+<div class="bg-base-100 border border-base-400 rounded-xl p-4 shadow-sm {className}">
 	<div class="flex items-center justify-between mb-3">
 		<div class="flex items-center gap-1.5">
 			<CalendarDays class="h-4 w-4 text-calendar-100" />

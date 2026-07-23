@@ -8,6 +8,7 @@
 	import { buildNotasContext } from '$lib/ai/context-notas';
 	import { buildConfiguracionContext } from '$lib/ai/context-configuracion';
 	import { buildDashboardContext } from '$lib/ai/context-dashboard';
+	import { buildPendientesContext } from '$lib/ai/context-pendientes';
 
 	type ContextItem = {
 		label: string;
@@ -45,6 +46,11 @@
 			label: 'Configuración',
 			desc: 'Preferencias y ajustes del sistema.',
 			build: buildConfiguracionContext
+		},
+		{
+			label: 'Pendientes',
+			desc: 'Tareas por hacer y resumen en el panel.',
+			build: buildPendientesContext
 		},
 		{
 			label: 'Panel Principal',

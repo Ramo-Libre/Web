@@ -5,6 +5,7 @@ import { SvelteDate, SvelteMap } from 'svelte/reactivity';
 
 interface Todo {
 	text: string;
+	body?: string;
 	completed: boolean;
 	ramoId?: string;
 	createdAt: string;

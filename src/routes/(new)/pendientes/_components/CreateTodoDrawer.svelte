@@ -12,6 +12,7 @@
 	let { show, editId = undefined, onClose }: Props = $props();
 
 	let text = $state('');
+	let body = $state('');
 	let selectedRamoId = $state<string | undefined>(undefined);
 
 	function resize(el: HTMLTextAreaElement) {
@@ -41,25 +42,38 @@
 			const todo = semestre.todos.get(editId);
 			if (todo) {
 				text = todo.text;
+				body = todo.body ?? '';
 				selectedRamoId = todo.ramoId;
 				resizeVisible();
 				return;
 			}
 		}
 		text = '';
+		body = '';
 		selectedRamoId = undefined;
 	});
 
 	function confirm() {
 		const todoText = text.trim();
 		if (!todoText) return;
+		const todoBody = body.trim() || undefined;
 		if (editId) {
 			const current = semestre.todos.get(editId);
 			if (current) {
-				semestre.todos.update(editId, { ...current, text: todoText, ramoId: selectedRamoId });
+				semestre.todos.update(editId, {
+					...current,
+					text: todoText,
+					body: todoBody,
+					ramoId: selectedRamoId
+				});
 			}
 		} else {
-			semestre.todos.add({ text: todoText, completed: false, ramoId: selectedRamoId });
+			semestre.todos.add({
+				text: todoText,
+				body: todoBody,
+				completed: false,
+				ramoId: selectedRamoId
+			});
 		}
 		onClose();
 	}
@@ -121,6 +135,16 @@
 								confirm();
 							}
 						}}></textarea>
+				</div>
+
+				<div class="border-t border-base-300 pt-4">
+					<textarea
+						bind:value={body}
+						oninput={handleInput}
+						placeholder="Detalles (opcional)"
+						class="todo-textarea-input w-full bg-transparent border-none outline-none text-sm text-content/70 placeholder-content/20 p-0 resize-none overflow-hidden"
+						rows="2"
+						style="white-space: pre-wrap"></textarea>
 				</div>
 
 				<div class="border-t border-base-300 pt-4">
@@ -215,6 +239,16 @@
 								confirm();
 							}
 						}}></textarea>
+				</div>
+
+				<div class="border-t border-base-300 pt-4">
+					<textarea
+						bind:value={body}
+						oninput={handleInput}
+						placeholder="Detalles (opcional)"
+						class="todo-textarea-input w-full bg-transparent border-none outline-none text-sm text-content/70 placeholder-content/20 p-0 resize-none overflow-hidden"
+						rows="2"
+						style="white-space: pre-wrap"></textarea>
 				</div>
 
 				<div class="border-t border-base-300 pt-4">
