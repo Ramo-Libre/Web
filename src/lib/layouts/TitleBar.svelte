@@ -5,7 +5,6 @@
 	const isLinux = typeof navigator !== 'undefined' && navigator.platform.includes('Linux');
 	const showControls = isTauri && !isLinux;
 
-
 	let isMaximized = $state(false);
 
 	async function getWindow() {
