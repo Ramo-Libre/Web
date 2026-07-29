@@ -39,11 +39,11 @@
 		<div id="about" class="break-inside-avoid">
 			<About ondevtap={handleDevTap} />
 		</div>
-	</div>
 
-	{#if devPanelUnlocked}
-		<div class="mt-6" in:fly={{ y: 10, duration: 300 }}>
-			<DevPanel />
-		</div>
-	{/if}
+		{#if devPanelUnlocked}
+			<div id="dev-panel" class="break-inside-avoid" in:fly={{ y: 10, duration: 300 }}>
+				<DevPanel />
+			</div>
+		{/if}
+	</div>
 </div>

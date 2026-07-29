@@ -9,20 +9,6 @@
     "core:default",
     "store:default",
     {
-      "identifier": "fs:allow-exists",
-      "allow": [
-        { "path": "$APPDATA" },
-        { "path": "$APPDATA/*" }
-      ]
-    },
-    {
-      "identifier": "fs:allow-read-text-file",
-      "allow": [
-        { "path": "$APPDATA" },
-        { "path": "$APPDATA/*" }
-      ]
-    },
-    {
       "identifier": "fs:allow-read-dir",
       "allow": [
         { "path": "$APPDATA" },
