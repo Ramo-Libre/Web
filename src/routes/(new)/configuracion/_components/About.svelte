@@ -3,6 +3,8 @@
 	import Icon from '@iconify/svelte';
 	import { Globe, Heart, CodeXml, GraduationCap } from '@lucide/svelte';
 	import { SuiteFavicons } from '@ramo-libre/ui-themes';
+
+	let { ondevtap }: { ondevtap?: () => void } = $props();
 </script>
 
 <div
@@ -17,7 +19,12 @@
 			<img src={SuiteFavicons.web} alt="Ramo Libre Logo" class="w-12 h-12" />
 		</div>
 		<h1 class="text-2xl font-bold text-content uppercase tracking-tight">Ramo Libre</h1>
-		<p class="text-xs font-mono text-content/40 mt-1">{VERSION} • Open Source</p>
+		<button
+			onclick={ondevtap}
+			onkeydown={(e) => e.key === 'Enter' && ondevtap?.()}
+			class="text-xs font-mono text-content/40 mt-1 cursor-pointer select-none bg-transparent border-none hover:text-content/60 transition-colors"
+			>{VERSION} • Open Source</button
+		>
 	</div>
 
 	<div class="p-6 space-y-8">
