@@ -5,6 +5,21 @@
 	import Privacidad from './_components/Privacidad.svelte';
 	import Account from './_components/Account.svelte';
 	import OtherApps from '$lib/pages/_components/dashboard/OtherApps.svelte';
+	import DevPanel from '$lib/dev/DevPanel.svelte';
+
+	let devPanelUnlocked = $state(false);
+	let tapCount = $state(0);
+	let tapTimer: ReturnType<typeof setTimeout>;
+
+	function handleDevTap() {
+		tapCount++;
+		clearTimeout(tapTimer);
+		tapTimer = setTimeout(() => (tapCount = 0), 2000);
+		if (tapCount >= 7) {
+			devPanelUnlocked = true;
+			tapCount = 0;
+		}
+	}
 </script>
 
 <div in:fly={{ y: 10, duration: 300, delay: 100 }} class="w-full">
@@ -22,7 +37,13 @@
 			<Privacidad />
 		</div>
 		<div id="about" class="break-inside-avoid">
-			<About />
+			<About ondevtap={handleDevTap} />
 		</div>
+
+		{#if devPanelUnlocked}
+			<div id="dev-panel" class="break-inside-avoid" in:fly={{ y: 10, duration: 300 }}>
+				<DevPanel />
+			</div>
+		{/if}
 	</div>
 </div>

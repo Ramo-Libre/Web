@@ -7,6 +7,21 @@
   ],
   "permissions": [
     "core:default",
-    "store:default"
+    "store:default",
+    {
+      "identifier": "fs:allow-read-dir",
+      "allow": [
+        { "path": "$APPDATA" },
+        { "path": "$APPDATA/*" },
+        { "path": "$APPDATA/**" }
+      ]
+    },
+    {
+      "identifier": "fs:allow-size",
+      "allow": [
+        { "path": "$APPDATA" },
+        { "path": "$APPDATA/*" }
+      ]
+    }
   ]
 }
