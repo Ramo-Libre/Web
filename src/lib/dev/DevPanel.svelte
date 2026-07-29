@@ -7,7 +7,8 @@
 	let loading = $state(false);
 	let error = $state<string | null>(null);
 
-	const isTauri = PUBLIC_TAURI_BUILD === 'true' || (typeof window !== 'undefined' && '__TAURI__' in window);
+	const isTauri =
+		PUBLIC_TAURI_BUILD === 'true' || (typeof window !== 'undefined' && '__TAURI__' in window);
 
 	async function refresh() {
 		loading = true;
@@ -75,7 +76,11 @@
 						{/if}
 						<span class="text-sm font-mono text-content truncate">{entry.name}</span>
 						<span class="text-[10px] text-content/30 ml-auto shrink-0">
-							{entry.isDirectory ? 'dir' : entry.sizeBytes != null ? formatBytes(entry.sizeBytes) : ''}
+							{entry.isDirectory
+								? 'dir'
+								: entry.sizeBytes != null
+									? formatBytes(entry.sizeBytes)
+									: ''}
 						</span>
 					</div>
 				{/each}

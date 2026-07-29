@@ -21,7 +21,9 @@ export async function listAppDataDir(): Promise<DirEntryInfo[]> {
 		if (e.isFile) {
 			try {
 				info.sizeBytes = await size(await join(dir, e.name));
-			} catch { /* ignore */ }
+			} catch {
+				/* ignore */
+			}
 		}
 		result.push(info);
 	}
