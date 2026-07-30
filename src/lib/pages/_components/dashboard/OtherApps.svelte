@@ -1,10 +1,7 @@
 <script lang="ts">
 	import { ExternalLink } from '@lucide/svelte';
 	import { SuiteFavicons } from '@ramo-libre/ui-themes';
-	import { PUBLIC_TAURI_BUILD } from '$env/static/public';
 	import { openExternal } from '$lib/utils/openExternal';
-
-	const isTauri = PUBLIC_TAURI_BUILD === 'true' || '__TAURI__' in window;
 
 	const apps = [
 		{
