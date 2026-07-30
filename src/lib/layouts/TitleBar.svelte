@@ -35,7 +35,10 @@
 		data-tauri-drag-region
 		class="select-none flex items-center h-9 px-3 bg-base-200 border-b border-base-400 text-content/60 shrink-0"
 	>
-		<div data-tauri-drag-region class="flex-1 flex items-center gap-2 text-xs font-medium tracking-wide">
+		<div
+			data-tauri-drag-region
+			class="flex-1 flex items-center gap-2 text-xs font-medium tracking-wide"
+		>
 			<img src={SuiteFavicons.web} alt="" class="w-4 h-4" />
 			Ramo Libre
 		</div>
