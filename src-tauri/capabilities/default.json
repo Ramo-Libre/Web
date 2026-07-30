@@ -8,6 +8,7 @@
   "permissions": [
     "core:default",
     "store:default",
+    "deep-link:default",
     {
       "identifier": "fs:allow-read-dir",
       "allow": [

@@ -1,9 +1,12 @@
 import { browser } from '$app/environment';
+import { PUBLIC_TAURI_BUILD } from '$env/static/public';
 import type { Provider, User } from '@supabase/supabase-js';
 import { supabase } from '$lib/supabase/client';
 import { syncRouter } from './sync-router.svelte';
 import { noopAdapter } from './sync-noop.svelte';
 import { pollingAdapter } from './sync-polling.svelte';
+
+const isTauri = PUBLIC_TAURI_BUILD === 'true' || '__TAURI__' in globalThis;
 
 class AccountManager {
 	private _user = $state<User | null>(null);
@@ -51,7 +54,7 @@ class AccountManager {
 		const { error } = await supabase.auth.signInWithOAuth({
 			provider,
 			options: {
-				redirectTo: window.location.origin
+				redirectTo: isTauri ? 'ramolibre://auth-callback' : window.location.origin
 			}
 		});
 		if (error) console.error('Login error:', error.message);
