@@ -9,6 +9,7 @@
     "core:default",
     "store:default",
     "deep-link:default",
+    "opener:default",
     {
       "identifier": "fs:allow-read-dir",
       "allow": [

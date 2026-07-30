@@ -13,6 +13,7 @@
 	import StatusPanel from './_components/StatusPanel.svelte';
 	import ComputedVariables from './_components/ComputedVariables.svelte';
 	import { ArrowLeft, Trash2, Plus } from '@lucide/svelte';
+	import { openExternal } from '$lib/utils/openExternal';
 	import EscenarioGrid from './_components/EscenarioGrid.svelte';
 	import CreateEscenarioDrawer from './_components/CreateEscenarioDrawer.svelte';
 	import type { RenderType, Escenario } from '$lib/features/notas.svelte';
@@ -166,7 +167,7 @@
 		if (browser) window.location.hash = '';
 	}
 
-	function handleExportToLab() {
+	async function handleExportToLab() {
 		if (!selectedEscenarioId) return;
 		const esc = semestre.escenarios.get(selectedEscenarioId);
 		if (!esc) return;
@@ -182,7 +183,7 @@
 			date: new Date().toISOString()
 		});
 		const labUrl = env.PUBLIC_RAMOLIBRE_LAB_URL ?? 'https://lab.ramolibre.app';
-		window.open(`${labUrl}?share=${payload}`, '_blank');
+		await openExternal(`${labUrl}?share=${payload}`);
 	}
 
 	function handleGradeChange(variable: string, value: number | null) {
