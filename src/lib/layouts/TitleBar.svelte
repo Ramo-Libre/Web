@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { PUBLIC_TAURI_BUILD } from '$env/static/public';
+	import { SuiteFavicons } from '@ramo-libre/ui-themes';
+	import { VERSION } from '$lib/utils/version';
 	import { Minus, Square, X } from '@lucide/svelte';
 
 	const isTauri = PUBLIC_TAURI_BUILD === 'true' || '__TAURI__' in window;
@@ -33,7 +35,15 @@
 		data-tauri-drag-region
 		class="select-none flex items-center h-9 px-3 bg-base-200 border-b border-base-400 text-content/60 shrink-0"
 	>
-		<div data-tauri-drag-region class="flex-1 text-xs font-medium tracking-wide">Ramo Libre</div>
+		<div
+			data-tauri-drag-region
+			class="flex-1 flex items-center gap-2 text-xs font-medium tracking-wide"
+		>
+			<img src={SuiteFavicons.web} alt="" class="w-4 h-4" />
+			Ramo Libre
+		</div>
+
+		<span class="text-[10px] text-content/30 select-none">{VERSION}</span>
 
 		{#if showControls}
 			<div class="flex items-center -mr-1">

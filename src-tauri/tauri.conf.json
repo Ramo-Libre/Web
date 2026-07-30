@@ -24,6 +24,16 @@
 			"csp": null
 		}
 	},
+	"plugins": {
+		"deep-link": {
+			"mobile": [
+				{ "host": "auth-callback", "pathPrefix": ["/"] }
+			],
+			"desktop": {
+				"schemes": ["ramolibre"]
+			}
+		}
+	},
 	"bundle": {
 		"active": true,
 		"targets": "all",

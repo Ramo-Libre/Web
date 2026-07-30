@@ -65,7 +65,9 @@
 	"dependencies": {
 		"@pipobscure/ical": "^1.0.0",
 		"@supabase/supabase-js": "^2.110.6",
+		"@tauri-apps/plugin-deep-link": "^2.4.9",
 		"@tauri-apps/plugin-fs": "^2.5.1",
+		"@tauri-apps/plugin-opener": "^2.5.4",
 		"@tauri-apps/plugin-store": "^2.4.4"
 	}
 }

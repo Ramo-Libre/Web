@@ -5,6 +5,7 @@
 	import { SuiteFavicons } from '@ramo-libre/ui-themes';
 	import { PUBLIC_TAURI_BUILD } from '$env/static/public';
 	import { initApp } from '$lib/infra/semestres.svelte';
+	import { supabase } from '$lib/supabase/client';
 
 	const isTauri = PUBLIC_TAURI_BUILD === 'true' || '__TAURI__' in window;
 
@@ -25,7 +26,14 @@
 		await initApp();
 		ready = true;
 
-		if (!isTauri) {
+		if (isTauri) {
+			const { onOpenUrl } = await import('@tauri-apps/plugin-deep-link');
+			await onOpenUrl(async (urls) => {
+				await supabase.auth.exchangeCodeForSession(urls[0]).then(({ error }) => {
+					if (error) console.error('Error completando sesión OAuth:', error);
+				});
+			});
+		} else {
 			const { pwaInfo: info } = await import('virtual:pwa-info');
 			pwaInfo = info;
 
