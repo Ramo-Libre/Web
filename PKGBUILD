@@ -9,11 +9,30 @@ license=('MIT')
 depends=('gtk3' 'webkit2gtk-4.1' 'cairo' 'glib2')
 makedepends=('rust' 'bun' 'git')
 
-# Clona la etiqueta/tag exacta lanzada en GitHub
-source=("${pkgname}::git+https://github.com/Ramo-Libre/Web.git#tag=v${pkgver}")
-sha256sums=('SKIP')
+# Uso normal (descarga el tag de GitHub):
+#   makepkg -si
+#
+# Uso local (empaqueta el binario ya compilado, sin descargar de GitHub):
+#   LOCAL_RELEASE=1 makepkg -si
+if [ -n "${LOCAL_RELEASE}" ]; then
+  pkgrel=2
+  source=()
+  sha256sums=()
+else
+  # Clona la etiqueta/tag exacta lanzada en GitHub
+  source=("${pkgname}::git+https://github.com/Ramo-Libre/Web.git#tag=v${pkgver}")
+  sha256sums=('SKIP')
+fi
 
 build() {
+  if [ -n "${LOCAL_RELEASE}" ]; then
+    if [ ! -x "${startdir}/src-tauri/target/release/app" ]; then
+      error "Binario de release no encontrado. Ejecuta 'bun run tauri:build' primero."
+      return 1
+    fi
+    return 0
+  fi
+
   cd "${srcdir}/${pkgname}"
   bun install --frozen-lockfile
   PUBLIC_SHOW_DEV_TOOLS="false" \
@@ -28,10 +47,18 @@ build() {
 }
 
 package() {
-  cd "${srcdir}/${pkgname}"
-  install -Dm755 "src-tauri/target/release/app" "${pkgdir}/usr/bin/${pkgname}"
-  install -Dm644 "src-tauri/icons/128x128.png" "${pkgdir}/usr/share/icons/hicolor/128x128/apps/${pkgname}.png"
-  install -Dm644 "src-tauri/icons/128x128.png" "${pkgdir}/usr/share/pixmaps/${pkgname}.png"
+  local _release_dir _icons
+  if [ -n "${LOCAL_RELEASE}" ]; then
+    _release_dir="${startdir}/src-tauri/target/release"
+    _icons="${startdir}/src-tauri/icons"
+  else
+    _release_dir="${srcdir}/${pkgname}/src-tauri/target/release"
+    _icons="${srcdir}/${pkgname}/src-tauri/icons"
+  fi
+
+  install -Dm755 "${_release_dir}/app" "${pkgdir}/usr/bin/${pkgname}"
+  install -Dm644 "${_icons}/128x128.png" "${pkgdir}/usr/share/icons/hicolor/128x128/apps/${pkgname}.png"
+  install -Dm644 "${_icons}/128x128.png" "${pkgdir}/usr/share/pixmaps/${pkgname}.png"
 
   install -dm755 "${pkgdir}/usr/share/applications"
   cat <<EOF > "${pkgdir}/usr/share/applications/${pkgname}.desktop"
