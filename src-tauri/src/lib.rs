@@ -1,15 +1,24 @@
+#[cfg(desktop)]
 use tauri::Emitter;
+#[cfg(desktop)]
 use tauri_plugin_deep_link::DeepLinkExt;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-	tauri::Builder::default()
-		.plugin(tauri_plugin_single_instance::init(|app, argv, _cwd| {
+	#[allow(unused_mut)]
+	let mut builder = tauri::Builder::default();
+
+	#[cfg(desktop)]
+	{
+		builder = builder.plugin(tauri_plugin_single_instance::init(|app, argv, _cwd| {
 			if let Some(url) = argv.iter().find(|a| a.starts_with("ramolibre://")) {
 				log::info!("deep-link-received from argv: {url}");
 				app.emit("deep-link-received", url.clone()).ok();
 			}
-		}))
+		}));
+	}
+
+	builder
 		.plugin(tauri_plugin_deep_link::init())
 		.plugin(tauri_plugin_store::Builder::default().build())
 		.plugin(tauri_plugin_fs::init())
