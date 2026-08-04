@@ -5,6 +5,7 @@ import { supabase } from '$lib/supabase/client';
 import { syncRouter } from './sync-router.svelte';
 import { noopAdapter } from './sync-noop.svelte';
 import { pollingAdapter } from './sync-polling.svelte';
+import { openExternal } from '$lib/utils/openExternal';
 
 const isTauri = PUBLIC_TAURI_BUILD === 'true' || '__TAURI__' in globalThis;
 
@@ -51,13 +52,23 @@ class AccountManager {
 	}
 
 	async loginWith(provider: Provider) {
-		const { error } = await supabase.auth.signInWithOAuth({
-			provider,
-			options: {
-				redirectTo: isTauri ? 'ramolibre://auth-callback' : window.location.origin
+		if (isTauri) {
+			const { data, error } = await supabase.auth.signInWithOAuth({
+				provider,
+				options: { redirectTo: 'ramolibre://auth-callback', skipBrowserRedirect: true }
+			});
+			if (error) {
+				console.error('Login error:', error.message);
+				return;
 			}
-		});
-		if (error) console.error('Login error:', error.message);
+			if (data?.url) await openExternal(data.url);
+		} else {
+			const { error } = await supabase.auth.signInWithOAuth({
+				provider,
+				options: { redirectTo: window.location.origin }
+			});
+			if (error) console.error('Login error:', error.message);
+		}
 	}
 
 	async logout() {

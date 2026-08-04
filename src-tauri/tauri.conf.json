@@ -9,6 +9,14 @@
 		"beforeDevCommand": "bun dev --host",
 		"beforeBuildCommand": "bun run build"
 	},
+	"plugins": {
+		"deep-link": {
+			"desktop": {
+				"schemes": ["ramolibre"]
+			},
+			"mobile": [{ "scheme": ["ramolibre"], "appLink": false }]
+		}
+	},
 	"app": {
 		"windows": [
 			{
@@ -22,16 +30,6 @@
 		],
 		"security": {
 			"csp": null
-		}
-	},
-	"plugins": {
-		"deep-link": {
-			"mobile": [
-				{ "host": "auth-callback", "pathPrefix": ["/"] }
-			],
-			"desktop": {
-				"schemes": ["ramolibre"]
-			}
 		}
 	},
 	"bundle": {

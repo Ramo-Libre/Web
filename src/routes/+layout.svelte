@@ -27,13 +27,34 @@
 		ready = true;
 
 		if (isTauri) {
-			const { onOpenUrl } = await import('@tauri-apps/plugin-deep-link');
-			await onOpenUrl(async (urls) => {
-				await supabase.auth.exchangeCodeForSession(urls[0]).then(({ error }) => {
-					if (error) console.error('Error completando sesión OAuth:', error);
-				});
+			const [{ onOpenUrl, getCurrent }, { listen }] = await Promise.all([
+				import('@tauri-apps/plugin-deep-link'),
+				import('@tauri-apps/api/event')
+			]);
+
+			let processingCode: string | null = null;
+
+			async function handleAuthCallback(url: string) {
+				const code = new URL(url).searchParams.get('code');
+				if (!code || code === processingCode) return;
+				processingCode = code;
+				const { error } = await supabase.auth.exchangeCodeForSession(code);
+				processingCode = null;
+				if (error) console.error('[deep-link] exchangeCodeForSession error:', error);
+			}
+
+			const startUrls = await getCurrent();
+			if (startUrls) handleAuthCallback(startUrls[0]).catch(console.error);
+
+			await onOpenUrl((urls) => {
+				handleAuthCallback(urls[0]).catch(console.error);
 			});
-		} else {
+			await listen<string>('deep-link-received', (event) => {
+				handleAuthCallback(event.payload).catch(console.error);
+			});
+		}
+
+		if (!isTauri) {
 			const { pwaInfo: info } = await import('virtual:pwa-info');
 			pwaInfo = info;
 
