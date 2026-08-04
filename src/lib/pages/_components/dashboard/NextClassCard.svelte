@@ -132,6 +132,9 @@
 						<CatIcon class="h-4 w-4 lg:h-5 lg:w-5 shrink-0" style="color: {color}" />
 						{c.title || ramoName(c.ramoId) || 'Clase'}
 					</h2>
+					{#if c.description}
+						<p class="text-sm text-content/60 mb-2 leading-snug">{c.description}</p>
+					{/if}
 					<div class="flex items-center gap-2 text-sm text-content/70 font-medium mb-2">
 						<span
 							class="flex items-center gap-1 bg-base-200 border border-base-300 px-1.5 py-0.5 rounded"
@@ -170,6 +173,9 @@
 						<CatIcon class="h-4 w-4 lg:h-5 lg:w-5 shrink-0" style="color: {color}" />
 						{c.title || ramoName(c.ramoId) || 'Clase'}
 					</h2>
+					{#if c.description}
+						<p class="text-sm text-content/60 mb-2 leading-snug">{c.description}</p>
+					{/if}
 					<div class="flex items-center gap-2 text-sm text-content/70 font-medium mb-2">
 						<span
 							class="flex items-center gap-1 bg-base-200 border border-base-300 px-1.5 py-0.5 rounded"
