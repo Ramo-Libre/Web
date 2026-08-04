@@ -19,7 +19,7 @@
 		"sign:android": "bash scripts/sign.sh",
 		"tauri:build:android:signed": "JAVA_HOME=/usr/lib/jvm/java-21-openjdk tauri android build --apk && bash scripts/sign.sh",
 		"tauri:build:ios": "tauri ios build",
-		"tauri:icons": "bun tauri icon static/web.svg",
+		"tauri:icons": "bun tauri icon scripts/icon-manifest.json",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",

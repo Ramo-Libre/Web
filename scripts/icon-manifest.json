@@ -1,0 +1,5 @@
+{
+	"default": "../static/web.svg",
+	"android_bg": "android-bg.png",
+	"android_fg": "android-fg.png"
+}
