@@ -31,6 +31,7 @@ Este proyecto está abierto a ideas, sugerencias y contribuciones.
 ## Tabla de contenidos
 
 - [Funcionalidades](#funcionalidades)
+- [Descargas](#descargas)
 - [Quick start](#quick-start)
 - [Créditos y atribuciones](#créditos-y-atribuciones)
 - [Licencia](#licencia)
@@ -48,6 +49,36 @@ Cada semestre mantiene su propia copia de los datos, organizados en las siguient
 - **Configuración** — ajusta el tema y las preferencias de visualización por semestre.
 
 Al eliminar un ramo se eliminan también sus horarios, escenarios de nota y pendientes vinculados. Cambiar de semestre activo cambia el conjunto completo de datos visible.
+
+## Descargas
+
+Los instaladores multiplataforma se generan manualmente con el workflow [`Build & Commit Installers`](.github/workflows/build-artifacts.yml) de GitHub Actions (trigger `workflow_dispatch`, nunca automático) y quedan disponibles en la rama [`artifacts`](https://github.com/Ramo-Libre/Web/tree/artifacts). Cada artefacto usa como versión el último tag publicado por el proceso de versionado semántico.
+
+### Descarga directa (última versión)
+
+Los enlaces apuntan siempre al último build generado, sin necesidad de conocer el número de versión:
+
+- **Linux (Debian):** [`ramolibre_latest_amd64.deb`](https://raw.githubusercontent.com/Ramo-Libre/Web/artifacts/ramolibre_latest_amd64.deb)
+- **Linux (Red Hat):** [`ramolibre_latest-1.x86_64.rpm`](https://raw.githubusercontent.com/Ramo-Libre/Web/artifacts/ramolibre_latest-1.x86_64.rpm)
+- **Linux (AppImage):** [`ramolibre_latest_amd64.AppImage`](https://raw.githubusercontent.com/Ramo-Libre/Web/artifacts/ramolibre_latest_amd64.AppImage)
+- **Windows (MSI):** [`ramolibre_latest_x64.msi`](https://raw.githubusercontent.com/Ramo-Libre/Web/artifacts/ramolibre_latest_x64.msi)
+- **Android (APK):** [`ramolibre_latest.apk`](https://raw.githubusercontent.com/Ramo-Libre/Web/artifacts/ramolibre_latest.apk)
+
+### Convención de nombres
+
+Los archivos con versión (`ramolibre_<version>_amd64.deb`, etc.) también quedan publicados en la misma rama:
+
+| Plataforma | Formato | Archivo |
+| --- | --- | --- |
+| Linux | Debian (`.deb`) | `ramolibre_<version>_amd64.deb` |
+| Linux | Red Hat (`.rpm`) | `ramolibre-<version>-1.x86_64.rpm` |
+| Linux | AppImage | `ramolibre_<version>_amd64.AppImage` |
+| Windows | Instalador MSI | `ramolibre_<version>_x64.msi` |
+| Android | APK | `ramolibre_<version>.apk` |
+
+> [!NOTE]
+> - El instalador de Windows (`.msi`) no está firmado con firma de código, por lo que Windows SmartScreen puede mostrar una advertencia al instalarlo.
+> - El paquete de AUR (`ramolibre`) no usa estos artefactos: se compila desde el código fuente del tag correspondiente mediante un proceso manual separado.
 
 ## Quick start
 
