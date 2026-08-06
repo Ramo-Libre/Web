@@ -34,10 +34,12 @@
 		exam: 'Examen'
 	};
 
-	const todayStr = $derived(now.toISOString().slice(0, 10));
-	const weekEndStr = $derived(
-		new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10)
-	);
+	function localDateStr(d: Date): string {
+		return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+	}
+
+	const todayStr = $derived(localDateStr(now));
+	const weekEndStr = $derived(localDateStr(new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)));
 
 	const upcomingEvents = $derived(
 		semestre.schedule
@@ -71,17 +73,26 @@
 			{#each upcomingEvents as ev (ev.id)}
 				{@const CatIcon = categoryIcons[ev.category] ?? Ellipsis}
 				{@const color = ramoColor(ev.ramoId)}
+				{@const isToday = ev.date === todayStr}
 				<button
 					onclick={() => goto('/calendario#' + ev.id)}
 					class="flex items-center gap-2.5 w-full rounded-lg px-3 py-2 text-left hover:bg-base-200 transition-colors cursor-pointer"
 				>
 					<div class="flex flex-col items-center min-w-[36px]">
-						<span class="text-xs lg:text-sm font-bold text-content/40 uppercase">
-							{ev.date
-								? new Date(ev.date + 'T12:00:00').toLocaleDateString('es-ES', { weekday: 'short' })
-								: ''}
+						<span
+							class="text-xs lg:text-sm font-bold uppercase {isToday
+								? 'text-primary-100'
+								: 'text-content/40'}"
+						>
+							{isToday
+								? 'HOY'
+								: ev.date
+									? new Date(ev.date + 'T12:00:00').toLocaleDateString('es-ES', {
+											weekday: 'short'
+										})
+									: ''}
 						</span>
-						<span class="text-lg lg:text-xl font-bold text-content leading-tight">
+						<span class="text-lg lg:text-xl font-bold leading-tight text-content">
 							{ev.date ? new Date(ev.date + 'T12:00:00').getDate() : ''}
 						</span>
 					</div>
