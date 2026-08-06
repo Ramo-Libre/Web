@@ -14,6 +14,7 @@
 	import { fly } from 'svelte/transition';
 	import type { ScheduleEvent, ScheduleCategory } from '$lib/features/schedule.svelte';
 	import { SCHEDULE_DESC_MAX_LENGTH } from '$lib/features/schedule.svelte';
+	import InlineCalendar from '$lib/components/InlineCalendar.svelte';
 
 	const CATEGORIES: { value: ScheduleCategory; label: string; icon: typeof Book }[] = [
 		{ value: 'exam', label: 'Examen', icon: Presentation },
@@ -144,12 +145,8 @@
 					<div class="text-xs font-semibold text-content/50 mb-3 uppercase tracking-wider">
 						Fecha
 					</div>
+					<InlineCalendar value={date} onChange={(d) => (date = d)} />
 					<div class="flex items-center gap-3 flex-wrap">
-						<input
-							type="date"
-							bind:value={date}
-							class="bg-base-100 border border-base-400 rounded-lg px-3 py-2 text-sm text-content outline-none focus:border-primary-100 transition-colors"
-						/>
 						<button
 							type="button"
 							onclick={() => {
@@ -327,12 +324,8 @@
 					<div class="text-xs font-semibold text-content/50 mb-3 uppercase tracking-wider">
 						Fecha
 					</div>
+					<InlineCalendar value={date} onChange={(d) => (date = d)} />
 					<div class="flex items-center gap-3 flex-wrap">
-						<input
-							type="date"
-							bind:value={date}
-							class="bg-base-100 border border-base-400 rounded-lg px-3 py-2 text-sm text-content outline-none focus:border-primary-100 transition-colors"
-						/>
 						<button
 							type="button"
 							onclick={() => {
