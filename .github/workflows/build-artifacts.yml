@@ -240,6 +240,16 @@ jobs:
           PUBLIC_CLOUD_SYNC_POLL_INTERVAL: ${{ vars.PUBLIC_CLOUD_SYNC_POLL_INTERVAL }}
           PUBLIC_TAURI_BUILD: 'true'
 
+      - name: Sign APK with apksigner
+        run: |
+          $ANDROID_HOME/build-tools/35.0.0/apksigner sign \
+            --ks android/app/my-release-key.jks \
+            --ks-pass pass:${{ secrets.ANDROID_KEYSTORE_PASSWORD }} \
+            --key-pass pass:${{ secrets.ANDROID_KEY_PASSWORD }} \
+            --ks-key-alias ${{ secrets.ANDROID_KEY_ALIAS }} \
+            --out ramolibre_${VERSION_NO_V}.apk \
+            src-tauri/gen/android/app/build/outputs/apk/universal/release/app-universal-release-unsigned.apk
+
       - name: Check APK size
         run: |
           set -euo pipefail
@@ -265,16 +275,6 @@ jobs:
           fi
         env:
           GH_TOKEN: ${{ github.token }}
-
-      - name: Sign APK with apksigner
-        run: |
-          $ANDROID_HOME/build-tools/35.0.0/apksigner sign \
-            --ks android/app/my-release-key.jks \
-            --ks-pass pass:${{ secrets.ANDROID_KEYSTORE_PASSWORD }} \
-            --key-pass pass:${{ secrets.ANDROID_KEY_PASSWORD }} \
-            --ks-key-alias ${{ secrets.ANDROID_KEY_ALIAS }} \
-            --out ramolibre_${VERSION_NO_V}.apk \
-            src-tauri/gen/android/app/build/outputs/apk/universal/release/app-universal-release-unsigned.apk
 
       - name: Upload Android installer
         uses: actions/upload-artifact@v4
