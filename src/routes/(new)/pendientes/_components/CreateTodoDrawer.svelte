@@ -30,7 +30,6 @@
 			for (const el of els) {
 				if (el.offsetParent !== null) {
 					resize(el);
-					break;
 				}
 			}
 		});

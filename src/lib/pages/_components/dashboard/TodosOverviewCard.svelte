@@ -90,8 +90,8 @@
 				{#each rows as row (row.name)}
 					<div class="flex items-center gap-2 min-w-0">
 						<span class="w-2 h-2 rounded-full shrink-0" style="background: {row.color}"></span>
-						<span class="text-xs text-content/60 truncate flex-1">{row.name}</span>
-						<div class="w-16 h-1.5 bg-base-300 rounded-full overflow-hidden shrink-0">
+						<span class="text-xs text-content/60 truncate shrink-0 w-[30%]">{row.name}</span>
+						<div class="flex-1 min-w-10 h-1.5 bg-base-300 rounded-full overflow-hidden">
 							<div
 								class="h-full rounded-full transition-all duration-300"
 								style="width: {row.total > 0
@@ -99,7 +99,8 @@
 									: 0}%; background: {row.color}"
 							></div>
 						</div>
-						<span class="text-xs text-content/40 shrink-0 tabular-nums">{row.done}/{row.total}</span
+						<span class="text-xs text-content/40 shrink-0 tabular-nums w-6"
+							>({row.total - row.done})</span
 						>
 					</div>
 				{/each}
