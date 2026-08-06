@@ -172,7 +172,9 @@ jobs:
         run: |
           $msi = Get-ChildItem -Path 'src-tauri/target/release/bundle' -Recurse -Filter '*.msi' | Select-Object -First 1
           if (-not $msi) { throw 'MSI bundle not found' }
-          Copy-Item -Path $msi.FullName -Destination "ramolibre_$env:VERSION_NO_V_x64.msi"
+          $target = "ramolibre_${env:VERSION_NO_V}_x64.msi"
+          Copy-Item -Path $msi.FullName -Destination $target
+          if (-not (Test-Path $target)) { throw "Renamed MSI not found: $target" }
           Get-ChildItem -Filter 'ramolibre_*.msi'
 
       - name: Upload Windows installer
@@ -321,13 +323,13 @@ jobs:
           cp ramolibre_${VERSION_NO_V}_amd64.AppImage "ramolibre_latest_amd64.AppImage"
           cp ramolibre_${VERSION_NO_V}_x64.msi "ramolibre_latest_x64.msi"
           cp ramolibre_${VERSION_NO_V}.apk "ramolibre_latest.apk"
+          rm -rf dist
           ls -lh ramolibre_* ramolibre-*
 
       - name: Commit and push
         run: |
           set -euo pipefail
-          cat > README.md <<'EOF'
-          # Ramo Libre - Installers
+          printf '%s\n' '# Ramo Libre - Installers
 
           Instaladores generados por el workflow [build-artifacts.yml](https://github.com/Ramo-Libre/Web/blob/main/.github/workflows/build-artifacts.yml).
 
@@ -339,8 +341,7 @@ jobs:
           - `ramolibre_latest_x64.msi`
           - `ramolibre_latest.apk`
 
-          Descarga: `https://raw.githubusercontent.com/Ramo-Libre/Web/artifacts/<archivo>`
-          EOF
+          Descarga: `https://raw.githubusercontent.com/Ramo-Libre/Web/artifacts/<archivo>`' > README.md
           git add -A
           if git diff --cached --quiet; then
             echo "No changes to commit"
