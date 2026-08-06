@@ -1,4 +1,4 @@
-# Ramo Libre - Installers
+# Ramo Libre - Instaladores
 
 Instaladores generados por el workflow [build-artifacts.yml](https://github.com/Ramo-Libre/Web/blob/main/.github/workflows/build-artifacts.yml).
 
