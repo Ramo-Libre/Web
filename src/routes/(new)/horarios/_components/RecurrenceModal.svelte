@@ -63,20 +63,13 @@
 	let description = $derived(event?.description ?? '');
 	let recurrenceStart = $derived(event?.recurrenceStart ?? '');
 	let recurrenceEnd = $derived(event?.recurrenceEnd ?? '');
-	let recurOpen = $state(false);
-	const hasRecurrence = $derived(!!(recurrenceStart || recurrenceEnd));
+	let showRecurrence = $derived(!!(event?.recurrenceStart || event?.recurrenceEnd));
 
 	const ramos = $derived(semestre.ramos.list);
 
 	const selectedRamo = $derived(ramoId ? semestre.ramos.get(ramoId) : null);
 	const badgeColor = $derived(selectedRamo?.color ?? 'var(--color-primary-100)');
 	const BadgeIcon = $derived(CATEGORY_ICONS[category] ?? Ellipsis);
-
-	function fmtDate(s: string): string {
-		if (!s) return '';
-		const [y, m, d] = s.split('-');
-		return `${d}/${m}/${y}`;
-	}
 
 	function resizeTextarea(el: HTMLTextAreaElement) {
 		el.style.height = 'auto';
@@ -103,7 +96,7 @@
 			daysOfWeek,
 			startTime,
 			endTime,
-			...(hasRecurrence
+			...(showRecurrence
 				? {
 						recurrenceStart: recurrenceStart || undefined,
 						recurrenceEnd: recurrenceEnd || undefined
@@ -251,27 +244,25 @@
 						</div>
 						<button
 							type="button"
-							onclick={() => (recurOpen = !recurOpen)}
-							class="flex items-center gap-2 text-sm transition-colors cursor-pointer {recurOpen
+							onclick={() => {
+								if (showRecurrence) {
+									recurrenceStart = '';
+									recurrenceEnd = '';
+								}
+								showRecurrence = !showRecurrence;
+							}}
+							class="flex items-center gap-2 text-sm transition-colors cursor-pointer {showRecurrence
 								? 'text-primary-100'
 								: 'text-content/30 hover:text-content/60'}"
 						>
-							{#if recurOpen}
+							{#if showRecurrence}
 								<ChevronDown class="w-4 h-4" />
 							{:else}
 								<ChevronRight class="w-4 h-4" />
 							{/if}
 							Rango de fechas
 						</button>
-						{#if !recurOpen && hasRecurrence}
-							<div class="mt-2 text-sm text-content/70">
-								<span class="text-content/40">desde</span>
-								{fmtDate(recurrenceStart)}
-								<span class="text-content/40 ml-2">hasta</span>
-								{fmtDate(recurrenceEnd)}
-							</div>
-						{/if}
-						{#if recurOpen}
+						{#if showRecurrence}
 							<div class="flex items-center gap-3 mt-3 flex-wrap">
 								<span class="text-sm text-content/40">desde</span>
 								<input
@@ -472,27 +463,25 @@
 						</div>
 						<button
 							type="button"
-							onclick={() => (recurOpen = !recurOpen)}
-							class="flex items-center gap-2 text-sm transition-colors cursor-pointer {recurOpen
+							onclick={() => {
+								if (showRecurrence) {
+									recurrenceStart = '';
+									recurrenceEnd = '';
+								}
+								showRecurrence = !showRecurrence;
+							}}
+							class="flex items-center gap-2 text-sm transition-colors cursor-pointer {showRecurrence
 								? 'text-primary-100'
 								: 'text-content/30 hover:text-content/60'}"
 						>
-							{#if recurOpen}
+							{#if showRecurrence}
 								<ChevronDown class="w-4 h-4" />
 							{:else}
 								<ChevronRight class="w-4 h-4" />
 							{/if}
 							Rango de fechas
 						</button>
-						{#if !recurOpen && hasRecurrence}
-							<div class="mt-2 text-sm text-content/70">
-								<span class="text-content/40">desde</span>
-								{fmtDate(recurrenceStart)}
-								<span class="text-content/40 ml-2">hasta</span>
-								{fmtDate(recurrenceEnd)}
-							</div>
-						{/if}
-						{#if recurOpen}
+						{#if showRecurrence}
 							<div class="flex flex-col gap-3 mt-3">
 								<div class="flex items-center gap-3">
 									<span class="text-sm text-content/40 shrink-0">desde</span>

@@ -3,8 +3,6 @@
 	import {
 		X,
 		Clock,
-		ChevronDown,
-		ChevronRight,
 		Presentation,
 		CircleAlert,
 		Book,
@@ -57,10 +55,9 @@
 	let category = $derived<ScheduleCategory>(event?.category ?? 'other');
 	let ramoId = $derived(event?.ramoId ?? '');
 	let date = $derived(event?.date ?? prefillDate ?? '');
-	let timeOpen = $state(false);
+	let showTime = $derived(!!(event?.startTime || event?.endTime));
 	let startTime = $derived(event?.startTime ?? '');
 	let endTime = $derived(event?.endTime ?? '');
-	const hasTime = $derived(!!(startTime || endTime));
 	let description = $derived(event?.description ?? '');
 
 	const selectedRamo = $derived(ramoId ? semestre.ramos.get(ramoId) : null);
@@ -155,42 +152,30 @@
 						<div class="text-xs font-semibold text-content/50 mb-3 uppercase tracking-wider">
 							Fecha
 						</div>
-						<input
-							type="date"
-							bind:value={date}
-							class="w-full bg-base-100 border border-base-400 rounded-lg px-3 py-2 text-sm text-content outline-none focus:border-primary-100 transition-colors"
-						/>
-					</div>
-
-					<div class="border-t border-base-300 pt-4">
-						<button
-							type="button"
-							onclick={() => (timeOpen = !timeOpen)}
-							class="flex items-center gap-2 text-sm transition-colors cursor-pointer {timeOpen
-								? 'text-primary-100'
-								: 'text-content/30 hover:text-content/60'}"
-						>
-							{#if timeOpen}
-								<ChevronDown class="w-4 h-4" />
-							{:else}
-								<ChevronRight class="w-4 h-4" />
-							{/if}
-							<Clock class="w-4 h-4" />
-							Horario
-						</button>
-						{#if !timeOpen && hasTime}
-							<div class="mt-2 text-sm text-content/70">
-								{#if startTime && endTime}
-									<span class="text-content/40">de</span>
-									{startTime}
-									<span class="text-content/40 ml-2">a</span>
-									{endTime}
-								{:else}
-									{startTime || endTime}
-								{/if}
-							</div>
-						{/if}
-						{#if timeOpen}
+						<div class="flex items-center gap-3 flex-wrap">
+							<input
+								type="date"
+								bind:value={date}
+								class="bg-base-100 border border-base-400 rounded-lg px-3 py-2 text-sm text-content outline-none focus:border-primary-100 transition-colors"
+							/>
+							<button
+								type="button"
+								onclick={() => {
+									if (showTime) {
+										startTime = '';
+										endTime = '';
+									}
+									showTime = !showTime;
+								}}
+								class="flex items-center gap-1.5 text-sm transition-colors cursor-pointer {showTime
+									? 'text-primary-100'
+									: 'text-content/30 hover:text-content/60'}"
+							>
+								<Clock class="w-4 h-4" />
+								{showTime ? 'Quitar hora' : 'Añadir hora'}
+							</button>
+						</div>
+						{#if showTime}
 							<div class="flex items-center gap-2 mt-3">
 								<span class="text-sm text-content/40">de</span>
 								<input
@@ -205,19 +190,6 @@
 									class="bg-transparent text-sm text-content outline-none border-b border-dashed border-content/20 focus:border-content/50 w-28"
 								/>
 							</div>
-							{#if hasTime}
-								<button
-									type="button"
-									onclick={() => {
-										startTime = '';
-										endTime = '';
-										timeOpen = false;
-									}}
-									class="mt-3 text-xs font-semibold text-content/40 hover:text-content/70 cursor-pointer"
-								>
-									Quitar hora
-								</button>
-							{/if}
 						{/if}
 					</div>
 
@@ -369,42 +341,30 @@
 						<div class="text-xs font-semibold text-content/50 mb-3 uppercase tracking-wider">
 							Fecha
 						</div>
-						<input
-							type="date"
-							bind:value={date}
-							class="w-full bg-base-100 border border-base-400 rounded-lg px-3 py-2 text-sm text-content outline-none focus:border-primary-100 transition-colors"
-						/>
-					</div>
-
-					<div class="border-t border-base-300 pt-4">
-						<button
-							type="button"
-							onclick={() => (timeOpen = !timeOpen)}
-							class="flex items-center gap-2 text-sm transition-colors cursor-pointer {timeOpen
-								? 'text-primary-100'
-								: 'text-content/30 hover:text-content/60'}"
-						>
-							{#if timeOpen}
-								<ChevronDown class="w-4 h-4" />
-							{:else}
-								<ChevronRight class="w-4 h-4" />
-							{/if}
-							<Clock class="w-4 h-4" />
-							Horario
-						</button>
-						{#if !timeOpen && hasTime}
-							<div class="mt-2 text-sm text-content/70">
-								{#if startTime && endTime}
-									<span class="text-content/40">de</span>
-									{startTime}
-									<span class="text-content/40 ml-2">a</span>
-									{endTime}
-								{:else}
-									{startTime || endTime}
-								{/if}
-							</div>
-						{/if}
-						{#if timeOpen}
+						<div class="flex items-center gap-3 flex-wrap">
+							<input
+								type="date"
+								bind:value={date}
+								class="bg-base-100 border border-base-400 rounded-lg px-3 py-2 text-sm text-content outline-none focus:border-primary-100 transition-colors"
+							/>
+							<button
+								type="button"
+								onclick={() => {
+									if (showTime) {
+										startTime = '';
+										endTime = '';
+									}
+									showTime = !showTime;
+								}}
+								class="flex items-center gap-1.5 text-sm transition-colors cursor-pointer {showTime
+									? 'text-primary-100'
+									: 'text-content/30 hover:text-content/60'}"
+							>
+								<Clock class="w-4 h-4" />
+								{showTime ? 'Quitar hora' : 'Añadir hora'}
+							</button>
+						</div>
+						{#if showTime}
 							<div class="flex items-center gap-2 mt-3">
 								<span class="text-sm text-content/40">de</span>
 								<input
@@ -419,19 +379,6 @@
 									class="bg-transparent text-sm text-content outline-none border-b border-dashed border-content/20 focus:border-content/50 w-28"
 								/>
 							</div>
-							{#if hasTime}
-								<button
-									type="button"
-									onclick={() => {
-										startTime = '';
-										endTime = '';
-										timeOpen = false;
-									}}
-									class="mt-3 text-xs font-semibold text-content/40 hover:text-content/70 cursor-pointer"
-								>
-									Quitar hora
-								</button>
-							{/if}
 						{/if}
 					</div>
 
