@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { semestre } from '$lib/infra/semestres.svelte';
 	import { goto } from '$app/navigation';
+	import { SvelteDate } from 'svelte/reactivity';
 	import {
 		CalendarDays,
 		FlaskConical,
@@ -39,7 +40,11 @@
 	}
 
 	const todayStr = $derived(localDateStr(now));
-	const weekEndStr = $derived(localDateStr(new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)));
+	const weekEndStr = $derived.by(() => {
+		const d = new SvelteDate(now);
+		d.setDate(d.getDate() + 7);
+		return localDateStr(d);
+	});
 
 	const upcomingEvents = $derived(
 		semestre.schedule

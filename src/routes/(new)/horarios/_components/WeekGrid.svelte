@@ -13,6 +13,7 @@
 	} from '@lucide/svelte';
 	import { SvelteDate, SvelteMap } from 'svelte/reactivity';
 	import { getNow } from '$lib/utils/date';
+	import { timeTravel } from '$lib/pages/_components/dev-tools/dev-tools-time.svelte';
 	import HorarioBar from './HorarioBar.svelte';
 	import RecurrenceModal from './RecurrenceModal.svelte';
 	import EventModal from '../../calendario/_components/EventModal.svelte';
@@ -87,7 +88,7 @@
 	};
 
 	// --- STATE ---
-	let weekStart = $state(getMonday(new Date()));
+	let weekStart = $state(getMonday(getNow()));
 	let editingEvent = $state<ScheduleEvent | null>(null);
 	let showModal = $state(false);
 	let modalDay = $state<number | undefined>(undefined);
@@ -99,18 +100,28 @@
 	// --- NOW ---
 	let now = $state(getNow());
 	$effect(() => {
+		void timeTravel.enabled;
+		void timeTravel.date;
+		now = getNow();
 		const interval = setInterval(() => (now = getNow()), 60000);
 		return () => clearInterval(interval);
+	});
+
+	let lastTravelKey = '';
+	$effect(() => {
+		const key = `${timeTravel.enabled}:${timeTravel.date}`;
+		if (key === lastTravelKey) return;
+		lastTravelKey = key;
+		weekStart = getMonday(getNow());
 	});
 
 	const nowStr = $derived(now.toTimeString().slice(0, 5));
 	const currentDowNum = $derived(now.getDay() === 0 ? 7 : now.getDay());
 	const isWorkDay = $derived(currentDowNum >= 1 && currentDowNum <= 7);
 
-	const todayStr = $derived.by(() => {
-		const d = new Date();
-		return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-	});
+	const todayStr = $derived(
+		`${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
+	);
 
 	const days = $derived.by(() => {
 		const d = new Date(weekStart + 'T12:00:00');

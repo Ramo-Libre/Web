@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { semestre } from '$lib/infra/semestres.svelte';
 	import { getNow } from '$lib/utils/date';
+	import { timeTravel } from '$lib/pages/_components/dev-tools/dev-tools-time.svelte';
 	import type { ScheduleEvent } from '$lib/features/schedule.svelte';
 	import {
 		ChevronLeft,
@@ -34,11 +35,23 @@
 
 	let { events, selectedDate, onDaySelect }: Props = $props();
 
-	const today = getNow();
-	const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+	const todayStr = $derived.by(() => {
+		const today = getNow();
+		return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+	});
 
-	let year = $state(today.getFullYear());
-	let month = $state(today.getMonth() + 1);
+	let year = $state(getNow().getFullYear());
+	let month = $state(getNow().getMonth() + 1);
+
+	let lastTravelKey = '';
+	$effect(() => {
+		const key = `${timeTravel.enabled}:${timeTravel.date}`;
+		if (key === lastTravelKey) return;
+		lastTravelKey = key;
+		const now = getNow();
+		year = now.getFullYear();
+		month = now.getMonth() + 1;
+	});
 
 	$effect(() => {
 		if (selectedDate) {
