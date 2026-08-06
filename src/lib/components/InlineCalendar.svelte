@@ -231,6 +231,7 @@
 {#if drawerOpen}
 	<div class="fixed inset-0 z-[60]" role="dialog" aria-modal="true">
 		<button
+			type="button"
 			class="absolute inset-0 bg-black/40 backdrop-blur-sm cursor-pointer"
 			onclick={closeDrawer}
 			aria-label="Cerrar"
