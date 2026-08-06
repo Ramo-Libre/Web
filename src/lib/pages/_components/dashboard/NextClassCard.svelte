@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { untrack } from 'svelte';
 	import { semestre } from '$lib/infra/semestres.svelte';
 	import {
 		Clock,
@@ -10,8 +11,11 @@
 		Presentation,
 		CircleAlert,
 		Book,
-		Ellipsis
+		Ellipsis,
+		ChevronLeft,
+		ChevronRight
 	} from '@lucide/svelte';
+	import type { ScheduleEvent } from '$lib/features/schedule.svelte';
 
 	const categoryIcons: Record<string, typeof Book> = {
 		exam: Presentation,
@@ -26,7 +30,6 @@
 
 	let { now }: { now: Date } = $props();
 
-	const currentDow = $derived(now.getDay() === 0 ? 7 : now.getDay());
 	const currentMin = $derived(now.getHours() * 60 + now.getMinutes());
 	const currentSec = $derived(now.getSeconds());
 
@@ -41,9 +44,14 @@
 
 	const todayEvents = $derived(
 		semestre.schedule
-			.getByDayOfWeek(currentDow, todayStr)
+			.getByDate(todayStr)
 			.filter((e) => e.startTime)
-			.sort((a, b) => (a.startTime ?? '').localeCompare(b.startTime ?? ''))
+			.sort((a, b) => {
+				const aRec = a.daysOfWeek && a.daysOfWeek.length > 0 ? 0 : 1;
+				const bRec = b.daysOfWeek && b.daysOfWeek.length > 0 ? 0 : 1;
+				if (aRec !== bRec) return aRec - bRec;
+				return (a.startTime ?? '').localeCompare(b.startTime ?? '');
+			})
 	);
 
 	const currentClass = $derived(
@@ -65,24 +73,82 @@
 				)
 	);
 
-	const progressPct = $derived.by(() => {
-		if (currentClass) {
-			const total =
-				toMinutes(currentClass.endTime ?? currentClass.startTime!) -
-				toMinutes(currentClass.startTime!);
-			const elapsed = currentMin - toMinutes(currentClass.startTime!);
-			return Math.min(100, Math.max(0, (elapsed / total) * 100));
+	const anchor = $derived(currentClass ?? nextClass);
+
+	const clusters = $derived.by(() => {
+		const sorted = [...todayEvents].sort((a, b) =>
+			(a.startTime ?? '').localeCompare(b.startTime ?? '')
+		);
+		const groups: ScheduleEvent[][] = [];
+		for (const ev of sorted) {
+			const s = toMinutes(ev.startTime!);
+			const group = groups.find(
+				(g) => s < Math.max(...g.map((c) => toMinutes(c.endTime ?? c.startTime!)))
+			);
+			if (group) group.push(ev);
+			else groups.push([ev]);
 		}
-		return 0;
+		for (const g of groups) {
+			g.sort((a, b) => {
+				const aRec = a.daysOfWeek && a.daysOfWeek.length > 0 ? 0 : 1;
+				const bRec = b.daysOfWeek && b.daysOfWeek.length > 0 ? 0 : 1;
+				if (aRec !== bRec) return aRec - bRec;
+				return (a.startTime ?? '').localeCompare(b.startTime ?? '');
+			});
+		}
+		return groups;
 	});
 
-	const countdownStr = $derived.by(() => {
-		let remainingMins;
-		if (currentClass) {
-			remainingMins = toMinutes(currentClass.endTime ?? currentClass.startTime!) - currentMin - 1;
-		} else if (nextClass) {
-			remainingMins = toMinutes(nextClass.startTime!) - currentMin - 1;
-		} else return '';
+	const anchorCluster = $derived(
+		anchor ? (clusters.find((g) => g.some((e) => e.id === anchor.id)) ?? [anchor]) : []
+	);
+
+	let slotIdx = $state(0);
+	let touchX = 0;
+
+	$effect(() => {
+		const id = anchor?.id;
+		if (!id) return;
+		const cluster = untrack(() => anchorCluster);
+		const idx = cluster.findIndex((e) => e.id === id);
+		if (idx >= 0 && untrack(() => slotIdx) !== idx) slotIdx = idx;
+	});
+
+	const shown = $derived(anchorCluster[Math.min(slotIdx, anchorCluster.length - 1)] ?? anchor);
+
+	function prevConflict() {
+		if (anchorCluster.length < 2) return;
+		slotIdx = (slotIdx - 1 + anchorCluster.length) % anchorCluster.length;
+	}
+
+	function nextConflict() {
+		if (anchorCluster.length < 2) return;
+		slotIdx = (slotIdx + 1) % anchorCluster.length;
+	}
+
+	function onTouchStart(e: TouchEvent) {
+		touchX = e.touches[0].clientX;
+	}
+
+	function onTouchEnd(e: TouchEvent) {
+		if (anchorCluster.length < 2) return;
+		const dx = e.changedTouches[0].clientX - touchX;
+		if (Math.abs(dx) > 40) {
+			if (dx < 0) nextConflict();
+			else prevConflict();
+		}
+	}
+
+	function progressFor(ev: ScheduleEvent): number {
+		const total = toMinutes(ev.endTime ?? ev.startTime!) - toMinutes(ev.startTime!);
+		const elapsed = currentMin - toMinutes(ev.startTime!);
+		return Math.min(100, Math.max(0, (elapsed / total) * 100));
+	}
+
+	function countdownFor(ev: ScheduleEvent, ongoing: boolean): string {
+		const remainingMins = ongoing
+			? toMinutes(ev.endTime ?? ev.startTime!) - currentMin - 1
+			: toMinutes(ev.startTime!) - currentMin - 1;
 		const hrs = Math.floor(remainingMins / 60);
 		const mins = remainingMins % 60;
 		const secs = 59 - currentSec;
@@ -90,7 +156,7 @@
 		if (hrs > 0) return `${hrs}h ${pad(mins)}m`;
 		if (mins > 0) return `${mins}m ${pad(secs)}s`;
 		return `${secs}s`;
-	});
+	}
 
 	function ramoColor(ramoId?: string): string {
 		if (!ramoId) return 'var(--color-primary-100)';
@@ -104,23 +170,58 @@
 </script>
 
 <div
-	class="bg-base-100 border border-base-400 rounded-xl p-4 shadow-sm relative overflow-hidden lg:col-span-2"
+	class="bg-base-100 border border-base-400 rounded-xl p-4 shadow-sm relative lg:col-span-2 overflow-hidden"
+	role="group"
+	aria-label="Próxima clase"
+	ontouchstart={onTouchStart}
+	ontouchend={onTouchEnd}
 >
-	<div class="flex items-center justify-between mb-3">
+	<div class="flex items-center justify-between gap-2 mb-3">
 		<div class="flex items-center gap-1.5">
 			<Clock class="h-4 w-4 text-schedule-100" />
 			<h3 class="text-xs font-bold text-content/50 uppercase tracking-widest">
 				{currentClass ? 'Ahora Mismo' : nextClass ? 'Próxima Clase' : 'Estado'}
 			</h3>
+			{#if anchorCluster.length > 1}
+				<span
+					class="hidden sm:inline-flex pointer-events-none select-none items-center gap-1 px-2 py-0.5 text-xs font-bold uppercase tracking-wide rounded-md bg-primary-400 text-primary-100 border border-primary-300"
+				>
+					<CircleAlert class="h-3 w-3" />
+					{anchorCluster.length} topan
+				</span>
+			{/if}
 		</div>
-		<span class="text-xs font-bold text-content/60 bg-base-300 px-2 py-0.5 rounded-md">
-			{now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
-		</span>
+		<div class="flex items-center gap-1">
+			{#if anchorCluster.length > 1}
+				<button
+					type="button"
+					onclick={prevConflict}
+					class="p-1 rounded-md text-content/50 hover:text-content hover:bg-base-200 transition-colors cursor-pointer"
+					aria-label="Horario anterior"
+				>
+					<ChevronLeft class="h-3.5 w-3.5" />
+				</button>
+				<span class="text-xs font-bold tabular-nums text-content/60 min-w-[2.5rem] text-center">
+					{slotIdx + 1}/{anchorCluster.length}
+				</span>
+				<button
+					type="button"
+					onclick={nextConflict}
+					class="p-1 rounded-md text-content/50 hover:text-content hover:bg-base-200 transition-colors cursor-pointer"
+					aria-label="Siguiente horario"
+				>
+					<ChevronRight class="h-3.5 w-3.5" />
+				</button>
+			{/if}
+			<span class="text-xs font-bold text-content/60 bg-base-300 px-2 py-0.5 rounded-md">
+				{now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
+			</span>
+		</div>
 	</div>
 
 	<div class="min-h-[100px] flex flex-col justify-center">
 		{#if currentClass}
-			{@const c = currentClass}
+			{@const c = shown!}
 			{@const CatIcon = categoryIcons[c.category] ?? Ellipsis}
 			{@const color = ramoColor(c.ramoId)}
 			<div class="flex gap-3 items-stretch">
@@ -150,18 +251,20 @@
 							<div class="w-1.5 h-1.5 bg-success-100 rounded-full animate-pulse"></div>
 							En curso
 						</span>
-						<span class="text-xs lg:text-sm font-bold text-content/60">Quedan {countdownStr}</span>
+						<span class="text-xs lg:text-sm font-bold text-content/60"
+							>Quedan {countdownFor(c, true)}</span
+						>
 					</div>
 				</div>
 			</div>
-			<div class="absolute bottom-0 left-0 right-0 h-1 bg-base-300">
+			<div class="absolute bottom-0 left-0 right-0 h-1 bg-base-300 rounded-b-xl">
 				<div
 					class="h-full transition-all duration-1000 ease-linear"
-					style="width: {progressPct}%; background-color: {color};"
+					style="width: {progressFor(c)}%; background-color: {color};"
 				></div>
 			</div>
 		{:else if nextClass}
-			{@const c = nextClass}
+			{@const c = shown!}
 			{@const CatIcon = categoryIcons[c.category] ?? Ellipsis}
 			{@const color = ramoColor(c.ramoId)}
 			<div class="flex gap-3 items-stretch">
@@ -187,7 +290,7 @@
 					<span
 						class="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-bold text-primary-100 bg-primary-400 border border-primary-300 rounded uppercase tracking-wide"
 					>
-						Empieza en {countdownStr}
+						Empieza en {countdownFor(c, false)}
 					</span>
 				</div>
 			</div>
