@@ -16,6 +16,7 @@
 	import { fly } from 'svelte/transition';
 	import type { ScheduleEvent, ScheduleCategory } from '$lib/features/schedule.svelte';
 	import { SCHEDULE_DESC_MAX_LENGTH } from '$lib/features/schedule.svelte';
+	import InlineCalendar from '$lib/components/InlineCalendar.svelte';
 
 	const CATEGORIES: { value: ScheduleCategory; label: string; icon: typeof Book }[] = [
 		{ value: 'exam', label: 'Examen', icon: Presentation },
@@ -63,13 +64,20 @@
 	let description = $derived(event?.description ?? '');
 	let recurrenceStart = $derived(event?.recurrenceStart ?? '');
 	let recurrenceEnd = $derived(event?.recurrenceEnd ?? '');
-	let showRecurrence = $derived(!!(event?.recurrenceStart || event?.recurrenceEnd));
+	let recurOpen = $state(false);
+	const hasRecurrence = $derived(!!(recurrenceStart || recurrenceEnd));
 
 	const ramos = $derived(semestre.ramos.list);
 
 	const selectedRamo = $derived(ramoId ? semestre.ramos.get(ramoId) : null);
 	const badgeColor = $derived(selectedRamo?.color ?? 'var(--color-primary-100)');
 	const BadgeIcon = $derived(CATEGORY_ICONS[category] ?? Ellipsis);
+
+	function fmtDate(s: string): string {
+		if (!s) return '';
+		const [y, m, d] = s.split('-');
+		return `${d}/${m}/${y}`;
+	}
 
 	function toggleDow(dow: number) {
 		if (daysOfWeek.includes(dow)) {
@@ -91,7 +99,7 @@
 			daysOfWeek,
 			startTime,
 			endTime,
-			...(showRecurrence
+			...(hasRecurrence
 				? {
 						recurrenceStart: recurrenceStart || undefined,
 						recurrenceEnd: recurrenceEnd || undefined
@@ -238,37 +246,37 @@
 					</div>
 					<button
 						type="button"
-						onclick={() => {
-							if (showRecurrence) {
-								recurrenceStart = '';
-								recurrenceEnd = '';
-							}
-							showRecurrence = !showRecurrence;
-						}}
-						class="flex items-center gap-2 text-sm transition-colors cursor-pointer {showRecurrence
+						onclick={() => (recurOpen = !recurOpen)}
+						class="flex items-center gap-2 text-sm transition-colors cursor-pointer {recurOpen
 							? 'text-primary-100'
 							: 'text-content/30 hover:text-content/60'}"
 					>
-						{#if showRecurrence}
+						{#if recurOpen}
 							<ChevronDown class="w-4 h-4" />
 						{:else}
 							<ChevronRight class="w-4 h-4" />
 						{/if}
 						Rango de fechas
 					</button>
-					{#if showRecurrence}
-						<div class="flex items-center gap-3 mt-3 flex-wrap">
-							<span class="text-sm text-content/40">desde</span>
-							<input
-								type="date"
-								bind:value={recurrenceStart}
-								class="bg-base-100 border border-base-400 rounded-lg px-3 py-2 text-sm text-content outline-none focus:border-primary-100 transition-colors"
+					{#if !recurOpen && hasRecurrence}
+						<div class="mt-2 text-sm text-content/70">
+							<span class="text-content/40">desde</span>
+							{fmtDate(recurrenceStart)}
+							<span class="text-content/40 ml-2">hasta</span>
+							{fmtDate(recurrenceEnd)}
+						</div>
+					{/if}
+					{#if recurOpen}
+						<div class="grid grid-cols-2 gap-3 mt-3">
+							<InlineCalendar
+								label="desde"
+								value={recurrenceStart}
+								onChange={(d) => (recurrenceStart = d)}
 							/>
-							<span class="text-sm text-content/40">hasta</span>
-							<input
-								type="date"
-								bind:value={recurrenceEnd}
-								class="bg-base-100 border border-base-400 rounded-lg px-3 py-2 text-sm text-content outline-none focus:border-primary-100 transition-colors"
+							<InlineCalendar
+								label="hasta"
+								value={recurrenceEnd}
+								onChange={(d) => (recurrenceEnd = d)}
 							/>
 						</div>
 					{/if}
@@ -453,42 +461,38 @@
 					</div>
 					<button
 						type="button"
-						onclick={() => {
-							if (showRecurrence) {
-								recurrenceStart = '';
-								recurrenceEnd = '';
-							}
-							showRecurrence = !showRecurrence;
-						}}
-						class="flex items-center gap-2 text-sm transition-colors cursor-pointer {showRecurrence
+						onclick={() => (recurOpen = !recurOpen)}
+						class="flex items-center gap-2 text-sm transition-colors cursor-pointer {recurOpen
 							? 'text-primary-100'
 							: 'text-content/30 hover:text-content/60'}"
 					>
-						{#if showRecurrence}
+						{#if recurOpen}
 							<ChevronDown class="w-4 h-4" />
 						{:else}
 							<ChevronRight class="w-4 h-4" />
 						{/if}
 						Rango de fechas
 					</button>
-					{#if showRecurrence}
+					{#if !recurOpen && hasRecurrence}
+						<div class="mt-2 text-sm text-content/70">
+							<span class="text-content/40">desde</span>
+							{fmtDate(recurrenceStart)}
+							<span class="text-content/40 ml-2">hasta</span>
+							{fmtDate(recurrenceEnd)}
+						</div>
+					{/if}
+					{#if recurOpen}
 						<div class="flex flex-col gap-3 mt-3">
-							<div class="flex items-center gap-3">
-								<span class="text-sm text-content/40 shrink-0">desde</span>
-								<input
-									type="date"
-									bind:value={recurrenceStart}
-									class="flex-1 bg-base-100 border border-base-400 rounded-lg px-3 py-2 text-sm text-content outline-none focus:border-primary-100 transition-colors"
-								/>
-							</div>
-							<div class="flex items-center gap-3">
-								<span class="text-sm text-content/40 shrink-0">hasta</span>
-								<input
-									type="date"
-									bind:value={recurrenceEnd}
-									class="flex-1 bg-base-100 border border-base-400 rounded-lg px-3 py-2 text-sm text-content outline-none focus:border-primary-100 transition-colors"
-								/>
-							</div>
+							<InlineCalendar
+								label="desde"
+								value={recurrenceStart}
+								onChange={(d) => (recurrenceStart = d)}
+							/>
+							<InlineCalendar
+								label="hasta"
+								value={recurrenceEnd}
+								onChange={(d) => (recurrenceEnd = d)}
+							/>
 						</div>
 					{/if}
 				</div>
