@@ -42,6 +42,7 @@ jobs:
     name: Build Linux (.deb / .rpm / .AppImage)
     runs-on: ubuntu-latest
     needs: resolve
+    environment: deploy
     env:
       VERSION_NO_V: ${{ needs.resolve.outputs.version_no_v }}
     steps:
@@ -122,6 +123,7 @@ jobs:
     name: Build Windows (.msi)
     runs-on: windows-latest
     needs: resolve
+    environment: deploy
     env:
       VERSION_NO_V: ${{ needs.resolve.outputs.version_no_v }}
     steps:
@@ -190,6 +192,7 @@ jobs:
     name: Build Android (.apk)
     runs-on: ubuntu-latest
     needs: resolve
+    environment: deploy
     env:
       VERSION_NO_V: ${{ needs.resolve.outputs.version_no_v }}
     steps:
