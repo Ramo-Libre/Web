@@ -30,11 +30,27 @@ Este proyecto está abierto a ideas, sugerencias y contribuciones.
 
 ## Tabla de contenidos
 
+- [Filosofía de diseño](#filosofía-de-diseño)
 - [Funcionalidades](#funcionalidades)
 - [Descargas](#descargas)
 - [Quick start](#quick-start)
 - [Créditos y atribuciones](#créditos-y-atribuciones)
 - [Licencia](#licencia)
+
+
+## Filosofía de diseño
+
+Ramo Libre Web no busca ser una suite de gestión académica exhaustiva, sino una herramienta de seguimiento: se usa para agregar algo cuando surge y dar un vistazo día a día, no para pasar tiempo dentro de la app. Toda decisión sobre qué agregar o cómo diseñarlo se evalúa contra los siguientes criterios:
+
+1. **Independencia.** Cada feature debe poder existir sin depender de las demás. Por debajo, las únicas features reales son *Schedule* (Horarios y Eventos son dos vistas de la misma feature) y *Escenarios*; no se tocan entre sí. Ramos es la única excepción consciente, ya que existe específicamente para organizar los datos del resto en categorías.
+
+2. **Valor real al día a día.** Toda feature debe resolver algo que efectivamente ocurre en el semestre a semestre de un estudiante, consultado de forma pasiva y breve — no gestión activa ni sesiones largas de uso.
+
+3. **Simplicidad.** La interacción hacia afuera debe ser trivial, incluso cuando el problema que resuelve por dentro no lo sea (es el caso de los Escenarios de Notas: un DSL expresivo por dentro, pero de uso trivial por fuera — se ingresan las reglas una vez y después solo se completan notas a medida que se conocen).
+
+4. **Alcance acotado.** Lo que no es gestión académica del día a día no entra a esta app, aunque esté relacionado. Casos de uso distintos —como simular combinaciones de notas con sliders— se resuelven en herramientas separadas del ecosistema Ramo Libre, no como una sección más de esta.
+
+5. **Nada "por si acaso".** Ninguna feature, campo o configuración se agrega por intuición o margen especulativo. Si no hay una razón concreta y verificable para incluir algo, no se incluye — y ante la duda, se prefiere omitir antes que sobrecargar.
 
 ## Funcionalidades
 
