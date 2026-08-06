@@ -1,6 +1,7 @@
 <script lang="ts">
-	import { ChevronLeft, ChevronRight } from '@lucide/svelte';
+	import { X, ChevronLeft, ChevronRight, ChevronDown } from '@lucide/svelte';
 	import { untrack } from 'svelte';
+	import { fly } from 'svelte/transition';
 	import { getNow } from '$lib/utils/date';
 
 	let {
@@ -98,20 +99,41 @@
 			else prevMonth();
 		}
 	}
+
+	let drawerOpen = $state(false);
+
+	const formattedValue = $derived(
+		value
+			? new Date(`${value}T12:00:00`).toLocaleDateString('es-ES', {
+					weekday: 'short',
+					day: 'numeric',
+					month: 'short'
+				})
+			: ''
+	);
+
+	$effect(() => {
+		if (!drawerOpen) return;
+		const handler = (e: KeyboardEvent) => {
+			if (e.key === 'Escape') {
+				e.stopImmediatePropagation();
+				drawerOpen = false;
+			}
+		};
+		window.addEventListener('keydown', handler, true);
+		return () => window.removeEventListener('keydown', handler, true);
+	});
+
+	function openDrawer() {
+		drawerOpen = true;
+	}
+
+	function closeDrawer() {
+		drawerOpen = false;
+	}
 </script>
 
-<div
-	class="select-none"
-	role="group"
-	aria-label="Selector de fecha"
-	ontouchstart={onTouchStart}
-	ontouchend={onTouchEnd}
->
-	{#if label}
-		<div class="text-xs font-semibold text-content/50 uppercase tracking-wider mb-2">
-			{label}
-		</div>
-	{/if}
+{#snippet calendarGrid()}
 	<div class="flex items-center justify-between mb-2">
 		<button
 			type="button"
@@ -171,4 +193,87 @@
 			</button>
 		{/if}
 	</div>
+{/snippet}
+
+<div
+	class="hidden sm:block select-none"
+	role="group"
+	aria-label="Selector de fecha"
+	ontouchstart={onTouchStart}
+	ontouchend={onTouchEnd}
+>
+	{#if label}
+		<div class="text-xs font-semibold text-content/50 uppercase tracking-wider mb-2">
+			{label}
+		</div>
+	{/if}
+	{@render calendarGrid()}
 </div>
+
+<div class="sm:hidden">
+	{#if label}
+		<div class="text-xs font-semibold text-content/50 uppercase tracking-wider mb-2">
+			{label}
+		</div>
+	{/if}
+	<button
+		type="button"
+		onclick={openDrawer}
+		class="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg border transition-colors cursor-pointer text-sm {value
+			? 'border-base-400 text-content'
+			: 'border-base-400/60 text-content/30'}"
+	>
+		<span class="font-semibold">{value ? formattedValue : 'Seleccionar fecha'}</span>
+		<ChevronDown class="w-4 h-4 shrink-0 text-content/40" />
+	</button>
+</div>
+
+{#if drawerOpen}
+	<div class="fixed inset-0 z-[60]" role="dialog" aria-modal="true">
+		<button
+			class="absolute inset-0 bg-black/40 backdrop-blur-sm cursor-pointer"
+			onclick={closeDrawer}
+			aria-label="Cerrar"
+		></button>
+		<div
+			class="absolute bottom-0 left-0 right-0 bg-base-100 rounded-t-2xl shadow-xl border border-base-400 max-h-[85vh] flex flex-col"
+			in:fly={{ y: 100, duration: 250 }}
+			out:fly={{ y: 100, duration: 200 }}
+		>
+			<div
+				class="shrink-0 flex items-center justify-between px-6 pt-4 pb-2 border-b border-base-300"
+			>
+				<h3 class="text-lg font-bold text-content">{label || 'Seleccionar fecha'}</h3>
+				<button
+					onclick={closeDrawer}
+					class="p-2 rounded-lg text-content/50 hover:text-content hover:bg-base-200 transition-colors cursor-pointer"
+					aria-label="Cerrar"
+				>
+					<X size={20} />
+				</button>
+			</div>
+			<div class="flex-1 overflow-y-auto px-6 py-4">
+				<div
+					class="select-none"
+					role="group"
+					aria-label="Selector de fecha"
+					ontouchstart={onTouchStart}
+					ontouchend={onTouchEnd}
+				>
+					{@render calendarGrid()}
+				</div>
+			</div>
+			<div
+				class="shrink-0 px-6 py-4 border-t border-base-300 pb-[max(env(safe-area-inset-bottom,0px),1rem)]"
+			>
+				<button
+					type="button"
+					onclick={closeDrawer}
+					class="w-full px-4 py-2 rounded-lg bg-primary-100 text-base-100 font-semibold hover:opacity-90 transition-opacity cursor-pointer text-sm"
+				>
+					Listo
+				</button>
+			</div>
+		</div>
+	</div>
+{/if}
