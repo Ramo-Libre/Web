@@ -1,27 +1,8 @@
 <script lang="ts">
 	import { semestre } from '$lib/infra/semestres.svelte';
 	import type { ScheduleEvent } from '$lib/features/schedule.svelte';
-	import {
-		Presentation,
-		CircleAlert,
-		Book,
-		FlaskConical,
-		Users,
-		Wrench,
-		Clock,
-		Ellipsis
-	} from '@lucide/svelte';
-
-	const categoryIcons: Record<string, typeof Book> = {
-		exam: Presentation,
-		urgent: CircleAlert,
-		book: Book,
-		lab: FlaskConical,
-		assist: Users,
-		taller: Wrench,
-		event: Clock,
-		other: Ellipsis
-	};
+	import { CATEGORY_ICONS } from '$lib/features/schedule-categories';
+	import { Ellipsis } from '@lucide/svelte';
 
 	interface Props {
 		dateStr: string | null;
@@ -70,7 +51,7 @@
 		{:else}
 			<div class="space-y-1">
 				{#each sorted as event (event.id)}
-					{@const Icon = categoryIcons[event.category] ?? Ellipsis}
+					{@const Icon = CATEGORY_ICONS[event.category] ?? Ellipsis}
 					{@const time = event.startTime
 						? event.endTime
 							? `${event.startTime}–${event.endTime}`

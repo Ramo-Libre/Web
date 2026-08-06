@@ -25,6 +25,8 @@ Los horarios definen la recurrencia semanal de tus clases y actividades. Pueden 
   - Taller
   - Urgente
   - Evento
+  - Entrega
+  - Viaje
   - Otro
 - **Descripción**: texto opcional con notas adicionales.
 - **Hora de inicio y hora de fin**: en formato de 24 horas (ej. 10:00, 14:30).

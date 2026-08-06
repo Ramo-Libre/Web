@@ -9,10 +9,10 @@
 	import AIContextDrawer from './AIContextDrawer.svelte';
 	import ICSImportModal from './ICSImportModal.svelte';
 
-	const now = getNow();
-	const year = now.getFullYear();
-	const semestreNum = now.getMonth() < 6 ? 1 : 2;
-	const recomendado = `${year}-${semestreNum}`;
+	const recomendado = $derived.by(() => {
+		const now = getNow();
+		return `${now.getFullYear()}-${now.getMonth() < 6 ? 1 : 2}`;
+	});
 
 	const actions = [
 		{

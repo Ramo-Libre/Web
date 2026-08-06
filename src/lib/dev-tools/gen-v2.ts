@@ -15,6 +15,8 @@ const ALL_CATEGORIES: ScheduleCategory[] = [
 	'exam',
 	'urgent',
 	'event',
+	'entrega',
+	'viaje',
 	'other'
 ];
 const ACADEMIC_CATEGORIES: ScheduleCategory[] = ['book', 'lab', 'assist', 'taller'];

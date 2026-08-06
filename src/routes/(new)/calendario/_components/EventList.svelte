@@ -2,28 +2,9 @@
 	import { semestre } from '$lib/infra/semestres.svelte';
 	import { getNow } from '$lib/utils/date';
 	import type { ScheduleEvent } from '$lib/features/schedule.svelte';
-	import {
-		Presentation,
-		CircleAlert,
-		Book,
-		FlaskConical,
-		Users,
-		Wrench,
-		Clock,
-		Ellipsis
-	} from '@lucide/svelte';
+	import { CATEGORY_ICONS } from '$lib/features/schedule-categories';
+	import { Ellipsis } from '@lucide/svelte';
 	import { SvelteDate } from 'svelte/reactivity';
-
-	const categoryIcons: Record<string, typeof Book> = {
-		exam: Presentation,
-		urgent: CircleAlert,
-		book: Book,
-		lab: FlaskConical,
-		assist: Users,
-		taller: Wrench,
-		event: Clock,
-		other: Ellipsis
-	};
 
 	interface Props {
 		events: ScheduleEvent[];
@@ -153,7 +134,7 @@
 				</thead>
 				<tbody>
 					{#each rows as row (row.event.id + '-' + row.date)}
-						{@const Icon = categoryIcons[row.event.category] ?? Ellipsis}
+						{@const Icon = CATEGORY_ICONS[row.event.category] ?? Ellipsis}
 						{@const color = ramoColor(row.event.ramoId)}
 						<tr
 							class="border-b border-base-300/50 hover:bg-base-200/50 transition-colors cursor-pointer"

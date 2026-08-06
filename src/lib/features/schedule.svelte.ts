@@ -13,6 +13,8 @@ export type ScheduleCategory =
 	| 'exam'
 	| 'urgent'
 	| 'event'
+	| 'entrega'
+	| 'viaje'
 	| 'other';
 
 export interface ScheduleEvent {
