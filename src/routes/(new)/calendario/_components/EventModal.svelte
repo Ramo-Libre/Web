@@ -67,6 +67,7 @@
 	const BadgeIcon = $derived(CATEGORY_ICONS[category] ?? Ellipsis);
 
 	function handleSubmit() {
+		if (!date) return;
 		onSave({
 			id: event?.id,
 			title: title || undefined,
@@ -275,7 +276,8 @@
 					</button>
 					<button
 						type="submit"
-						class="px-4 py-2 rounded-lg bg-primary-100 text-base-100 font-semibold hover:opacity-90 transition-opacity cursor-pointer text-sm"
+						disabled={!date}
+						class="px-4 py-2 rounded-lg bg-primary-100 text-base-100 font-semibold hover:opacity-90 transition-opacity cursor-pointer text-sm disabled:opacity-40 disabled:cursor-not-allowed"
 					>
 						{isEdit ? 'Guardar' : 'Crear'}
 					</button>
@@ -461,7 +463,8 @@
 					</button>
 					<button
 						type="submit"
-						class="px-4 py-2 rounded-lg bg-primary-100 text-base-100 font-semibold hover:opacity-90 transition-opacity cursor-pointer text-sm"
+						disabled={!date}
+						class="px-4 py-2 rounded-lg bg-primary-100 text-base-100 font-semibold hover:opacity-90 transition-opacity cursor-pointer text-sm disabled:opacity-40 disabled:cursor-not-allowed"
 					>
 						{isEdit ? 'Guardar' : 'Crear'}
 					</button>
