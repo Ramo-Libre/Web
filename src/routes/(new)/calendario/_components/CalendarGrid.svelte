@@ -3,29 +3,8 @@
 	import { getNow } from '$lib/utils/date';
 	import { timeTravel } from '$lib/pages/_components/dev-tools/dev-tools-time.svelte';
 	import type { ScheduleEvent } from '$lib/features/schedule.svelte';
-	import {
-		ChevronLeft,
-		ChevronRight,
-		Presentation,
-		CircleAlert,
-		Book,
-		FlaskConical,
-		Users,
-		Wrench,
-		Clock,
-		Ellipsis
-	} from '@lucide/svelte';
-
-	const categoryIcons: Record<string, typeof Book> = {
-		exam: Presentation,
-		urgent: CircleAlert,
-		book: Book,
-		lab: FlaskConical,
-		assist: Users,
-		taller: Wrench,
-		event: Clock,
-		other: Ellipsis
-	};
+	import { CATEGORY_ICONS } from '$lib/features/schedule-categories';
+	import { ChevronLeft, ChevronRight, Ellipsis } from '@lucide/svelte';
 
 	interface Props {
 		events: ScheduleEvent[];
@@ -200,7 +179,7 @@
 					</span>
 					<div class="flex flex-wrap gap-0.5 mt-auto pt-0.5">
 						{#each cell.events.slice(0, 5) as event (event.id)}
-							{@const Icon = categoryIcons[event.category] ?? Ellipsis}
+							{@const Icon = CATEGORY_ICONS[event.category] ?? Ellipsis}
 							<span class="pointer-events-none" style="color: {ramoColor(event.ramoId)}">
 								<Icon class="w-4 h-4" />
 							</span>

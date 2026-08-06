@@ -5,28 +5,13 @@
 		Clock,
 		CheckCircle2,
 		Coffee,
-		FlaskConical,
-		Users,
-		Wrench,
-		Presentation,
 		CircleAlert,
-		Book,
 		Ellipsis,
 		ChevronLeft,
 		ChevronRight
 	} from '@lucide/svelte';
 	import type { ScheduleEvent } from '$lib/features/schedule.svelte';
-
-	const categoryIcons: Record<string, typeof Book> = {
-		exam: Presentation,
-		urgent: CircleAlert,
-		book: Book,
-		lab: FlaskConical,
-		assist: Users,
-		taller: Wrench,
-		event: Clock,
-		other: Ellipsis
-	};
+	import { CATEGORY_ICONS } from '$lib/features/schedule-categories';
 
 	let { now }: { now: Date } = $props();
 
@@ -222,7 +207,7 @@
 	<div class="min-h-[100px] flex flex-col justify-center">
 		{#if currentClass}
 			{@const c = shown!}
-			{@const CatIcon = categoryIcons[c.category] ?? Ellipsis}
+			{@const CatIcon = CATEGORY_ICONS[c.category] ?? Ellipsis}
 			{@const color = ramoColor(c.ramoId)}
 			<div class="flex gap-3 items-stretch">
 				<div class="w-1 rounded-full shrink-0" style="background-color: {color}"></div>
@@ -265,7 +250,7 @@
 			</div>
 		{:else if nextClass}
 			{@const c = shown!}
-			{@const CatIcon = categoryIcons[c.category] ?? Ellipsis}
+			{@const CatIcon = CATEGORY_ICONS[c.category] ?? Ellipsis}
 			{@const color = ramoColor(c.ramoId)}
 			<div class="flex gap-3 items-stretch">
 				<div class="w-1 rounded-full shrink-0" style="background-color: {color}"></div>

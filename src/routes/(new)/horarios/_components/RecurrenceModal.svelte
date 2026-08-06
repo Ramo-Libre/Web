@@ -1,35 +1,10 @@
 <script lang="ts">
 	import { semestre } from '$lib/infra/semestres.svelte';
-	import {
-		X,
-		ChevronDown,
-		ChevronRight,
-		Clock,
-		Presentation,
-		CircleAlert,
-		Book,
-		FlaskConical,
-		Users,
-		Wrench,
-		Ellipsis
-	} from '@lucide/svelte';
+	import { X, ChevronDown, ChevronRight, Ellipsis } from '@lucide/svelte';
 	import { fly } from 'svelte/transition';
 	import type { ScheduleEvent, ScheduleCategory } from '$lib/features/schedule.svelte';
 	import { SCHEDULE_DESC_MAX_LENGTH } from '$lib/features/schedule.svelte';
-
-	const CATEGORIES: { value: ScheduleCategory; label: string; icon: typeof Book }[] = [
-		{ value: 'exam', label: 'Examen', icon: Presentation },
-		{ value: 'urgent', label: 'Urgente', icon: CircleAlert },
-		{ value: 'book', label: 'Libro', icon: Book },
-		{ value: 'lab', label: 'Lab', icon: FlaskConical },
-		{ value: 'assist', label: 'Asistencia', icon: Users },
-		{ value: 'taller', label: 'Taller', icon: Wrench },
-		{ value: 'event', label: 'Evento', icon: Clock },
-		{ value: 'other', label: 'Otro', icon: Ellipsis }
-	];
-
-	const CATEGORY_ICONS: Record<string, typeof Book> = {};
-	for (const c of CATEGORIES) CATEGORY_ICONS[c.value] = c.icon;
+	import { CATEGORIES, CATEGORY_ICONS } from '$lib/features/schedule-categories';
 
 	const DOW_LABELS = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
 

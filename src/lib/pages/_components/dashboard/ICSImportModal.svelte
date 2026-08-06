@@ -7,12 +7,6 @@
 		Clock,
 		X,
 		FileSpreadsheet,
-		Book,
-		Presentation,
-		CircleAlert,
-		FlaskConical,
-		Users,
-		Wrench,
 		Ellipsis
 	} from '@lucide/svelte';
 	import {
@@ -22,7 +16,7 @@
 		type DescriptionOptions
 	} from '$lib/utils/ics';
 	import { semestre } from '$lib/infra/semestres.svelte';
-	import type { ScheduleCategory } from '$lib/features/schedule.svelte';
+	import { CATEGORY_ICONS } from '$lib/features/schedule-categories';
 
 	let { onClose }: { onClose: () => void } = $props();
 
@@ -34,17 +28,6 @@
 		5: 'Vie',
 		6: 'Sáb',
 		7: 'Dom'
-	};
-
-	const categoryIcons: Record<ScheduleCategory, typeof Book> = {
-		exam: Presentation,
-		urgent: CircleAlert,
-		book: Book,
-		lab: FlaskConical,
-		assist: Users,
-		taller: Wrench,
-		event: Clock,
-		other: Ellipsis
 	};
 
 	let events = $state<ParsedEvent[]>([]);
@@ -234,7 +217,7 @@
 			<!-- Lista de horarios -->
 			<div class="space-y-2 max-h-80 overflow-y-auto pr-1">
 				{#each events as event, i (event.uid)}
-					{@const Icon = categoryIcons[event.category] ?? Ellipsis}
+					{@const Icon = CATEGORY_ICONS[event.category] ?? Ellipsis}
 					{@const desc = getPreviewDescription(event)}
 					<button
 						onclick={() => toggleEvent(i)}

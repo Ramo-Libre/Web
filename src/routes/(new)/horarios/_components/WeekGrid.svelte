@@ -1,16 +1,8 @@
 <script lang="ts">
 	import { semestre } from '$lib/infra/semestres.svelte';
 	import type { ScheduleEvent, ScheduleCategory } from '$lib/features/schedule.svelte';
-	import {
-		Presentation,
-		CircleAlert,
-		Book,
-		FlaskConical,
-		Users,
-		Wrench,
-		Clock,
-		Ellipsis
-	} from '@lucide/svelte';
+	import { CATEGORY_ICONS } from '$lib/features/schedule-categories';
+	import { Ellipsis } from '@lucide/svelte';
 	import { SvelteDate, SvelteMap } from 'svelte/reactivity';
 	import { getNow } from '$lib/utils/date';
 	import { timeTravel } from '$lib/pages/_components/dev-tools/dev-tools-time.svelte';
@@ -19,17 +11,6 @@
 	import EventModal from '../../calendario/_components/EventModal.svelte';
 
 	type Orientation = 'normal' | 'rotated';
-
-	const categoryIcons: Record<string, typeof Book> = {
-		exam: Presentation,
-		urgent: CircleAlert,
-		book: Book,
-		lab: FlaskConical,
-		assist: Users,
-		taller: Wrench,
-		event: Clock,
-		other: Ellipsis
-	};
 
 	const weekDays: { id: string; name: string; short: string; dow: number }[] = [
 		{ id: 'L', name: 'Lunes', short: 'Lun', dow: 1 },
@@ -513,7 +494,7 @@
 											: ''}"
 									>
 										{#each laidByDay[day.dow] as ev (ev.id)}
-											{@const Icon = categoryIcons[ev.category] ?? Ellipsis}
+											{@const Icon = CATEGORY_ICONS[ev.category] ?? Ellipsis}
 											<button
 												onclick={() => openEdit(ev.event)}
 												class="absolute rounded-md border-l-4 shadow-sm overflow-hidden group transition-all hover:z-30 hover:shadow-md cursor-pointer p-1 lg:p-2"
@@ -637,7 +618,7 @@
 
 									<!-- Eventos: tarjeta con título + horario, aprovechando el alto de fila -->
 									{#each laidByDay[weekDays[i].dow] as ev (ev.id)}
-										{@const Icon = categoryIcons[ev.category] ?? Ellipsis}
+										{@const Icon = CATEGORY_ICONS[ev.category] ?? Ellipsis}
 										<button
 											onclick={() => openEdit(ev.event)}
 											class="absolute rounded-lg border-l-4 shadow-sm overflow-hidden transition-all hover:z-30 hover:shadow-md cursor-pointer px-2 py-1.5 flex flex-col items-start justify-center gap-0.5 text-left"

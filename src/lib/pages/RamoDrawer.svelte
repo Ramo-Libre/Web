@@ -2,12 +2,6 @@
 	import { beforeNavigate, goto } from '$app/navigation';
 	import {
 		X,
-		Book,
-		FlaskConical,
-		Users,
-		Wrench,
-		Presentation,
-		Clock,
 		Ellipsis,
 		CircleCheck,
 		Circle,
@@ -20,6 +14,7 @@
 	import { ramoDrawer } from '$lib/features/ramosDrawer.svelte';
 	import { ColorUtils } from '$lib/utils/colors';
 	import type { Escenario } from '$lib/features/notas.svelte';
+	import { CATEGORY_ICONS, CATEGORY_LABELS } from '$lib/features/schedule-categories';
 
 	const WEEKDAYS: Record<number, string> = {
 		1: 'L',
@@ -29,26 +24,6 @@
 		5: 'V',
 		6: 'S',
 		7: 'D'
-	};
-
-	const categoryIcons: Record<string, typeof Book> = {
-		exam: Presentation,
-		book: Book,
-		lab: FlaskConical,
-		assist: Users,
-		taller: Wrench,
-		event: Clock,
-		other: Ellipsis
-	};
-
-	const categoryLabels: Record<string, string> = {
-		exam: 'Examen',
-		book: 'Clase',
-		lab: 'Lab',
-		assist: 'Ayudantía',
-		taller: 'Taller',
-		event: 'Evento',
-		other: 'Otro'
 	};
 
 	const selectedRamo = $derived(ramoDrawer.id ? semestre.ramos.get(ramoDrawer.id) : null);
@@ -157,7 +132,7 @@
 				<div class="space-y-2">
 					{#each recurringEntries as entry (entry.key)}
 						{@const ev = entry.event}
-						{@const CatIcon = categoryIcons[ev.category] ?? Ellipsis}
+						{@const CatIcon = CATEGORY_ICONS[ev.category] ?? Ellipsis}
 						{@const dayLetter = WEEKDAYS[entry.day] ?? '?'}
 						{@const bgColor = selectedRamo?.color ?? 'var(--color-primary-100)'}
 						<div
@@ -177,7 +152,7 @@
 											<div class="flex items-center gap-1.5">
 												<CatIcon class="h-4 w-4 shrink-0" style="color: {bgColor}" />
 												<span class="text-[13px] font-bold leading-tight text-content truncate">
-													{ev.title || (categoryLabels[ev.category] ?? ev.category)}
+													{ev.title || (CATEGORY_LABELS[ev.category] ?? ev.category)}
 												</span>
 											</div>
 											<div

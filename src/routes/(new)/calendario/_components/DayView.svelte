@@ -1,39 +1,9 @@
 <script lang="ts">
 	import { semestre } from '$lib/infra/semestres.svelte';
-	import {
-		Presentation,
-		CircleAlert,
-		Book,
-		FlaskConical,
-		Users,
-		Wrench,
-		Clock,
-		Ellipsis
-	} from '@lucide/svelte';
+	import { CATEGORY_ICONS, CATEGORY_LABELS } from '$lib/features/schedule-categories';
+	import { Ellipsis } from '@lucide/svelte';
 	import type { ScheduleEvent } from '$lib/features/schedule.svelte';
 	import { SvelteMap } from 'svelte/reactivity';
-
-	const categoryIcons: Record<string, typeof Book> = {
-		exam: Presentation,
-		urgent: CircleAlert,
-		book: Book,
-		lab: FlaskConical,
-		assist: Users,
-		taller: Wrench,
-		event: Clock,
-		other: Ellipsis
-	};
-
-	const categoryLabels: Record<string, string> = {
-		exam: 'Examen',
-		urgent: 'Urgente',
-		book: 'Libro',
-		lab: 'Lab',
-		assist: 'Asistencia',
-		taller: 'Taller',
-		event: 'Evento',
-		other: 'Otro'
-	};
 
 	interface Props {
 		dateStr: string | null;
@@ -119,7 +89,7 @@
 						>
 						<div class="mt-2 space-y-2">
 							{#each allDay as event (event.id)}
-								{@const Icon = categoryIcons[event.category] ?? Ellipsis}
+								{@const Icon = CATEGORY_ICONS[event.category] ?? Ellipsis}
 								<button
 									onclick={() => onEventClick?.(event)}
 									class="w-full flex items-start gap-3 p-3 rounded-lg border border-base-400 bg-base-100 hover:bg-base-200 transition-colors text-left cursor-pointer"
@@ -134,7 +104,7 @@
 									</span>
 									<div class="flex-1 min-w-0">
 										<span class="font-semibold text-sm text-content">
-											{event.title || categoryLabels[event.category] || 'Evento'}
+											{event.title || CATEGORY_LABELS[event.category] || 'Evento'}
 										</span>
 										{#if event.description}
 											<p class="text-xs text-content/50 mt-0.5">{event.description}</p>
@@ -161,7 +131,7 @@
 								</div>
 								<div class="flex-1 min-w-0 border-t border-base-300/50 pt-1.5">
 									{#each evs as event (event.id)}
-										{@const Icon = categoryIcons[event.category] ?? Ellipsis}
+										{@const Icon = CATEGORY_ICONS[event.category] ?? Ellipsis}
 										{@const timeLabel = event.endTime
 											? `${event.startTime} – ${event.endTime}`
 											: event.startTime}
@@ -183,7 +153,7 @@
 														>{timeLabel}</span
 													>
 													<span class="font-semibold text-sm text-content truncate">
-														{event.title || categoryLabels[event.category] || 'Evento'}
+														{event.title || CATEGORY_LABELS[event.category] || 'Evento'}
 													</span>
 													{#if event.ramoId}
 														<span

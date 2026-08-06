@@ -2,24 +2,21 @@
 	import {
 		Sparkles,
 		BookMarked,
+		Book,
 		CalendarDays,
 		CalendarCheck,
 		Calendar,
 		TrendingUp,
 		LayoutDashboard,
 		GraduationCap,
-		Book,
 		Activity,
-		Presentation,
-		FlaskConical,
-		Users,
-		Wrench,
 		Ellipsis,
 		CircleCheck,
 		CloudOff,
 		ChevronLeft,
 		ChevronRight
 	} from '@lucide/svelte';
+	import { CATEGORY_ICONS } from '$lib/features/schedule-categories';
 	import { SuiteFavicons } from '@ramo-libre/ui-themes';
 
 	let {
@@ -55,15 +52,6 @@
 		V: [{ color: '#ef4444', time: '08:30', cat: 'exam' }],
 		S: [],
 		D: []
-	};
-
-	const catIconsMap: Record<string, typeof Book> = {
-		book: Book,
-		lab: FlaskConical,
-		exam: Presentation,
-		assist: Users,
-		taller: Wrench,
-		other: Ellipsis
 	};
 
 	const year = 2026;
@@ -314,7 +302,7 @@
 								: ''}"
 						>
 							{#each scheduleDummy[d.slice(0, 1)] ?? [] as block (block.time)}
-								{@const CatIcon = catIconsMap[block.cat] ?? Book}
+								{@const CatIcon = CATEGORY_ICONS[block.cat] ?? Ellipsis}
 								<div
 									class="rounded-md border-l-4 shadow-sm mb-0.5 flex items-center justify-center p-1"
 									style="background-color: {block.color}15; border-color: {block.color};"

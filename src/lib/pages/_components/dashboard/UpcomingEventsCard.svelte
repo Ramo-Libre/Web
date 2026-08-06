@@ -2,38 +2,10 @@
 	import { semestre } from '$lib/infra/semestres.svelte';
 	import { goto } from '$app/navigation';
 	import { SvelteDate } from 'svelte/reactivity';
-	import {
-		CalendarDays,
-		FlaskConical,
-		Users,
-		Wrench,
-		Presentation,
-		CircleAlert,
-		Book,
-		Ellipsis,
-		Clock
-	} from '@lucide/svelte';
+	import { CATEGORY_ICONS, CATEGORY_LABELS } from '$lib/features/schedule-categories';
+	import { CalendarDays, Ellipsis } from '@lucide/svelte';
 
 	let { now, class: className = '' }: { now: Date; class?: string } = $props();
-
-	const categoryIcons: Record<string, typeof Book> = {
-		exam: Presentation,
-		urgent: CircleAlert,
-		book: Book,
-		lab: FlaskConical,
-		assist: Users,
-		taller: Wrench,
-		event: Clock,
-		other: Ellipsis
-	};
-
-	const categoryLabels: Record<string, string> = {
-		book: 'Clase',
-		lab: 'Lab',
-		assist: 'Ayudantía',
-		taller: 'Taller',
-		exam: 'Examen'
-	};
 
 	function localDateStr(d: Date): string {
 		return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -76,7 +48,7 @@
 	{#if upcomingEvents.length > 0}
 		<div class="space-y-1">
 			{#each upcomingEvents as ev (ev.id)}
-				{@const CatIcon = categoryIcons[ev.category] ?? Ellipsis}
+				{@const CatIcon = CATEGORY_ICONS[ev.category] ?? Ellipsis}
 				{@const color = ramoColor(ev.ramoId)}
 				{@const isToday = ev.date === todayStr}
 				<button
@@ -104,7 +76,7 @@
 					<CatIcon class="h-4 w-4 lg:h-6 lg:w-6 shrink-0" style="color: {color}" />
 					<div class="min-w-0 flex-1">
 						<div class="text-sm lg:text-base font-bold text-content truncate">
-							{ev.title || categoryLabels[ev.category] || 'Sin título'}
+							{ev.title || CATEGORY_LABELS[ev.category] || 'Sin título'}
 						</div>
 						{#if ev.ramoId}
 							<div class="text-xs lg:text-sm text-content/50">{ramoName(ev.ramoId)}</div>
