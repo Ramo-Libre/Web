@@ -16,7 +16,6 @@
 	import { fly } from 'svelte/transition';
 	import type { ScheduleEvent, ScheduleCategory } from '$lib/features/schedule.svelte';
 	import { SCHEDULE_DESC_MAX_LENGTH } from '$lib/features/schedule.svelte';
-	import InlineCalendar from '$lib/components/InlineCalendar.svelte';
 
 	const CATEGORIES: { value: ScheduleCategory; label: string; icon: typeof Book }[] = [
 		{ value: 'exam', label: 'Examen', icon: Presentation },
@@ -273,16 +272,18 @@
 							</div>
 						{/if}
 						{#if recurOpen}
-							<div class="grid grid-cols-2 gap-3 mt-3">
-								<InlineCalendar
-									label="desde"
-									value={recurrenceStart}
-									onChange={(d) => (recurrenceStart = d)}
+							<div class="flex items-center gap-3 mt-3 flex-wrap">
+								<span class="text-sm text-content/40">desde</span>
+								<input
+									type="date"
+									bind:value={recurrenceStart}
+									class="bg-base-100 border border-base-400 rounded-lg px-3 py-2 text-sm text-content outline-none focus:border-primary-100 transition-colors"
 								/>
-								<InlineCalendar
-									label="hasta"
-									value={recurrenceEnd}
-									onChange={(d) => (recurrenceEnd = d)}
+								<span class="text-sm text-content/40">hasta</span>
+								<input
+									type="date"
+									bind:value={recurrenceEnd}
+									class="bg-base-100 border border-base-400 rounded-lg px-3 py-2 text-sm text-content outline-none focus:border-primary-100 transition-colors"
 								/>
 							</div>
 						{/if}
@@ -493,16 +494,22 @@
 						{/if}
 						{#if recurOpen}
 							<div class="flex flex-col gap-3 mt-3">
-								<InlineCalendar
-									label="desde"
-									value={recurrenceStart}
-									onChange={(d) => (recurrenceStart = d)}
-								/>
-								<InlineCalendar
-									label="hasta"
-									value={recurrenceEnd}
-									onChange={(d) => (recurrenceEnd = d)}
-								/>
+								<div class="flex items-center gap-3">
+									<span class="text-sm text-content/40 shrink-0">desde</span>
+									<input
+										type="date"
+										bind:value={recurrenceStart}
+										class="flex-1 bg-base-100 border border-base-400 rounded-lg px-3 py-2 text-sm text-content outline-none focus:border-primary-100 transition-colors"
+									/>
+								</div>
+								<div class="flex items-center gap-3">
+									<span class="text-sm text-content/40 shrink-0">hasta</span>
+									<input
+										type="date"
+										bind:value={recurrenceEnd}
+										class="flex-1 bg-base-100 border border-base-400 rounded-lg px-3 py-2 text-sm text-content outline-none focus:border-primary-100 transition-colors"
+									/>
+								</div>
 							</div>
 						{/if}
 					</div>
